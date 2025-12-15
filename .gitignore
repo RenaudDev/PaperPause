@@ -18,9 +18,23 @@ resources/_gen/
 .wrangler/
 .dev.vars
 
+# Environment Variables & Secrets
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+*.key
+*.pem
+secrets/
+.secrets/
+
 # Generated Assets (Tailwind)
 # We generate this on build, so no need to commit unless you want to.
 /static/css/main.css
 
-# Local Automation Scripts
+# Local CMS Backend (completely local, not for repo)
 scripts/morning-routine/
+
+# CMS Prompt Configurations (generation settings, not needed in repo)
+config/prompts/

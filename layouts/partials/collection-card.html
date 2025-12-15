@@ -13,7 +13,7 @@
   {{- if or .Params.image_url .Params.cf_image_id -}}
     {{- $imageData := dict "url" "" "cf_id" .Params.cf_image_id "alt" .Title -}}
     {{- if .Params.cf_image_id -}}
-      {{- $imageData = merge $imageData (dict "url" (printf "https://imagedelivery.net/%s/%s/thumbnail" (default "G92SwfasiUv-usR1s4VYvA" $.Site.Params.cf_images_hash) .Params.cf_image_id)) -}}
+      {{- $imageData = merge $imageData (dict "url" (printf "https://imagedelivery.net/%s/%s/thumbnail" $.Site.Params.cf_images_hash .Params.cf_image_id)) -}}
     {{- else if .Params.image_url -}}
       {{- $imageData = merge $imageData (dict "url" .Params.image_url) -}}
     {{- end -}}
