@@ -6,3 +6,21 @@ compatibility_date = "2024-01-01"
 binding = "ASSETS_BUCKET"
 bucket_name = "visual-sanctuary-assets"
 preview_bucket_name = "visual-sanctuary-assets-preview"
+
+# Secrets configuration (set via: wrangler secret put <NAME>)
+# These are injected into process.env when running scripts via Wrangler
+# 
+# Required secrets:
+# - GEMINI_API_KEY (Google AI image generation)
+# - R2_ACCOUNT_ID (Cloudflare R2 storage)
+# - R2_ACCESS_KEY_ID (R2 API credentials)
+# - R2_SECRET_ACCESS_KEY (R2 API credentials)
+# - R2_BUCKET_NAME (R2 bucket name)
+# - R2_PUBLIC_URL (R2 public URL base)
+# - CF_IMAGES_ACCOUNT_ID (Cloudflare Images account)
+# - CF_IMAGES_API_TOKEN (Cloudflare Images API token)
+# - CF_IMAGES_ACCOUNT_HASH (Cloudflare Images account hash)
+# - DASHBOARD_PORT (optional, defaults to 3000)
+#
+# For local development, create a .dev.vars file (see .dev.vars.example)
+# Wrangler automatically loads .dev.vars when running 'wrangler pages dev'

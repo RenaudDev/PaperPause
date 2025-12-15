@@ -1,4 +1,9 @@
 ---
 title: "Animals"
 description: "Browse our collection of animal coloring pages."
+image_url: "/images/og-animals.jpg"
+cascade:
+  - _target:
+      kind: section
+    outputs: ["HTML", "RSS", "SECTION_SITEMAP"]
 ---
