@@ -1,0 +1,105 @@
+name: Daily Image Generation
+
+on:
+  schedule:
+    # Cats: 6:00 AM EST = 11:00 AM UTC (EST is UTC-5)
+    - cron: '0 11 * * *'
+    # Dogs: 6:00 PM EST = 11:00 PM UTC (EST is UTC-5)
+    - cron: '0 23 * * *'
+  workflow_dispatch: # Allow manual triggers
+    inputs:
+      animal_type:
+        description: 'Animal type to generate (cats, Dogs, or both)'
+        required: false
+        default: 'both'
+        type: choice
+        options:
+          - cats
+          - Dogs
+          - both
+
+jobs:
+  generate-images:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Create .dev.vars from secrets
+        run: |
+          cat > .dev.vars << EOF
+          GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+          RECRAFT_API_KEY=${{ secrets.RECRAFT_API_KEY }}
+          R2_ACCOUNT_ID=${{ secrets.R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID=${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY=${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET_NAME=${{ secrets.R2_BUCKET_NAME }}
+          R2_PUBLIC_URL=${{ secrets.R2_PUBLIC_URL }}
+          CF_IMAGES_ACCOUNT_ID=${{ secrets.CF_IMAGES_ACCOUNT_ID }}
+          CF_IMAGES_API_TOKEN=${{ secrets.CF_IMAGES_API_TOKEN }}
+          CF_IMAGES_ACCOUNT_HASH=${{ secrets.CF_IMAGES_ACCOUNT_HASH }}
+          EOF
+      
+      - name: Determine which animals to generate
+        id: determine_animals
+        run: |
+          # Get current hour in UTC
+          CURRENT_HOUR=$(date -u +%H)
+          
+          # If manually triggered, use input
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            ANIMAL_TYPE="${{ inputs.animal_type }}"
+          # If triggered by cron at 11:00 UTC (6 AM EST) - generate cats
+          elif [ "$CURRENT_HOUR" -eq 11 ]; then
+            ANIMAL_TYPE="cats"
+          # If triggered by cron at 23:00 UTC (6 PM EST) - generate dogs
+          elif [ "$CURRENT_HOUR" -eq 23 ]; then
+            ANIMAL_TYPE="Dogs"
+          else
+            ANIMAL_TYPE="both"
+          fi
+          
+          echo "animal_type=$ANIMAL_TYPE" >> $GITHUB_OUTPUT
+          echo "Generating images for: $ANIMAL_TYPE"
+          
+      - name: Generate 5 Cat Images
+        if: steps.determine_animals.outputs.animal_type == 'cats' || steps.determine_animals.outputs.animal_type == 'both'
+        run: npm run generate animals cats 5
+        
+      - name: Generate 5 Dog Images
+        if: steps.determine_animals.outputs.animal_type == 'Dogs' || steps.determine_animals.outputs.animal_type == 'both'
+        run: npm run generate animals Dogs 5
+        
+      - name: Set all new images to draft=false
+        run: npx ts-node scripts/morning-routine/tasks/publish-drafts.ts
+        
+      - name: Configure Git
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+      - name: Commit and push changes
+        run: |
+          git add content/
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            ANIMAL_TYPE="${{ steps.determine_animals.outputs.animal_type }}"
+            git commit -m "🎨 Generated $ANIMAL_TYPE images: $(date +'%Y-%m-%d %H:%M UTC')"
+            git push
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
