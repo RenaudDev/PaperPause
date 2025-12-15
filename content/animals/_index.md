@@ -1,5 +1,6 @@
 ---
 title: "Animals"
+h1: "Free Printable Coloring Pages Of Animals"
 description: "Browse our collection of animal coloring pages."
 image_url: "/images/og-animals.jpg"
 cascade:
