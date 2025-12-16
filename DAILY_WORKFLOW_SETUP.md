@@ -26,10 +26,12 @@ The workflow runs **once daily** at 5:00 AM EST:
 
 1. ✅ **Generates 1 cat image** - Uses Recraft API with cat prompts
 2. ✅ **Generates 1 dog image** - Uses Recraft API with dog prompts
-3. ✅ **Automatically publishes** - Images are set to `draft: false` and go live immediately
-4. ✅ **Commits changes** - Pushes to repository with timestamp
+3. ✅ **Generates 1 horse image** - Uses Recraft API with horse prompts
+4. ✅ **Generates 1 butterfly image** - Uses Recraft API with butterfly prompts
+5. ✅ **Automatically publishes** - Images are set to `draft: false` and go live immediately
+6. ✅ **Commits changes** - Pushes to repository with timestamp
 
-**Total**: 2 images generated and published per day (1 cat + 1 dog)
+**Total**: 4 images generated and published per day (1 cat + 1 dog + 1 horse + 1 butterfly)
 
 **Important**: Images are automatically published and go live immediately.
 
@@ -74,9 +76,11 @@ This allows the workflow to commit and push changes.
 3. Click **"Run workflow"**
 4. Select branch
 5. Choose animal type:
+   - **all** - Generate all animals (cats, dogs, horses, butterflies)
    - **cats** - Generate only cat images
-   - **Dogs** - Generate only dog images  
-   - **both** - Generate both cats and dogs
+   - **Dogs** - Generate only dog images
+   - **Horses** - Generate only horse images
+   - **Butterflies** - Generate only butterfly images
 6. Click **"Run workflow"**
 
 ## Local Testing
@@ -89,6 +93,12 @@ npm run generate animals cats 1
 
 # Generate 1 dog image  
 npm run generate animals Dogs 1
+
+# Generate 1 horse image
+npm run generate animals Horses 1
+
+# Generate 1 butterfly image
+npm run generate animals Butterflies 1
 
 # Or generate multiple images
 npm run generate animals cats 5
@@ -117,7 +127,7 @@ npm run publish:drafts
 This will set `draft: false` on ALL draft images.
 
 **Option 2: Manually edit files**
-- Open the `.md` files in `content/animals/cats/` or `content/animals/Dogs/`
+- Open the `.md` files in `content/animals/` subdirectories (cats, Dogs, Horses, Butterflies)
 - Change `draft: true` to `draft: false`
 - Commit and push
 
@@ -153,6 +163,12 @@ Edit the workflow file and change the count parameter:
 
 - name: Generate 1 Dog Image
   run: npm run generate animals Dogs 5  # Change 1 to 5
+
+- name: Generate 1 Horse Image
+  run: npm run generate animals Horses 5  # Change 1 to 5
+
+- name: Generate 1 Butterfly Image
+  run: npm run generate animals Butterflies 5  # Change 1 to 5
 ```
 
 This will generate 5 images per collection instead of 1.
@@ -177,7 +193,11 @@ To generate images for additional animal types:
 - Click any run to see detailed logs
 
 ### Check Generated Files
-- New images appear in `content/animals/cats/` and `content/animals/Dogs/`
+- New images appear in:
+  - `content/animals/cats/`
+  - `content/animals/Dogs/`
+  - `content/animals/Horses/`
+  - `content/animals/Butterflies/`
 - Each run creates a commit with timestamp
 
 ## Troubleshooting

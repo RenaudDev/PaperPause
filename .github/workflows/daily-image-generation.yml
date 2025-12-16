@@ -2,19 +2,21 @@ name: Daily Image Generation
 
 on:
   schedule:
-    # Both cats and dogs: 5:00 AM EST = 10:00 AM UTC (EST is UTC-5)
+    # All animals (cats, dogs, horses, butterflies): 5:00 AM EST = 10:00 AM UTC (EST is UTC-5)
     - cron: '0 10 * * *'
   workflow_dispatch: # Allow manual triggers
     inputs:
       animal_type:
-        description: 'Animal type to generate (cats, Dogs, or both)'
+        description: 'Animal type to generate'
         required: false
-        default: 'both'
+        default: 'all'
         type: choice
         options:
+          - all
           - cats
           - Dogs
-          - both
+          - Horses
+          - Butterflies
 
 jobs:
   generate-images:
@@ -57,20 +59,28 @@ jobs:
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             ANIMAL_TYPE="${{ inputs.animal_type }}"
           else
-            # Scheduled run - generate both cats and dogs
-            ANIMAL_TYPE="both"
+            # Scheduled run - generate all animals
+            ANIMAL_TYPE="all"
           fi
           
           echo "animal_type=$ANIMAL_TYPE" >> $GITHUB_OUTPUT
           echo "Generating images for: $ANIMAL_TYPE"
           
       - name: Generate 1 Cat Image
-        if: steps.determine_animals.outputs.animal_type == 'cats' || steps.determine_animals.outputs.animal_type == 'both'
+        if: steps.determine_animals.outputs.animal_type == 'cats' || steps.determine_animals.outputs.animal_type == 'all'
         run: npm run generate animals cats 1
         
       - name: Generate 1 Dog Image
-        if: steps.determine_animals.outputs.animal_type == 'Dogs' || steps.determine_animals.outputs.animal_type == 'both'
+        if: steps.determine_animals.outputs.animal_type == 'Dogs' || steps.determine_animals.outputs.animal_type == 'all'
         run: npm run generate animals Dogs 1
+        
+      - name: Generate 1 Horse Image
+        if: steps.determine_animals.outputs.animal_type == 'Horses' || steps.determine_animals.outputs.animal_type == 'all'
+        run: npm run generate animals Horses 1
+        
+      - name: Generate 1 Butterfly Image
+        if: steps.determine_animals.outputs.animal_type == 'Butterflies' || steps.determine_animals.outputs.animal_type == 'all'
+        run: npm run generate animals Butterflies 1
         
       - name: Set all new images to draft=false
         run: npx ts-node scripts/morning-routine/tasks/publish-drafts.ts
