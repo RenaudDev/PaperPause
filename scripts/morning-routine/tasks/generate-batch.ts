@@ -234,7 +234,6 @@ medium: "${template.medium || 'Markers'}"
 cf_image_id: "${uploadResult.cfImageId}"
 image_url: "${uploadResult.imageUrl}"
 download_url: "${uploadResult.downloadUrl}"
-has_pdf: ${uploadResult.downloadUrl ? 'true' : 'false'}
 r2_original: "${uploadResult.r2Url}"
 prompt: "${variantPrompt}"
 tags:

@@ -2,7 +2,7 @@ name: Daily Image Generation
 
 on:
   schedule:
-    # All animals (cats, dogs, horses, butterflies): 5:00 AM EST = 10:00 AM UTC (EST is UTC-5)
+    # All animals (cats, dogs, horses, butterflies, sharks): 5:00 AM EST = 10:00 AM UTC (EST is UTC-5)
     - cron: '0 10 * * *'
   workflow_dispatch: # Allow manual triggers
     inputs:
@@ -17,6 +17,7 @@ on:
           - Dogs
           - Horses
           - Butterflies
+          - Sharks
 
 jobs:
   generate-images:
@@ -81,6 +82,10 @@ jobs:
       - name: Generate 1 Butterfly Image
         if: steps.determine_animals.outputs.animal_type == 'Butterflies' || steps.determine_animals.outputs.animal_type == 'all'
         run: npm run generate animals Butterflies 1
+        
+      - name: Generate 1 Shark Image
+        if: steps.determine_animals.outputs.animal_type == 'Sharks' || steps.determine_animals.outputs.animal_type == 'all'
+        run: npm run generate animals Sharks 1
         
       - name: Set all new images to draft=false
         run: npx ts-node scripts/morning-routine/tasks/publish-drafts.ts

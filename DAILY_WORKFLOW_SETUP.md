@@ -28,10 +28,11 @@ The workflow runs **once daily** at 5:00 AM EST:
 2. ✅ **Generates 1 dog image** - Uses Recraft API with dog prompts
 3. ✅ **Generates 1 horse image** - Uses Recraft API with horse prompts
 4. ✅ **Generates 1 butterfly image** - Uses Recraft API with butterfly prompts
-5. ✅ **Automatically publishes** - Images are set to `draft: false` and go live immediately
-6. ✅ **Commits changes** - Pushes to repository with timestamp
+5. ✅ **Generates 1 shark image** - Uses Recraft API with shark prompts
+6. ✅ **Automatically publishes** - Images are set to `draft: false` and go live immediately
+7. ✅ **Commits changes** - Pushes to repository with timestamp
 
-**Total**: 4 images generated and published per day (1 cat + 1 dog + 1 horse + 1 butterfly)
+**Total**: 5 images generated and published per day (1 cat + 1 dog + 1 horse + 1 butterfly + 1 shark)
 
 **Important**: Images are automatically published and go live immediately.
 
@@ -76,11 +77,12 @@ This allows the workflow to commit and push changes.
 3. Click **"Run workflow"**
 4. Select branch
 5. Choose animal type:
-   - **all** - Generate all animals (cats, dogs, horses, butterflies)
+   - **all** - Generate all animals (cats, dogs, horses, butterflies, sharks)
    - **cats** - Generate only cat images
    - **Dogs** - Generate only dog images
    - **Horses** - Generate only horse images
    - **Butterflies** - Generate only butterfly images
+   - **Sharks** - Generate only shark images
 6. Click **"Run workflow"**
 
 ## Local Testing
@@ -99,6 +101,9 @@ npm run generate animals Horses 1
 
 # Generate 1 butterfly image
 npm run generate animals Butterflies 1
+
+# Generate 1 shark image
+npm run generate animals Sharks 1
 
 # Or generate multiple images
 npm run generate animals cats 5
@@ -127,7 +132,7 @@ npm run publish:drafts
 This will set `draft: false` on ALL draft images.
 
 **Option 2: Manually edit files**
-- Open the `.md` files in `content/animals/` subdirectories (cats, Dogs, Horses, Butterflies)
+- Open the `.md` files in `content/animals/` subdirectories (cats, Dogs, Horses, Butterflies, Sharks)
 - Change `draft: true` to `draft: false`
 - Commit and push
 
@@ -169,6 +174,9 @@ Edit the workflow file and change the count parameter:
 
 - name: Generate 1 Butterfly Image
   run: npm run generate animals Butterflies 5  # Change 1 to 5
+
+- name: Generate 1 Shark Image
+  run: npm run generate animals Sharks 5  # Change 1 to 5
 ```
 
 This will generate 5 images per collection instead of 1.
@@ -198,6 +206,7 @@ To generate images for additional animal types:
   - `content/animals/Dogs/`
   - `content/animals/Horses/`
   - `content/animals/Butterflies/`
+  - `content/animals/Sharks/`
 - Each run creates a commit with timestamp
 
 ## Troubleshooting
