@@ -1,8 +1,14 @@
-<nav class="text-sm text-teal-600 mb-8 font-medium">
-    <a href="/" class="hover:text-teal-700">Home</a> /
-    {{ range .Page.Ancestors.Reverse }}
+{{- $ancestors := .Ancestors -}}
+{{- if isset . "Page" -}}
+    {{- $ancestors = .Page.Ancestors -}}
+{{- end -}}
+{{- $textColor := default "text-teal-600" .textColor -}}
+{{- $hoverColor := default "hover:text-teal-700" .hoverColor -}}
+<nav class="text-sm {{ $textColor }} mb-8 font-medium">
+    <a href="/" class="{{ $hoverColor }}">Home</a> /
+    {{ range $ancestors.Reverse }}
     {{ if not .IsHome }}
-    <a href="{{ .RelPermalink }}" class="hover:text-teal-700">{{ .LinkTitle }}</a> /
+    <a href="{{ .RelPermalink }}" class="{{ $hoverColor }}">{{ .LinkTitle }}</a> /
     {{ end }}
     {{ end }}
 </nav>

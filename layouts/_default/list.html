@@ -1,15 +1,24 @@
 {{ define "main" }}
-<div class="container mx-auto px-4 py-12">
-    <!-- Breadcrumbs -->
-    {{ partial "breadcrumbs.html" . }}
+<!-- Teal Header Section -->
+<section class="bg-teal-600 text-white py-12">
+    <div class="container mx-auto px-4">
+        <!-- Breadcrumbs -->
+        {{ partial "breadcrumbs.html" (dict "Page" .Page "textColor" "text-white" "hoverColor" "hover:text-white/80") }}
 
-    <!-- Header -->
-    <header class="mb-12 max-w-6xl">
-        <h1 class="font-heading text-3xl md:text-5xl font-bold text-slate-800 mb-4">{{ .Params.h1 }}</h1>
-        <div class="prose prose-lg text-slate-600">
-            {{ .Content }}
-        </div>
-    </header>
+        <!-- Header -->
+        <header class="max-w-6xl">
+            <h1 class="font-heading text-3xl md:text-5xl font-bold text-white mb-4">{{ .Params.h1 }}</h1>
+            {{ if .Params.description }}
+            <p class="text-white text-lg mb-4">{{ .Params.description }}</p>
+            {{ end }}
+            <div class="prose prose-lg text-white">
+                {{ .Content }}
+            </div>
+        </header>
+    </div>
+</section>
+
+<div class="container mx-auto px-4 py-12">
 
     {{- /* Check if this page has subsections (like Animals > Cats, Dogs) */ -}}
     {{- $hasSubsections := gt (len .Sections) 0 -}}

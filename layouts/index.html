@@ -3,7 +3,7 @@
 <section class="bg-teal-600 text-white py-20 text-center">
     <div class="container mx-auto px-4 max-w-3xl">
         <h1 class="font-heading text-4xl md:text-5xl font-bold mb-6 tracking-tight">
-            Find your calm.<br>Search 5,000+ free coloring pages.
+            {{ .Params.h1 }}
         </h1>
         <div class="relative max-w-xl mx-auto" x-data>
             <input type="text" placeholder="Search for cats, mandalas, or steampunk..."
@@ -29,14 +29,54 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {{ range where .Site.Sections "Title" "in" (slice "Animals") }}
+            {{- $section := . -}}
+            {{- $allPages := slice -}}
+            {{- /* Collect all pages recursively from all subsections (cats, dogs, etc.) */ -}}
+            {{- range $section.Sections -}}
+                {{- range .Pages -}}
+                    {{- $allPages = $allPages | append . -}}
+                {{- end -}}
+            {{- end -}}
+            {{- $images := slice -}}
+            
+            {{- /* Collect last 2 images from all pages */ -}}
+            {{- range last 2 $allPages -}}
+              {{- if or .Params.image_url .Params.cf_image_id -}}
+                {{- $imageData := dict "url" "" "cf_id" .Params.cf_image_id "alt" .Title -}}
+                {{- if .Params.cf_image_id -}}
+                  {{- $imageData = merge $imageData (dict "url" (printf "https://imagedelivery.net/%s/%s/thumbnail" $.Site.Params.cf_images_hash .Params.cf_image_id)) -}}
+                {{- else if .Params.image_url -}}
+                  {{- $imageData = merge $imageData (dict "url" .Params.image_url) -}}
+                {{- end -}}
+                {{- $images = $images | append $imageData -}}
+              {{- end -}}
+            {{- end -}}
+            
             <a href="{{ .RelPermalink }}"
                 class="group block bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-100">
-                <div class="aspect-[4/3] bg-slate-100 relative grid grid-cols-2 gap-0.5">
-                    <!-- Placeholder Visual Collage -->
-                    <div class="bg-teal-50"></div>
-                    <div class="bg-teal-100"></div>
-                    <div class="bg-teal-100"></div>
-                    <div class="bg-teal-50"></div>
+                <div class="aspect-[4/3] bg-slate-100 relative overflow-hidden">
+                    {{- if eq (len $images) 0 -}}
+                        {{- /* No images found - show placeholder grid */ -}}
+                        <div class="grid grid-cols-2 gap-0.5 h-full">
+                            <div class="bg-teal-50"></div>
+                            <div class="bg-teal-100"></div>
+                            <div class="bg-teal-100"></div>
+                            <div class="bg-teal-50"></div>
+                        </div>
+                    {{- else -}}
+                        {{- /* Show last 2 images side by side */ -}}
+                        <div class="grid grid-cols-2 gap-1 h-full">
+                            {{- range first 2 $images -}}
+                                <div class="w-full h-full aspect-[2/3]">
+                                    <img src="{{ .url }}" 
+                                         alt="{{ .alt }}" 
+                                         class="w-full h-full object-cover" 
+                                         loading="lazy">
+                                </div>
+                            {{- end -}}
+                        </div>
+                    {{- end -}}
+                    
                     <div
                         class="absolute inset-0 flex items-center justify-center bg-black/5 opacity-0 group-hover:opacity-100 transition">
                         <span class="bg-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">Browse {{ .Title

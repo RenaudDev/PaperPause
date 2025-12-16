@@ -19,7 +19,7 @@
     <div class="lg:w-[35%] bg-white p-6 lg:p-12 flex flex-col h-full lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto"
         data-pagefind-body>
         <!-- Breadcrumbs -->
-        {{ partial "breadcrumbs.html" . }}
+        {{ partial "breadcrumbs.html" (dict "Page" .Page "textColor" "text-teal-600" "hoverColor" "hover:text-teal-700") }}
 
         <h1 class="font-heading text-3xl lg:text-4xl font-bold text-slate-800 mb-4 leading-tight">{{ .Title | title }}</h1>
 
