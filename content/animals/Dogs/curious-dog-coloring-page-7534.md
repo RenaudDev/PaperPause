@@ -1,22 +1,28 @@
 ---
-title: "Curious German Shepherd in a beach baking"
-description: "Free printable curious german shepherd in a beach baking coloring page. Easy difficulty with bold lines. Perfect for kids and adults."
-pinterest_description: "Free printable curious german shepherd in a beach baking coloring page. Features bold, easy-to-color lines perfect for markers. Great for kids, adults, and all skill levels. Download for free now!"
+title: Curious German Shepherd in a beach baking
+description: >-
+  Free printable curious german shepherd in a beach baking coloring page. Easy
+  difficulty with bold lines. Perfect for kids and adults.
+pinterest_description: >-
+  Free printable curious german shepherd in a beach baking coloring page.
+  Features bold, easy-to-color lines perfect for markers. Great for kids,
+  adults, and all skill levels. Download for free now!
 date: 2025-12-15T20:22:25.020Z
-type: "coloring-pages"
-draft: true
+type: coloring-pages
+draft: false
 categories:
   - animals
 collections:
   - Dogs
-difficulty: "Easy"
-style: "Bold"
-medium: "Markers"
-cf_image_id: "ca9f6d2d-8bcf-4b3d-de98-781ef80fab00"
-image_url: "https://imagedelivery.net/G92SwfasiUv-usR1s4VYvA/ca9f6d2d-8bcf-4b3d-de98-781ef80fab00/desktop"
-download_url: "https://img.paperpause.app/Dogs/curious-dog-coloring-page-7534.pdf"
-r2_original: "https://img.paperpause.app/Dogs/curious-dog-coloring-page-7534.png"
-prompt: "Curious German Shepherd in a beach baking"
+difficulty: Easy
+style: Bold
+medium: Markers
+cf_image_id: ca9f6d2d-8bcf-4b3d-de98-781ef80fab00
+image_url: >-
+  https://imagedelivery.net/G92SwfasiUv-usR1s4VYvA/ca9f6d2d-8bcf-4b3d-de98-781ef80fab00/desktop
+download_url: 'https://img.paperpause.app/Dogs/curious-dog-coloring-page-7534.pdf'
+r2_original: 'https://img.paperpause.app/Dogs/curious-dog-coloring-page-7534.png'
+prompt: Curious German Shepherd in a beach baking
 tags:
   - Curious
 ---
