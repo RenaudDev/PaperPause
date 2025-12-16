@@ -8,10 +8,21 @@
   {{/* Include section sitemaps, excluding the pages section */}}
   {{ range .Site.Sections }}
     {{ if ne .Section "pages" }}
-    <sitemap>
-      <loc>{{ .Permalink }}sitemap.xml</loc>
-      <lastmod>{{ .Date.Format "2006-01-02T15:04:05-07:00" }}</lastmod>
-    </sitemap>
+      {{ if .Sections }}
+        {{/* Section has subsections - reference them directly to avoid nested indexing */}}
+        {{ range .Sections }}
+        <sitemap>
+          <loc>{{ .Permalink }}sitemap.xml</loc>
+          <lastmod>{{ .Date.Format "2006-01-02T15:04:05-07:00" }}</lastmod>
+        </sitemap>
+        {{ end }}
+      {{ else }}
+        {{/* Section has no subsections - reference it directly */}}
+        <sitemap>
+          <loc>{{ .Permalink }}sitemap.xml</loc>
+          <lastmod>{{ .Date.Format "2006-01-02T15:04:05-07:00" }}</lastmod>
+        </sitemap>
+      {{ end }}
     {{ end }}
   {{ end }}
 </sitemapindex>

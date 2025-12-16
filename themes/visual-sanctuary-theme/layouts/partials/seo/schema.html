@@ -60,21 +60,108 @@
 
     {{/* 3. CollectionPage Schema for List/Section Pages */}}
     {{ if .IsSection }}
+    {{/* Determine collection image - use first page's image or section image */}}
+    {{ $collectionImage := "" }}
+    {{ $collectionImageId := "" }}
+    {{ if .Params.image_url }}
+      {{ $collectionImage = .Params.image_url | absURL }}
+    {{ else if gt (len .Pages) 0 }}
+      {{ $firstPage := index .Pages 0 }}
+      {{ if $firstPage.Params.cf_image_id }}
+        {{ $collectionImageId = $firstPage.Params.cf_image_id }}
+        {{ $collectionImage = printf "https://imagedelivery.net/%s/%s/desktop" $.Site.Params.cf_images_hash $firstPage.Params.cf_image_id }}
+      {{ else if $firstPage.Params.image_url }}
+        {{ $collectionImage = $firstPage.Params.image_url | absURL }}
+      {{ end }}
+    {{ end }}
+    {{/* Build keywords from categories, collections, and common tags */}}
+    {{ $keywords := slice }}
+    {{ if .Params.categories }}{{ $keywords = $keywords | append .Params.categories }}{{ end }}
+    {{ if .Params.collections }}{{ $keywords = $keywords | append .Params.collections }}{{ end }}
+    {{ range .Pages }}
+      {{ if .Params.tags }}
+        {{ range .Params.tags }}
+          {{ $keywords = $keywords | append . }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+    {{ $keywords = $keywords | uniq | first 10 }}
+    {{ if $collectionImage }}
+    ,
+    {
+      "@type": "ImageObject",
+      "@id": "{{ .Permalink }}#collectionimage",
+      "url": "{{ $collectionImage }}",
+      "contentUrl": "{{ $collectionImage }}",
+      "caption": "{{ .Title }} Collection"
+      {{ if $collectionImageId }}
+      ,"width": 1000,
+      "height": 1500,
+      "encodingFormat": "image/png"
+      {{ end }}
+    }
+    {{ end }}
+    ,
+    {
+      "@type": "WebPage",
+      "@id": "{{ .Permalink }}#webpage",
+      "url": "{{ .Permalink }}",
+      "name": "{{ .Title }}",
+      "headline": "{{ .Params.h1 | default .Title }}",
+      "description": "{{ .Description | default .Summary | plainify }}",
+      {{ if $collectionImage }}
+      "primaryImageOfPage": { "@id": "{{ .Permalink }}#collectionimage" },
+      {{ end }}
+      "isPartOf": { "@id": "{{ .Site.BaseURL }}#website" },
+      "inLanguage": "{{ .Site.LanguageCode }}",
+      "datePublished": "{{ .Date.Format "2006-01-02T15:04:05-07:00" }}",
+      "dateModified": "{{ .Lastmod.Format "2006-01-02T15:04:05-07:00" }}",
+      "publisher": {
+        "@type": "Organization",
+        "@id": "{{ .Site.BaseURL }}#organization",
+        "name": "{{ .Site.Title }}",
+        "url": "{{ .Site.BaseURL }}"
+      }
+    }
     ,
     {
       "@type": "CollectionPage",
       "@id": "{{ .Permalink }}#collectionpage",
       "url": "{{ .Permalink }}",
       "name": "{{ .Title }}",
+      "headline": "{{ .Params.h1 | default .Title }}",
       "description": "{{ .Description | default .Summary | plainify }}",
+      {{ if $collectionImage }}
+      "image": { "@id": "{{ .Permalink }}#collectionimage" },
+      {{ end }}
+      {{ if gt (len $keywords) 0 }}
+      "keywords": "{{ delimit $keywords ", " }}",
+      {{ end }}
+      "about": {
+        "@type": "Thing",
+        "name": "{{ .Title }} Coloring Pages"
+      },
+      "audience": {
+        "@type": "Audience",
+        "audienceType": "Children, Adults, Seniors"
+      },
       "mainEntity": { "@id": "{{ .Permalink }}#itemlist" },
-      "isPartOf": { "@id": "{{ .Site.BaseURL }}#website" }
+      "isPartOf": { "@id": "{{ .Site.BaseURL }}#website" },
+      "datePublished": "{{ .Date.Format "2006-01-02T15:04:05-07:00" }}",
+      "dateModified": "{{ .Lastmod.Format "2006-01-02T15:04:05-07:00" }}",
+      "publisher": {
+        "@type": "Organization",
+        "@id": "{{ .Site.BaseURL }}#organization",
+        "name": "{{ .Site.Title }}",
+        "url": "{{ .Site.BaseURL }}"
+      }
     }
     ,
     {
       "@type": "ItemList",
       "@id": "{{ .Permalink }}#itemlist",
       "numberOfItems": {{ len .Pages }},
+      "itemListOrder": "https://schema.org/ItemListOrderUnspecified",
       "itemListElement": [
         {{ range $index, $page := .Pages }}
         {{ if gt $index 0 }},{{ end }}
@@ -82,10 +169,24 @@
           "@type": "ListItem",
           "position": {{ add $index 1 }},
           "item": {
-            "@type": "CreativeWork",
+            "@type": "VisualArtwork",
             "@id": "{{ $page.Permalink }}#creativework",
             "name": "{{ $page.Title }}",
             "url": "{{ $page.Permalink }}"
+            {{ if $page.Description }}
+            ,"description": "{{ $page.Description | plainify }}"
+            {{ end }}
+            {{ if $page.Params.cf_image_id }}
+            ,"image": "https://imagedelivery.net/{{ $.Site.Params.cf_images_hash }}/{{ $page.Params.cf_image_id }}/thumbnail"
+            {{ else if $page.Params.image_url }}
+            ,"image": "{{ $page.Params.image_url | absURL }}"
+            {{ end }}
+            {{ if $page.Params.style }}
+            ,"artform": "{{ $page.Params.style }}"
+            {{ end }}
+            {{ if $page.Params.difficulty }}
+            ,"educationalLevel": "{{ $page.Params.difficulty }}"
+            {{ end }}
           }
         }
         {{ end }}
@@ -93,12 +194,28 @@
     }
     {{ end }}
 
-    {{/* 4. Single Asset Schema (ImageObject + CreativeWork) */}}
+    {{/* 4. Organization Schema - Enhanced for single and section pages */}}
+    {{ if and (not .IsHome) (or .IsPage .IsSection) }}
+    ,
+    {
+      "@type": "Organization",
+      "@id": "{{ .Site.BaseURL }}#organization",
+      "name": "{{ .Site.Title }}",
+      "url": "{{ .Site.BaseURL }}",
+      "description": "{{ .Site.Params.description | default "Free printable coloring pages for adults and kids." }}"
+    }
+    {{ end }}
+
+    {{/* 5. Single Asset Schema (ImageObject + VisualArtwork) */}}
     {{ if and .IsPage (not .IsHome) }}
-    {{/* Determine image URL - prioritize cf_image_id like head.html */}}
+    {{/* Determine image URLs - prioritize cf_image_id like head.html */}}
     {{ $schemaImage := "" }}
+    {{ $imageMobile := "" }}
+    {{ $imageRss := "" }}
     {{ if .Params.cf_image_id }}
       {{ $schemaImage = printf "https://imagedelivery.net/%s/%s/desktop" $.Site.Params.cf_images_hash .Params.cf_image_id }}
+      {{ $imageMobile = printf "https://imagedelivery.net/%s/%s/mobile" $.Site.Params.cf_images_hash .Params.cf_image_id }}
+      {{ $imageRss = printf "https://imagedelivery.net/%s/%s/rss" $.Site.Params.cf_images_hash .Params.cf_image_id }}
     {{ else if .Params.image_url }}
       {{ $schemaImage = .Params.image_url | absURL }}
     {{ end }}
@@ -109,12 +226,20 @@
       "@id": "{{ .Permalink }}#primaryimage",
       "url": "{{ $schemaImage }}",
       "contentUrl": "{{ $schemaImage }}",
-      "caption": "{{ .Title }}"
+      "caption": "{{ .Title }}",
+      "encodingFormat": "image/png"
+      {{ if .Params.cf_image_id }}
+      ,"width": 1000,
+      "height": 1500
+      {{ if $imageMobile }},
+      "thumbnailUrl": "{{ $imageMobile }}"
+      {{ end }}
+      {{ end }}
     }
     {{ end }}
     ,
     {
-      "@type": "CreativeWork",
+      "@type": "VisualArtwork",
       "@id": "{{ .Permalink }}#creativework",
       "url": "{{ .Permalink }}",
       "name": "{{ .Title }}",
@@ -123,25 +248,131 @@
       {{ if $schemaImage }}
       ,"image": { "@id": "{{ .Permalink }}#primaryimage" }
       {{ end }}
-      ,"genre": "{{ .Params.style }} Coloring Page",
+      {{ if .Params.style }}
+      ,"artform": "{{ .Params.style }}"
+      {{ end }}
+      {{ if .Params.medium }}
+      ,"artMedium": "{{ .Params.medium }}"
+      {{ end }}
+      {{ if .Params.difficulty }}
+      {{ $difficulty := lower .Params.difficulty }}
+      {{ if or (eq $difficulty "easy") (eq $difficulty "simple") (eq $difficulty "beginner") }}
+      ,"educationalLevel": "Beginner",
+      "audience": {
+        "@type": "Audience",
+        "audienceType": "Children, Adults, Seniors"
+      }
+      {{ else if or (eq $difficulty "hard") (eq $difficulty "advanced") (eq $difficulty "complex") }}
+      ,"educationalLevel": "Advanced",
+      "audience": {
+        "@type": "Audience",
+        "audienceType": "Adults"
+      }
+      {{ else }}
+      ,"educationalLevel": "Intermediate",
+      "audience": {
+        "@type": "Audience",
+        "audienceType": "Children, Adults"
+      }
+      {{ end }}
+      {{ end }}
       {{ $keywords := slice }}
       {{ if .Params.categories }}{{ $keywords = $keywords | append .Params.categories }}{{ end }}
       {{ if .Params.collections }}{{ $keywords = $keywords | append .Params.collections }}{{ end }}
-      "keywords": "{{ delimit $keywords ", " }}",
-      "isPartOf": { "@id": "{{ .Site.BaseURL }}#website" },
+      {{ if .Params.tags }}{{ $keywords = $keywords | append .Params.tags }}{{ end }}
+      {{ if gt (len $keywords) 0 }}
+      ,"keywords": "{{ delimit $keywords ", " }}"
+      {{ end }}
+      ,"isPartOf": { "@id": "{{ .Site.BaseURL }}#website" },
       "datePublished": "{{ .Date.Format "2006-01-02T15:04:05-07:00" }}",
       "dateModified": "{{ .Lastmod.Format "2006-01-02T15:04:05-07:00" }}",
-      "author": {
+      "license": "https://creativecommons.org/licenses/by-nc-nd/4.0/",
+      "copyrightHolder": {
         "@type": "Organization",
         "name": "{{ .Site.Title }}",
         "url": "{{ .Site.BaseURL }}"
-      } 
-      {{ if .Params.download_url }}
+      },
+      "author": {
+        "@type": "Organization",
+        "@id": "{{ .Site.BaseURL }}#organization",
+        "name": "{{ .Site.Title }}",
+        "url": "{{ .Site.BaseURL }}"
+      }
+      {{ if .Params.r2_original }}
+      ,"offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock",
+        "url": "{{ .Permalink }}"
+      }
+      {{ end }}
+      {{ $hasEncoding := false }}
+      {{ if .Params.r2_original }}
+      {{ $hasEncoding = true }}
+      ,"encoding": [
+        {
+          "@type": "MediaObject",
+          "contentUrl": "{{ .Params.r2_original | absURL }}",
+          "encodingFormat": "image/png"
+        }
+        {{ if .Params.download_url }},
+        {
+          "@type": "MediaObject",
+          "contentUrl": "{{ .Params.download_url | absURL }}",
+          "encodingFormat": "application/pdf"
+        }
+        {{ end }}
+      ]
+      {{ else if .Params.download_url }}
+      {{ $hasEncoding = true }}
+      ,"encoding": [
+        {
+          "@type": "MediaObject",
+          "contentUrl": "{{ .Params.download_url | absURL }}",
+          "encodingFormat": "application/pdf"
+        }
+      ]
+      {{ end }}
+      {{ if and .Params.download_url (not $hasEncoding) }}
       ,"associatedMedia": {
         "@type": "DigitalDocument",
         "contentUrl": "{{ .Params.download_url | absURL }}",
         "encodingFormat": "application/pdf"
       }
+      {{ end }}
+      {{ if .Params.r2_original }}
+      ,"potentialAction": [
+        {
+          "@type": "DownloadAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "{{ .Params.r2_original | absURL }}"
+          },
+          "name": "Download PNG"
+        }
+        {{ if .Params.download_url }},
+        {
+          "@type": "DownloadAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "{{ .Params.download_url | absURL }}"
+          },
+          "name": "Download PDF"
+        }
+        {{ end }}
+      ]
+      {{ else if .Params.download_url }}
+      ,"potentialAction": [
+        {
+          "@type": "DownloadAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "{{ .Params.download_url | absURL }}"
+          },
+          "name": "Download PDF"
+        }
+      ]
       {{ end }}
     }
     {{ end }}

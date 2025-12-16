@@ -13,6 +13,7 @@
     "generate": "ts-node scripts/morning-routine/tasks/generate-batch.ts",
     "generate:batch": "ts-node scripts/morning-routine/tasks/generate-batch.ts",
     "publish:drafts": "ts-node scripts/morning-routine/tasks/publish-drafts.ts",
+    "backfill:pdfs": "ts-node scripts/morning-routine/tasks/backfill-pdfs.ts",
     "lint": "hugo --printPathWarnings --printMemoryUsage",
     "validate:env": "ts-node scripts/validate-env.ts",
     "validate:taxonomy": "ts-node scripts/validate-taxonomy.ts",
@@ -34,6 +35,7 @@
     "@types/fs-extra": "^11.0.4",
     "@types/glob": "^8.1.0",
     "@types/node": "^25.0.2",
+    "@types/pdfkit": "^0.12.11",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
@@ -41,6 +43,7 @@
     "glob": "^13.0.0",
     "gray-matter": "^4.0.3",
     "pagefind": "^1.4.0",
+    "pdfkit": "^0.14.0",
     "sharp": "^0.33.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"

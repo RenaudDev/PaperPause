@@ -80,15 +80,15 @@
 
         <!-- Desktop Action (Hidden on Mobile) -->
         <div class="hidden md:block space-y-4 mb-12">
-            <a href="{{ .Params.r2_original }}" 
-               download="{{ $cleanTitle | urlize }}.png"
-               aria-label="Download {{ $cleanTitle }} as printable PNG"
+            <a href="{{ .Params.download_url | default .Params.r2_original }}" 
+               download="{{ $cleanTitle | urlize }}.pdf"
+               aria-label="Download {{ $cleanTitle }} as printable PDF"
                class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg transform transition hover:-translate-y-1 flex items-center justify-center gap-3 text-lg">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                 </svg>
-                Download Printable
+                Download Printable PDF
             </a>
             <p class="text-center text-xs text-slate-400">Free for personal use only.</p>
         </div>
@@ -125,15 +125,15 @@
     {{ $cleanTitle = replaceRE "^Cat Coloring Page:\\s*" "" $cleanTitle }}
     {{ $cleanTitle = replaceRE "\\s*\\([^)]*\\)\\s*" "" $cleanTitle }}
     {{ $cleanTitle = replaceRE "\\.\\s*$" "" $cleanTitle }}
-    <a href="{{ .Params.r2_original }}" 
-       download="{{ $cleanTitle | urlize }}.png"
-       aria-label="Download {{ $cleanTitle }} as printable PNG"
+    <a href="{{ .Params.download_url | default .Params.r2_original }}" 
+       download="{{ $cleanTitle | urlize }}.pdf"
+       aria-label="Download {{ $cleanTitle }} as printable PDF"
        class="w-full bg-teal-600 text-white font-bold py-4 rounded-xl shadow-2xl flex items-center justify-center gap-2 text-lg border border-teal-400">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
         </svg>
-        DOWNLOAD
+        DOWNLOAD PDF
     </a>
 </div>
 {{ end }}

@@ -19,12 +19,13 @@ medium: Markers
 cf_image_id: eb57821a-a953-410b-af36-cda31eee7c00
 image_url: >-
   https://imagedelivery.net/G92SwfasiUv-usR1s4VYvA/eb57821a-a953-410b-af36-cda31eee7c00/desktop
-download_url: 'https://img.paperpause.app/Horses/elegant-horse-coloring-page-7834.pdf'
-r2_original: 'https://img.paperpause.app/Horses/elegant-horse-coloring-page-7834.png'
+download_url: 'https://img.paperpause.app/horses/elegant-horse-coloring-page-7834.pdf'
+r2_original: 'https://img.paperpause.app/horses/elegant-horse-coloring-page-7834.png'
 prompt: Elegant Morgan in a steppes Grazing
 tags:
   - Elegant
   - Bold Line Pop Art
+has_pdf: true
 ---
 
 A beautiful Horses coloring page in Bold Line Pop Art style.
