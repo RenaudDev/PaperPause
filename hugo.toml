@@ -76,7 +76,12 @@ googleAnalytics = "G-R0NHTPYWFY"
     baseName = "sitemap"
     isPlainText = false
     isHTML = false
+  [outputFormats.PAGES_SITEMAP]
+    mediaType = "application/xml"
+    baseName = "pages-sitemap"
+    isPlainText = false
+    isHTML = false
 
 [outputs]
-  home = ["HTML", "RSS", "SITEMAP"]
+  home = ["HTML", "RSS", "SITEMAP", "PAGES_SITEMAP"]
   section = ["HTML", "RSS", "SECTION_SITEMAP"]

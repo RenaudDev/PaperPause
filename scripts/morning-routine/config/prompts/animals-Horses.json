@@ -1,0 +1,57 @@
+{
+  "collection": "Horses",
+  "category": "animals",
+  "base": "TYPE: Black and white line art coloring page - OUTLINES ONLY.\nSTYLE: Clean vector illustration, children's book style.\n\nCRITICAL REQUIREMENTS FOR COLORING PAGES:\n- OUTLINES ONLY: Use ONLY black outlines to define shapes. NO filled black areas. NO solid black shapes.\n- ALL AREAS MUST BE COLORABLE: Every part of the image should be an empty space inside black outlines.\n- Background: Pure white (#FFFFFF). NO shading, NO gradients, NO gray tones.\n\nVISUAL QUALITY:\n- LINES: Thick, uniform, consistent line weight (4-6px). Solid black outlines only.\n- PROPORTIONS: Perfect anatomical proportions. Cute but structurally correct.\n- COMPOSITION: Centered, balanced, with maximum negative space for coloring.\n\nCONTENT:\n- SUBJECT: A cute, cozy Horse.\n- NO FILLED AREAS: Everything must be outlined, nothing filled with black or gray.\n\nATMOSPHERE: Whimsical, inviting, clean line art ready for coloring.",
+  "negative_prompt": "transparent background, transparency, color, shading, gray, gradient, photo, realistic, 3d, rendering, text, signature, watermark, blurry, broken lines, thin lines, sketch, messy, horizontal orientation, landscape, filled areas, solid colors",
+  "attributes": {
+    "tones": [
+      "Cozy",
+      "Playful",
+      "Sleepy",
+      "Adventurous",
+      "Elegant",
+      "Curious",
+      "Grumpy",
+      "Zen"
+    ],
+    "types": [
+      "American Quarter Horse",
+      "Thoroughbred",
+      "Arabian",
+      "American Paint Horse",
+      "Appaloos",
+      "Morgan",
+      "Tennessee Walking Horse",
+      "Dutch Warmblood",
+      "Clydesdale",
+      "Miniature Horse"
+    ],
+    "actions": [
+      "Walk",
+      "Trot",
+      "Canter",
+      "Gallop",
+      "Grazing"
+    ],
+    "settings": [
+      "stable",
+      "barn",
+      "pasture",
+      "riding arena",
+      "racetrack",
+      "ranch",
+      "steppes",
+      "desert",
+      "mountain foothills",
+      "sparse woodland"
+    ],
+    "details": [],
+    "styles": [
+      "Magical Realism",
+      "Totem",
+      "Kawaii",
+      "Cottagecore",
+      "Bold Line Pop Art"
+    ]
+  }
+}

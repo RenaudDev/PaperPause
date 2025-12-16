@@ -1,10 +1,18 @@
 {{ printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  {{ range .Site.Sections }}
+  {{/* Include regular pages sitemap (home, about, contact, privacy, terms) */}}
   <sitemap>
-    <loc>{{ .Permalink }}sitemap.xml</loc>
-    <lastmod>{{ .Date.Format "2006-01-02T15:04:05-07:00" }}</lastmod>
+    <loc>{{ .Site.BaseURL }}pages-sitemap.xml</loc>
+    <lastmod>{{ now.Format "2006-01-02T15:04:05-07:00" }}</lastmod>
   </sitemap>
+  {{/* Include section sitemaps, excluding the pages section */}}
+  {{ range .Site.Sections }}
+    {{ if ne .Section "pages" }}
+    <sitemap>
+      <loc>{{ .Permalink }}sitemap.xml</loc>
+      <lastmod>{{ .Date.Format "2006-01-02T15:04:05-07:00" }}</lastmod>
+    </sitemap>
+    {{ end }}
   {{ end }}
 </sitemapindex>
 

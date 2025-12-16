@@ -64,17 +64,16 @@ jobs:
           echo "animal_type=$ANIMAL_TYPE" >> $GITHUB_OUTPUT
           echo "Generating images for: $ANIMAL_TYPE"
           
-      - name: Generate 5 Cat Images
+      - name: Generate 1 Cat Image
         if: steps.determine_animals.outputs.animal_type == 'cats' || steps.determine_animals.outputs.animal_type == 'both'
-        run: npm run generate animals cats 5
+        run: npm run generate animals cats 1
         
-      - name: Generate 5 Dog Images
+      - name: Generate 1 Dog Image
         if: steps.determine_animals.outputs.animal_type == 'Dogs' || steps.determine_animals.outputs.animal_type == 'both'
-        run: npm run generate animals Dogs 5
+        run: npm run generate animals Dogs 1
         
-      # Auto-publish disabled - images remain as draft: true
-      # - name: Set all new images to draft=false
-      #   run: npx ts-node scripts/morning-routine/tasks/publish-drafts.ts
+      - name: Set all new images to draft=false
+        run: npx ts-node scripts/morning-routine/tasks/publish-drafts.ts
         
       - name: Configure Git
         run: |

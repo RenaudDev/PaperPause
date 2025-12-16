@@ -14,7 +14,6 @@ export interface IndexMetadata {
   cms_batch_size?: number;
   cms_frontmatter_template?: {
     type?: string;
-    difficulty?: string;
     style?: string;
     medium?: string;
   };
@@ -228,8 +227,7 @@ export function createCollection(
       cms_batch_size: 5,
       cms_frontmatter_template: {
         type: 'coloring-pages',
-        difficulty: 'Easy',
-        style: 'Bold',
+        style: '',
         medium: 'Markers'
       },
       ...metadata

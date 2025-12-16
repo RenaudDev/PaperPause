@@ -6,7 +6,6 @@ cms_enabled: true
 cms_batch_size: 5
 cms_frontmatter_template:
   type: coloring-pages
-  difficulty: Easy
-  style: Bold
+  style: ""
   medium: Markers
 ---

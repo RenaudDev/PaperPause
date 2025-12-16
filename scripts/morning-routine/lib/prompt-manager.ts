@@ -1,6 +1,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 import { logger } from './logger';
+import { getStyleById, getRandomStyle, getStyleByName, StyleDefinition } from '../config/styles';
 
 const PROMPTS_DIR = path.resolve(__dirname, '../config/prompts');
 
@@ -15,6 +16,7 @@ export interface PromptConfig {
     actions: string[];
     settings: string[];
     details: string[];
+    styles?: string[];
   };
 }
 
@@ -160,11 +162,61 @@ ATMOSPHERE: Whimsical, inviting, clean line art ready for coloring.`,
       types: [],
       actions: ['baking', 'napping', 'reading', 'painting', 'dancing'],
       settings: ['home', 'garden', 'library', 'kitchen', 'studio'],
-      details: []
+      details: [],
+      styles: ['Kawaii', 'Cottagecore', 'Totem', 'Bold Line Pop Art', 'Magical Realism']
     }
   };
 
   savePrompt(category, collection, config);
   return config;
+}
+
+/**
+ * Build full prompt with style modifier
+ * Randomly selects a style from the prompt config's styles array, or uses random if none specified
+ * @param category - Category name (e.g., "animals")
+ * @param collection - Collection name (e.g., "cats")
+ * @param variantPrompt - The scene/variant prompt (e.g., "Sleepy Cat napping")
+ * @returns Object with fullPrompt, style definition, and negative_prompt
+ */
+export function buildPromptWithStyle(
+  category: string,
+  collection: string,
+  variantPrompt: string
+): { fullPrompt: string; style: StyleDefinition; negative_prompt: string } {
+  const promptConfig = loadPrompt(category, collection);
+  
+  if (!promptConfig) {
+    throw new Error(`Prompt not found for collection: ${category}/${collection}`);
+  }
+
+  let style: StyleDefinition | null = null;
+
+  // Check if styles array exists and has values
+  const styles = promptConfig.attributes.styles || [];
+  
+  if (styles.length > 0) {
+    // Randomly pick from the styles array
+    const randomStyleName = styles[Math.floor(Math.random() * styles.length)];
+    style = getStyleByName(randomStyleName);
+    
+    if (!style) {
+      logger.warn(`Style not found in config: ${randomStyleName}, using random style`);
+      style = getRandomStyle();
+    }
+  } else {
+    // No styles specified in config, pick random from all available
+    style = getRandomStyle();
+  }
+
+  // Inject style modifier into base prompt
+  const styledBase = `${promptConfig.base}\n\nSTYLE MODIFIER: ${style.promptModifier}`;
+  const fullPrompt = `${styledBase}\n\nSCENE: ${variantPrompt}`;
+
+  return {
+    fullPrompt,
+    style,
+    negative_prompt: promptConfig.negative_prompt
+  };
 }
 

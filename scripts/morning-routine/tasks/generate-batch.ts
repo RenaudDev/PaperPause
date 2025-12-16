@@ -4,7 +4,7 @@ import { generateImage } from '../lib/gemini';
 import { uploadImage } from '../lib/storage';
 import { RateLimiter } from '../lib/rate-limiter';
 import { logger } from '../lib/logger';
-import { loadPrompt, getRandomVariant } from '../lib/prompt-manager';
+import { loadPrompt, getRandomVariant, buildPromptWithStyle } from '../lib/prompt-manager';
 import { readIndexFile } from '../lib/hugo-manager';
 import { ENV } from '../config/env';
 
@@ -19,27 +19,41 @@ export interface GenerationResult {
 
 /**
  * Generate a clean, short title for the page (H1)
- * Removes "Cat Coloring Page:" prefix and parenthetical content
- * Example: "Curious Scottish Fold Cat peering into a fishbowl"
+ * Removes parenthetical content and capitalizes each word properly
+ * Example: "Curious Scottish Fold Cat Peering Into A Fishbowl"
  */
 function generateTitle(variantPrompt: string): string {
-  // Remove content in parentheses and extra punctuation
-  let cleanPrompt = variantPrompt.replace(/\s*\([^)]*\)\s*/g, '').replace(/\.\s*$/, '').trim();
-
-  return cleanPrompt;
+  // Remove content in parentheses (with proper spacing)
+  let cleanPrompt = variantPrompt.replace(/\s*\([^)]*\)\s*/g, ' ');
+  
+  // Remove extra punctuation and trim
+  cleanPrompt = cleanPrompt.replace(/\.\s*$/, '').trim();
+  
+  // Normalize multiple spaces to single space
+  cleanPrompt = cleanPrompt.replace(/\s+/g, ' ');
+  
+  // Capitalize each word (Title Case)
+  const words = cleanPrompt.split(' ');
+  const capitalizedWords = words.map(word => {
+    if (word.length === 0) return word;
+    // Handle words with special characters (e.g., "Red Admiral")
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+  });
+  
+  return capitalizedWords.join(' ');
 }
 
 /**
  * Generate SEO-optimized meta description (150-160 characters)
  * Used for meta tags, OpenGraph, search engine snippets
  */
-function generateSEODescription(variantPrompt: string, difficulty: string, style: string): string {
+function generateSEODescription(variantPrompt: string, styleName: string): string {
   // Remove parenthetical content for cleaner description
   const cleanPrompt = variantPrompt.replace(/\s*\([^)]*\)\s*/g, '').replace(/\.\s*$/, '').trim().toLowerCase();
 
-  const base = `Free printable ${cleanPrompt} coloring page.`;
-  const features = `${difficulty} difficulty with ${style.toLowerCase()} lines.`;
-  const cta = `Perfect for kids and adults. Download and print for free!`;
+  const base = `Free printable ${cleanPrompt} coloring page in ${styleName.toLowerCase()} style.`;
+  const features = `Perfect for all ages.`;
+  const cta = `Download and print for free!`;
 
   const fullDesc = `${base} ${features} ${cta}`;
 
@@ -64,15 +78,14 @@ function generateSEODescription(variantPrompt: string, difficulty: string, style
  */
 function generatePinterestDescription(
   variantPrompt: string,
-  difficulty: string,
-  style: string,
+  styleName: string,
   medium: string
 ): string {
   // Remove parenthetical content for cleaner description
   const cleanPrompt = variantPrompt.replace(/\s*\([^)]*\)\s*/g, '').replace(/\.\s*$/, '').trim().toLowerCase();
 
-  const intro = `Free printable ${cleanPrompt} coloring page.`;
-  const details = `Features ${style.toLowerCase()}, easy-to-color lines perfect for ${medium.toLowerCase()}.`;
+  const intro = `Free printable ${cleanPrompt} coloring page in ${styleName.toLowerCase()} style.`;
+  const details = `Easy-to-color lines perfect for ${medium.toLowerCase()}.`;
   const audience = `Great for kids, adults, and all skill levels.`;
   const cta = `Download for free now!`;
 
@@ -104,26 +117,27 @@ function generatePinterestDescription(
 }
 
 /**
- * Generate SEO-friendly slug from variant prompt
- * Format: {tag}-{collection}-coloring-page-{uuid}
- * Example: "sleepy-cat-coloring-page-7292"
+ * Generate SEO-friendly slug from style and collection
+ * Format: {style}-{collection}-coloring-pages-{uuid}
+ * Example: "totem-butterflies-coloring-pages-7292"
  */
-function generateSlugFromPrompt(variantPrompt: string, collection: string, timestamp: number): string {
-  // Extract the first word (tone/style) from the variant prompt
-  // Example: "Sleepy Siamese Cat napping..." -> "Sleepy"
-  const tag = variantPrompt.trim().split(/\s+/)[0].toLowerCase();
+function generateSlugFromStyle(styleName: string, collection: string, timestamp: number): string {
+  // Convert style name to filename-friendly format (lowercase, spaces to hyphens)
+  // Example: "Bold Line Pop Art" -> "bold-line-pop-art"
+  const styleSlug = styleName
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, ''); // Remove any non-alphanumeric characters except hyphens
 
-  // Get singular collection name in lowercase
-  // "cats" -> "cat", "Dogs" -> "dog"
-  const singularCollection = collection.endsWith('s')
-    ? collection.slice(0, -1).toLowerCase()
-    : collection.toLowerCase();
+  // Keep collection name as-is (lowercase, preserve plural)
+  // "Butterflies" -> "butterflies", "cats" -> "cats"
+  const collectionSlug = collection.toLowerCase();
 
   // Get last 4 digits of timestamp for uniqueness (short UUID)
   const uuid = String(timestamp).slice(-4);
 
-  // Construct slug: {tag}-{collection}-coloring-page-{uuid}
-  const slug = `${tag}-${singularCollection}-coloring-page-${uuid}`;
+  // Construct slug: {style}-{collection}-coloring-pages-{uuid}
+  const slug = `${styleSlug}-${collectionSlug}-coloring-pages-${uuid}`;
 
   return slug;
 }
@@ -164,20 +178,25 @@ export const generateBatch = async (
       const timestamp = Date.now();
       const variantPrompt = getRandomVariant(category, collection);
 
-      // Generate slug-based ID from variant prompt
-      const id = generateSlugFromPrompt(variantPrompt, collection, timestamp);
+      // Build prompt with style (randomly picks from styles array in prompt config)
+      const { fullPrompt, style, negative_prompt } = buildPromptWithStyle(
+        category,
+        collection,
+        variantPrompt
+      );
 
-      // Construct Full Prompt (keep under 1000 chars for Recraft API limit)
-      const fullPrompt = `${promptConfig.base}\n\nSCENE: ${variantPrompt}`;
+      // Generate slug-based ID from style and collection
+      const id = generateSlugFromStyle(style.name, collection, timestamp);
 
       try {
         logger.info(`[${i + 1}/${batchSize}] Generating`, {
           id,
-          variant: variantPrompt.substring(0, 40)
+          variant: variantPrompt.substring(0, 40),
+          style: style.name
         });
 
         // 1. Generate image with negative prompt passed separately
-        const imageBuffer = await generateImage(fullPrompt, promptConfig.negative_prompt);
+        const imageBuffer = await generateImage(fullPrompt, negative_prompt);
 
         // 2. Upload to R2 and CF Images
         const filename = `${id}.png`;
@@ -186,18 +205,16 @@ export const generateBatch = async (
         // 3. Create Draft Markdown with full metadata
         const template = collectionMeta.cms_frontmatter_template || {
           type: 'coloring-pages',
-          difficulty: 'Easy',
-          style: 'Bold',
+          style: style.name,
           medium: 'Markers'
         };
 
         // Generate SEO-optimized content
         const title = generateTitle(variantPrompt);
-        const seoDescription = generateSEODescription(variantPrompt, template.difficulty || 'Easy', template.style || 'Bold');
+        const seoDescription = generateSEODescription(variantPrompt, style.name);
         const pinterestDescription = generatePinterestDescription(
           variantPrompt,
-          template.difficulty || 'Easy',
-          template.style || 'Bold',
+          style.name,
           template.medium || 'Markers'
         );
 
@@ -207,13 +224,12 @@ description: "${seoDescription}"
 pinterest_description: "${pinterestDescription}"
 date: ${new Date().toISOString()}
 type: "${template.type || 'coloring-pages'}"
-draft: true
+draft: false
 categories:
   - ${category}
 collections:
   - ${collection}
-difficulty: "${template.difficulty || 'Easy'}"
-style: "${template.style || 'Bold'}"
+style: "${style.name}"
 medium: "${template.medium || 'Markers'}"
 cf_image_id: "${uploadResult.cfImageId}"
 image_url: "${uploadResult.imageUrl}"
@@ -221,13 +237,12 @@ download_url: "${uploadResult.downloadUrl}"
 r2_original: "${uploadResult.r2Url}"
 prompt: "${variantPrompt}"
 tags:
-  - ${variantPrompt.trim().split(/\s+/)[0]}
+  - ${style.name}
 ---
 
-A beautiful ${collection} coloring page generated by AI. This printable coloring page features a cute ${collection.slice(0, -1)} in the style shown above.
+A beautiful ${collection} coloring page in ${style.name} style.
 
-**Difficulty:** ${template.difficulty || 'Easy'}  
-**Style:** ${template.style || 'Bold'} and simple lines, perfect for all ages  
+**Style:** ${style.name}
 **Medium:** ${template.medium || 'Markers'}, crayons, or colored pencils
 
 ---

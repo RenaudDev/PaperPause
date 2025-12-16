@@ -35,3 +35,4 @@ The materials on Visual Sanctuary are provided on an 'as is' basis. We make no w
 ### 4. Changes to Terms
 
 We reserve the right to modify these terms at any time. By using this website, you are agreeing to be bound by the then current version of these Terms of Service.
+

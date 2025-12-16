@@ -20,3 +20,4 @@ We aim to respond to all inquiries within 48 hours.
 ### Follow Us
 
 Stay updated on the latest releases and community features by following us on social media. (Links coming soon!)
+

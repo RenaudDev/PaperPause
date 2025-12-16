@@ -351,16 +351,17 @@
                 class="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-800">
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Difficulty</label>
-              <input type="text" x-model="newCollection.metadata.cms_frontmatter_template.difficulty"
-                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-800"
-                placeholder="Easy, Medium, Hard">
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Style</label>
-              <input type="text" x-model="newCollection.metadata.cms_frontmatter_template.style"
-                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-800"
-                placeholder="Bold, Detailed, etc.">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Art Style</label>
+              <select x-model="newCollection.metadata.cms_frontmatter_template.style"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-800">
+                <option value="">Random (All Styles)</option>
+                <option value="Kawaii">Kawaii - Cute & Simple</option>
+                <option value="Cottagecore">Cottagecore - Cozy Storybook</option>
+                <option value="Totem">Totem - Zentangle Patterns</option>
+                <option value="Bold Line Pop Art">Bold Line Pop Art - Modern & Sharp</option>
+                <option value="Magical Realism">Magical Realism - Realistic Fantasy</option>
+              </select>
+              <p class="text-xs text-gray-500 mt-1">Leave blank for random style per image</p>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Medium</label>
@@ -526,8 +527,7 @@
             cms_batch_size: 5,
             cms_frontmatter_template: {
               type: 'coloring-pages',
-              difficulty: 'Easy',
-              style: 'Bold',
+              style: '',
               medium: 'Markers'
             }
           }
@@ -639,8 +639,7 @@
                 cms_batch_size: 5,
                 cms_frontmatter_template: {
                   type: 'coloring-pages',
-                  difficulty: 'Easy',
-                  style: 'Bold',
+                  style: '',
                   medium: 'Markers'
                 }
               }
@@ -727,6 +726,10 @@
             const [category, collection] = this.selectedPromptCollection.split('/');
             const res = await fetch(`/api/prompts/${category}/${collection}`);
             this.currentPromptConfig = await res.json();
+            // Ensure styles array exists in attributes
+            if (!this.currentPromptConfig.attributes.styles) {
+              this.currentPromptConfig.attributes.styles = [];
+            }
             this.newAttributeValue = {};
           } catch (error) {
             console.error('Error loading prompt:', error);

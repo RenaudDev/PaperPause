@@ -19,3 +19,4 @@ Coloring isn't just for kids. For adults, it serves as a powerful tool for:
 - **Creative Expression**: A low-pressure outlet for artistic energy.
 
 Everything on this site is free to download and print for your personal use. Grab your favorite colored pencils, markers, or crayons, and find your sanctuary.
+

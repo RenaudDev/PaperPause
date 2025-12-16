@@ -8,7 +8,7 @@ A fully automated GitHub Actions workflow that runs daily to generate and publis
 
 1. **`.github/workflows/daily-image-generation.yml`**
    - Main GitHub Actions workflow file
-   - Runs daily at 8:00 AM UTC
+   - Runs daily at 5:00 AM EST (10:00 AM UTC)
    - Can also be triggered manually
 
 2. **`scripts/morning-routine/tasks/publish-drafts.ts`**
@@ -24,14 +24,14 @@ A fully automated GitHub Actions workflow that runs daily to generate and publis
 
 The workflow runs **once daily** at 5:00 AM EST:
 
-1. ✅ **Generates 5 cat images** - Uses Recraft API with cat prompts
-2. ✅ **Generates 5 dog images** - Uses Recraft API with dog prompts
-3. ✅ **Saves as drafts** - Images remain `draft: true` (not published)
+1. ✅ **Generates 1 cat image** - Uses Recraft API with cat prompts
+2. ✅ **Generates 1 dog image** - Uses Recraft API with dog prompts
+3. ✅ **Automatically publishes** - Images are set to `draft: false` and go live immediately
 4. ✅ **Commits changes** - Pushes to repository with timestamp
 
-**Total**: 10 images generated per day (5 cats + 5 dogs)
+**Total**: 2 images generated and published per day (1 cat + 1 dog)
 
-**Important**: Images are saved as drafts and require manual publishing.
+**Important**: Images are automatically published and go live immediately.
 
 ## Next Steps
 
@@ -84,51 +84,42 @@ This allows the workflow to commit and push changes.
 You can test the scripts locally:
 
 ```bash
-# Generate 5 cat images
+# Generate 1 cat image
+npm run generate animals cats 1
+
+# Generate 1 dog image  
+npm run generate animals Dogs 1
+
+# Or generate multiple images
 npm run generate animals cats 5
 
-# Generate 5 dog images  
-npm run generate animals Dogs 5
-
-# Publish all drafts (set draft: false)
+# Publish any remaining drafts (set draft: false)
 npm run publish:drafts
 ```
 
 ## Publishing Images
 
-### Manual Publishing
+### Automatic Publishing
 
-Generated images remain as drafts. To publish them:
+Images are **automatically published** when generated:
+- The `generate-batch.ts` script creates images with `draft: false`
+- The workflow includes a safety step that ensures all drafts are published
+- Images go live immediately after generation
 
-**Option 1: Manually edit files**
-- Open the `.md` files in `content/animals/cats/` or `content/animals/Dogs/`
-- Change `draft: true` to `draft: false`
-- Commit and push
+### Manual Publishing (if needed)
 
-**Option 2: Use the publish script**
+If you need to publish existing draft images manually:
+
+**Option 1: Use the publish script**
 ```bash
 npm run publish:drafts
 ```
 This will set `draft: false` on ALL draft images.
 
-### Enable Auto-Publishing
-
-To automatically publish images after generation, edit `.github/workflows/daily-image-generation.yml` and uncomment:
-
-```yaml
-# Auto-publish disabled - images remain as draft: true
-# - name: Set all new images to draft=false
-#   run: npx ts-node scripts/morning-routine/tasks/publish-drafts.ts
-```
-
-Change to:
-
-```yaml
-- name: Set all new images to draft=false
-  run: npx ts-node scripts/morning-routine/tasks/publish-drafts.ts
-```
-
-Then commit and push the workflow file.
+**Option 2: Manually edit files**
+- Open the `.md` files in `content/animals/cats/` or `content/animals/Dogs/`
+- Change `draft: true` to `draft: false`
+- Commit and push
 
 ## Customization
 
@@ -157,14 +148,14 @@ schedule:
 Edit the workflow file and change the count parameter:
 
 ```yaml
-- name: Generate 5 Cat Images
-  run: npm run generate animals cats 10  # Change 5 to 10
+- name: Generate 1 Cat Image
+  run: npm run generate animals cats 5  # Change 1 to 5
 
-- name: Generate 5 Dog Images
-  run: npm run generate animals Dogs 10  # Change 5 to 10
+- name: Generate 1 Dog Image
+  run: npm run generate animals Dogs 5  # Change 1 to 5
 ```
 
-This will generate 10 images per run instead of 5.
+This will generate 5 images per collection instead of 1.
 
 ### Add More Collections
 
@@ -197,9 +188,9 @@ To generate images for additional animal types:
 - Check workflow permissions are set
 
 ### Images Not Publishing
-- Verify `publish-drafts.ts` script is running
-- Check if `draft: false` is being set in markdown files
-- Review workflow logs for errors
+- Check if `draft: false` is being set in markdown files (should be automatic)
+- Verify the `publish-drafts.ts` script step is running in workflow logs
+- Review workflow logs for any errors during generation or publishing
 
 ### API Errors
 - Check API keys are valid
