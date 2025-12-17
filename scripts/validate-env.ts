@@ -7,10 +7,13 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config({ path: path.resolve(__dirname, '../.dev.vars') });
 
 const required = [
-  'RECRAFT_API_KEY',
   'R2_ACCOUNT_ID',
   'R2_ACCESS_KEY_ID',
   'R2_SECRET_ACCESS_KEY'
+];
+
+const optional = [
+  'RECRAFT_API_KEY'
 ];
 
 const cfImagesRequired = [
@@ -20,6 +23,7 @@ const cfImagesRequired = [
 ];
 
 let missing: string[] = [];
+let missingOptional: string[] = [];
 let missingCFImages: string[] = [];
 
 console.log('🔍 Validating environment variables...\n');
@@ -27,6 +31,16 @@ console.log('🔍 Validating environment variables...\n');
 for (const key of required) {
   if (!process.env[key]) {
     missing.push(key);
+  } else {
+    console.log(`✅ ${key} is configured`);
+  }
+}
+
+console.log('\n🔧 Optional API keys:\n');
+for (const key of optional) {
+  if (!process.env[key]) {
+    missingOptional.push(key);
+    console.log(`⚠️  ${key} is not configured (optional for testing)`);
   } else {
     console.log(`✅ ${key} is configured`);
   }

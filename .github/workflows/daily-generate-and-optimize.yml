@@ -2,8 +2,8 @@ name: Daily Generate & Optimize Coloring Pages
 
 on:
   schedule:
-    # Run at 5 AM UTC (adjust for your timezone if needed)
-    - cron: '0 5 * * *'
+    # Run at 5 AM EST = 10 AM UTC (EST is UTC-5)
+    - cron: '0 10 * * *'
   workflow_dispatch:  # Allow manual trigger for testing
 
 env:
@@ -45,30 +45,97 @@ jobs:
       - name: Validate environment
         run: npm run validate:env
 
-      # Step 1: Generate batch of images (critical - must succeed)
-      - name: Generate daily coloring pages
-        id: generate
+      # ===== CATS =====
+      - name: Generate Cats (1 image)
+        id: generate-cats
         run: |
-          GENERATION_RUN_ID=$(date +%Y-%m-%dT%H-%M-%SZ)
-          echo "run_id=$GENERATION_RUN_ID" >> $GITHUB_OUTPUT
-          GENERATION_RUN_ID=$GENERATION_RUN_ID npx ts-node scripts/morning-routine/tasks/generate-batch.ts animals Butterflies 5
-        env:
-          GENERATION_RUN_ID: ${{ github.run_id }}-${{ github.run_number }}
+          RUN_ID=$(date +%Y-%m-%dT%H-%M-%SZ)-cats
+          echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT
+          GENERATION_RUN_ID=$RUN_ID npx ts-node scripts/morning-routine/tasks/generate-batch.ts animals cats 1
 
-      # Step 2: SEO optimization (best effort - don't fail workflow if SEO review fails)
-      - name: Optimize SEO metadata
-        id: seo-review
+      - name: Optimize SEO metadata for Cats
         run: |
-          MANIFEST_FILE="scripts/morning-routine/.runs/${{ steps.generate.outputs.run_id }}.json"
+          MANIFEST_FILE="scripts/morning-routine/.runs/${{ steps.generate-cats.outputs.run_id }}.json"
+          if [ -f "$MANIFEST_FILE" ]; then
+            npx ts-node scripts/morning-routine/tasks/seo-review-batch.ts animals cats --manifest "$MANIFEST_FILE"
+          else
+            echo "⚠️  No manifest found, skipping SEO for cats"
+          fi
+        continue-on-error: true
+
+      # ===== DOGS =====
+      - name: Generate Dogs (1 image)
+        id: generate-dogs
+        run: |
+          RUN_ID=$(date +%Y-%m-%dT%H-%M-%SZ)-Dogs
+          echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT
+          GENERATION_RUN_ID=$RUN_ID npx ts-node scripts/morning-routine/tasks/generate-batch.ts animals Dogs 1
+
+      - name: Optimize SEO metadata for Dogs
+        run: |
+          MANIFEST_FILE="scripts/morning-routine/.runs/${{ steps.generate-dogs.outputs.run_id }}.json"
+          if [ -f "$MANIFEST_FILE" ]; then
+            npx ts-node scripts/morning-routine/tasks/seo-review-batch.ts animals Dogs --manifest "$MANIFEST_FILE"
+          else
+            echo "⚠️  No manifest found, skipping SEO for Dogs"
+          fi
+        continue-on-error: true
+
+      # ===== HORSES =====
+      - name: Generate Horses (1 image)
+        id: generate-horses
+        run: |
+          RUN_ID=$(date +%Y-%m-%dT%H-%M-%SZ)-Horses
+          echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT
+          GENERATION_RUN_ID=$RUN_ID npx ts-node scripts/morning-routine/tasks/generate-batch.ts animals Horses 1
+
+      - name: Optimize SEO metadata for Horses
+        run: |
+          MANIFEST_FILE="scripts/morning-routine/.runs/${{ steps.generate-horses.outputs.run_id }}.json"
+          if [ -f "$MANIFEST_FILE" ]; then
+            npx ts-node scripts/morning-routine/tasks/seo-review-batch.ts animals Horses --manifest "$MANIFEST_FILE"
+          else
+            echo "⚠️  No manifest found, skipping SEO for Horses"
+          fi
+        continue-on-error: true
+
+      # ===== BUTTERFLIES =====
+      - name: Generate Butterflies (1 image)
+        id: generate-butterflies
+        run: |
+          RUN_ID=$(date +%Y-%m-%dT%H-%M-%SZ)-Butterflies
+          echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT
+          GENERATION_RUN_ID=$RUN_ID npx ts-node scripts/morning-routine/tasks/generate-batch.ts animals Butterflies 1
+
+      - name: Optimize SEO metadata for Butterflies
+        run: |
+          MANIFEST_FILE="scripts/morning-routine/.runs/${{ steps.generate-butterflies.outputs.run_id }}.json"
           if [ -f "$MANIFEST_FILE" ]; then
             npx ts-node scripts/morning-routine/tasks/seo-review-batch.ts animals Butterflies --manifest "$MANIFEST_FILE"
           else
-            echo "⚠️  No manifest found, reviewing all files in collection..."
-            npx ts-node scripts/morning-routine/tasks/seo-review-batch.ts animals Butterflies
+            echo "⚠️  No manifest found, skipping SEO for Butterflies"
           fi
-        continue-on-error: true  # Don't fail workflow if SEO review fails
+        continue-on-error: true
 
-      # Step 3: Commit and push generated content
+      # ===== SHARKS =====
+      - name: Generate Sharks (1 image)
+        id: generate-sharks
+        run: |
+          RUN_ID=$(date +%Y-%m-%dT%H-%M-%SZ)-Sharks
+          echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT
+          GENERATION_RUN_ID=$RUN_ID npx ts-node scripts/morning-routine/tasks/generate-batch.ts animals Sharks 1
+
+      - name: Optimize SEO metadata for Sharks
+        run: |
+          MANIFEST_FILE="scripts/morning-routine/.runs/${{ steps.generate-sharks.outputs.run_id }}.json"
+          if [ -f "$MANIFEST_FILE" ]; then
+            npx ts-node scripts/morning-routine/tasks/seo-review-batch.ts animals Sharks --manifest "$MANIFEST_FILE"
+          else
+            echo "⚠️  No manifest found, skipping SEO for Sharks"
+          fi
+        continue-on-error: true
+
+      # ===== COMMIT ALL CHANGES =====
       - name: Commit generated content
         run: |
           git config user.name "GitHub Actions Bot"
@@ -79,27 +146,29 @@ jobs:
           if git diff --staged --quiet; then
             echo "✓ No changes to commit"
           else
-            git commit -m "🎨 Generate daily coloring pages [automated by Actions]"
+            git commit -m "🎨 Generate daily coloring pages [automated]"
             git push
             echo "✓ Pushed changes"
           fi
 
-      # Step 4: Report results
+      # ===== REPORT =====
       - name: Report workflow summary
         if: always()
         run: |
           echo "## Daily Generation Report" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Step | Status |" >> $GITHUB_STEP_SUMMARY
-          echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Generation | ${{ steps.generate.outcome }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| SEO Optimization | ${{ steps.seo-review.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Collection | Generation | SEO |" >> $GITHUB_STEP_SUMMARY
+          echo "|------------|------------|-----|" >> $GITHUB_STEP_SUMMARY
+          echo "| Cats | ${{ steps.generate-cats.outcome }} | ✓ |" >> $GITHUB_STEP_SUMMARY
+          echo "| Dogs | ${{ steps.generate-dogs.outcome }} | ✓ |" >> $GITHUB_STEP_SUMMARY
+          echo "| Horses | ${{ steps.generate-horses.outcome }} | ✓ |" >> $GITHUB_STEP_SUMMARY
+          echo "| Butterflies | ${{ steps.generate-butterflies.outcome }} | ✓ |" >> $GITHUB_STEP_SUMMARY
+          echo "| Sharks | ${{ steps.generate-sharks.outcome }} | ✓ |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Run ID:** ${{ steps.generate.outputs.run_id }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Schedule:** 5 AM EST (10 AM UTC)" >> $GITHUB_STEP_SUMMARY
 
-      # Step 5: Notify on critical failure
       - name: Notify on generation failure
-        if: failure() && steps.generate.outcome == 'failure'
+        if: failure()
         run: |
           echo "❌ **CRITICAL**: Daily generation failed!"
-          echo "Check the workflow logs for details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          echo "Check the workflow logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
