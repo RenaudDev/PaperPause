@@ -1,10 +1,13 @@
 {{ define "main" }}
 {{- $allColoringPages := where .Site.RegularPages "Type" "coloring-pages" -}}
 {{- $coloringPageCount := len $allColoringPages -}}
-{{- $collectionCount := 0 -}}
-{{- if .Site.Taxonomies.collections -}}
-  {{- $collectionCount = len .Site.Taxonomies.collections -}}
+{{- $allSubsections := slice -}}
+{{- range .Site.Sections -}}
+  {{- range .Sections -}}
+    {{- $allSubsections = $allSubsections | append . -}}
+  {{- end -}}
 {{- end -}}
+{{- $collectionCount := len $allSubsections -}}
 
 <!-- Hero Section -->
 <section class="bg-teal-600 text-white py-20 text-center">
@@ -41,8 +44,8 @@
   </div>
 </section>
 
-<!-- Popular Collections -->
-{{ if .Site.Taxonomies.collections }}
+<!-- Popular Collections (L2 Sections) -->
+{{ if gt $collectionCount 0 }}
 <section class="py-16 bg-white">
   <div class="container mx-auto px-4">
     <div class="flex items-end justify-between gap-6 mb-8">
@@ -50,22 +53,27 @@
         <h2 class="font-heading text-2xl font-bold text-slate-800 border-l-4 border-teal-600 pl-4">Popular Collections</h2>
         <p class="text-slate-600 text-sm mt-2">Quick picks people love right now.</p>
       </div>
-      <a href="/collections/" class="hidden md:inline text-teal-700 font-bold hover:underline">Browse all →</a>
+      <a href="/animals/" class="hidden md:inline text-teal-700 font-bold hover:underline">Browse all →</a>
     </div>
 
-    <div class="grid grid-cols-2 md:grid-cols-6 lg:grid-cols-6 gap-4">
-      {{ range first 12 .Site.Taxonomies.collections.ByCount }}
-      {{- $termPage := .Page -}}
-      {{- $termPages := $termPage.Pages -}}
+    <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {{- $subsectionsWithCounts := slice -}}
+      {{- range $allSubsections -}}
+        {{- $subsectionsWithCounts = $subsectionsWithCounts | append (dict "section" . "count" (len .RegularPagesRecursive)) -}}
+      {{- end -}}
+      {{- $sortedSubsections := sort $subsectionsWithCounts "count" "desc" -}}
+      {{- range first 12 $sortedSubsections -}}
+      {{- $subsection := .section -}}
+      {{- $subsectionPages := $subsection.RegularPagesRecursive -}}
       {{- $preview := "" -}}
-      {{- $previewAlt := printf "%s coloring pages" $termPage.Title -}}
-      {{- if gt (len $termPages) 0 -}}
+      {{- $previewAlt := printf "%s coloring pages" $subsection.Title -}}
+      {{- if gt (len $subsectionPages) 0 -}}
         {{- $first := "" -}}
-        {{- range first 1 (where $termPages "Params.cf_image_id" "!=" nil) -}}
+        {{- range first 1 (where $subsectionPages "Params.cf_image_id" "!=" nil) -}}
           {{- $first = . -}}
         {{- end -}}
         {{- if not $first -}}
-          {{- range first 1 (where $termPages "Params.image_url" "!=" nil) -}}
+          {{- range first 1 (where $subsectionPages "Params.image_url" "!=" nil) -}}
             {{- $first = . -}}
           {{- end -}}
         {{- end -}}
@@ -78,7 +86,7 @@
         {{- end -}}
       {{- end -}}
 
-      <a href="{{ $termPage.RelPermalink }}"
+      <a href="{{ $subsection.RelPermalink }}"
         class="group block bg-white rounded-2xl shadow-sm hover:shadow-lg transition overflow-hidden border border-slate-100">
         <div class="aspect-[3/4] bg-slate-100 relative overflow-hidden">
           {{ if $preview }}
@@ -93,11 +101,11 @@
           {{ end }}
         </div>
         <div class="p-4">
-          <div class="font-heading font-bold text-slate-800 group-hover:text-teal-700 transition">{{ $termPage.Title }}</div>
-          <div class="text-slate-500 text-sm mt-1">{{ .Count }} pages</div>
+          <div class="font-heading font-bold text-slate-800 group-hover:text-teal-700 transition">{{ $subsection.Title }}</div>
+          <div class="text-slate-500 text-sm mt-1">{{ len $subsectionPages }} pages</div>
         </div>
       </a>
-      {{ end }}
+      {{- end -}}
     </div>
   </div>
 </section>

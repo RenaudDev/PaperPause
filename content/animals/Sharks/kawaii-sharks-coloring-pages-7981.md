@@ -7,8 +7,6 @@ type: "coloring-pages"
 draft: false
 categories:
   - animals
-collections:
-  - Sharks
 style: "Kawaii"
 medium: "Markers"
 cf_image_id: "cf328ef8-162e-416b-c225-9152512a4800"

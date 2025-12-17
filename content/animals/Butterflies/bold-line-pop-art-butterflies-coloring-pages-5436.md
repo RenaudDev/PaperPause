@@ -13,8 +13,6 @@ type: coloring-pages
 draft: false
 categories:
   - animals
-collections:
-  - Butterflies
 style: Bold Line Pop Art
 medium: Markers
 cf_image_id: 4a4cba75-b01b-4794-a172-7622041c8600

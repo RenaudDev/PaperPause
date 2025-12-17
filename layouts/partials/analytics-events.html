@@ -85,7 +85,43 @@
             }
 
             // ==========================================
-            // B. TRACK EXTERNAL LINKS
+            // B. TRACK PINTEREST SAVES (Overlay Button)
+            // ==========================================
+            const isPinterestSave = link.dataset.trackType === 'pinterest_save';
+            if (isPinterestSave) {
+                const assetName = link.dataset.assetName || 'Unknown Asset';
+                const assetCategory = link.dataset.category || 'uncategorized';
+
+                // GA4 Tracking
+                if (typeof gtag === 'function') {
+                    try {
+                        gtag('event', 'share', {
+                            'method': 'Pinterest',
+                            'content_type': 'image',
+                            'item_id': assetName,
+                            'item_category': assetCategory
+                        });
+                    } catch (error) {
+                        console.error('GA4 share tracking error:', error);
+                    }
+                }
+
+                // Pinterest Tracking
+                if (typeof pintrk === 'function') {
+                    try {
+                        pintrk('track', 'lead', {
+                            'lead_type': 'Pinterest Save',
+                            'product_category': assetCategory,
+                            'product_name': assetName
+                        });
+                    } catch (error) {
+                        console.error('Pinterest save tracking error:', error);
+                    }
+                }
+            }
+
+            // ==========================================
+            // C. TRACK EXTERNAL LINKS
             // ==========================================
             if (link.hostname !== window.location.hostname && !isPdfDownload) {
                 if (typeof gtag === 'function') {

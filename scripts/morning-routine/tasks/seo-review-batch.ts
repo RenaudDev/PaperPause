@@ -102,10 +102,10 @@ export async function reviewBatch(
           throw new Error('Missing image_url and r2_original in frontmatter');
         }
 
-        // Determine subject
-        const subject = Array.isArray(fm.collections)
-          ? (fm.collections[0] as string)
-          : collection;
+        // Determine subject from path (collection parameter or derive from file path)
+        const pathParts = file.path.split(path.sep);
+        const collectionFromPath = pathParts[pathParts.indexOf('content') + 2] || collection;
+        const subject = collectionFromPath;
 
         const style = String(fm.style || 'Kawaii');
         const medium = String(fm.medium || 'Markers');

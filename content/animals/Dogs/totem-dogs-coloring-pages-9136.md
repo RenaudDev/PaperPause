@@ -12,8 +12,6 @@ type: coloring-pages
 draft: false
 categories:
   - animals
-collections:
-  - Dogs
 style: Totem
 medium: Markers
 cf_image_id: 298a6805-5d11-44c5-5611-065bf3818f00

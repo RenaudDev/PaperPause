@@ -13,8 +13,6 @@ type: coloring-pages
 draft: false
 categories:
   - animals
-collections:
-  - Butterflies
 style: Totem
 medium: Markers
 cf_image_id: a89b3859-d3e1-43c0-ba5c-8917f5bc3000

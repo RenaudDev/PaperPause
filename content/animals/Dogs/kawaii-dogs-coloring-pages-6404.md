@@ -13,8 +13,6 @@ type: coloring-pages
 draft: false
 categories:
   - animals
-collections:
-  - Dogs
 style: Kawaii
 medium: Markers
 cf_image_id: 9cc8b491-b496-4284-01a1-c266d140c100

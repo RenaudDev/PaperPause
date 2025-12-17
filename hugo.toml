@@ -15,17 +15,12 @@ pinterestTag = "2613274913432"
 
 [taxonomies]
   category = "categories"  # Silo (Animals)
-  series = "collections"   # Sub-Silo (Cats)
 
 [related]
   includeNewer = true
   threshold = 80
   toLower = false
 
-  [[related.indices]]
-    name = "collections"
-    weight = 100
-  
   [[related.indices]]
     name = "categories"
     weight = 80

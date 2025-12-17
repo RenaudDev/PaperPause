@@ -1,2 +1,10 @@
 # Redirect Categories to Sections
 /categories/animals/ /animals/ 301
+
+# Redirect Collections Taxonomy to Sections
+/collections/ /animals/ 301
+/collections/cats/ /animals/cats/ 301
+/collections/dogs/ /animals/dogs/ 301
+/collections/butterflies/ /animals/butterflies/ 301
+/collections/horses/ /animals/horses/ 301
+/collections/sharks/ /animals/sharks/ 301

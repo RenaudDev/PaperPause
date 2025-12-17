@@ -12,8 +12,6 @@ type: coloring-pages
 draft: false
 categories:
   - animals
-collections:
-  - Horses
 style: Bold Line Pop Art
 medium: Markers
 cf_image_id: eb57821a-a953-410b-af36-cda31eee7c00

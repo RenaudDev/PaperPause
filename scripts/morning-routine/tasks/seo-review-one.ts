@@ -67,9 +67,10 @@ async function run() {
     throw new Error('Missing image_url and r2_original in frontmatter; cannot run vision review.');
   }
 
-  const subject =
-    (Array.isArray(fm.collections) ? String(fm.collections[0] || '') : String(fm.collections || '')) ||
-    collection;
+  // Derive subject from path (collection parameter or derive from file path)
+  const pathParts = filePath.split(path.sep);
+  const collectionFromPath = pathParts[pathParts.indexOf('content') + 2] || collection;
+  const subject = collectionFromPath;
   const style = String(fm.style || '');
   const medium = String(fm.medium || 'Markers');
 

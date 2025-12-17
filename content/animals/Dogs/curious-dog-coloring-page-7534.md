@@ -12,8 +12,6 @@ type: coloring-pages
 draft: false
 categories:
   - animals
-collections:
-  - Dogs
 difficulty: Easy
 style: Bold Line Pop Art
 medium: Markers

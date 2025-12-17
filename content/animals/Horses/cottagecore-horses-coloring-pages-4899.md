@@ -14,8 +14,6 @@ type: coloring-pages
 draft: false
 categories:
   - animals
-collections:
-  - Horses
 style: Cottagecore
 medium: Markers
 cf_image_id: 693eed8f-7f90-418c-6b0f-0deb21cbdd00

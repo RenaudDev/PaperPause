@@ -9,7 +9,6 @@ draft: false
 
 # SEO & Content Classification
 categories: ["animals"]  # Choose: animals, mandalas, holidays, fantasy, educational
-collections: ["cats"]    # Choose based on category
 style: "Kawaii"          # Kawaii, Cottagecore, Totem, Bold Line Pop Art, Magical Realism
 medium: "Markers"        # Markers, Crayons, Colored Pencils, etc.
 

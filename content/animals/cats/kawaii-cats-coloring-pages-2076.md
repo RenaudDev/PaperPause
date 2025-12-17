@@ -13,8 +13,6 @@ type: coloring-pages
 draft: false
 categories:
   - animals
-collections:
-  - cats
 style: Kawaii
 medium: Markers
 cf_image_id: e5d90425-b73b-4e4d-b44c-7f6d9699af00

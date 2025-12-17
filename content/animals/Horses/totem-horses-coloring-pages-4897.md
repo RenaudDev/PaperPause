@@ -12,8 +12,6 @@ type: coloring-pages
 draft: false
 categories:
   - animals
-collections:
-  - Horses
 style: Totem
 medium: Markers
 cf_image_id: fcdb5a0d-a45f-49aa-a9bf-d8c7f30a2f00

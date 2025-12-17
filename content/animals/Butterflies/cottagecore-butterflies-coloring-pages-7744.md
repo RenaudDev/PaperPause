@@ -14,8 +14,6 @@ type: coloring-pages
 draft: false
 categories:
   - animals
-collections:
-  - Butterflies
 style: Cottagecore
 medium: Markers
 cf_image_id: 7a28e0a1-467f-4dcd-234f-d4463f906700

@@ -233,8 +233,6 @@ type: "${template.type || 'coloring-pages'}"
 draft: false
 categories:
   - ${category}
-collections:
-  - ${collection}
 style: "${style.name}"
 medium: "${template.medium || 'Markers'}"
 cf_image_id: "${uploadResult.cfImageId}"

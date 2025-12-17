@@ -13,8 +13,6 @@ type: coloring-pages
 draft: false
 categories:
   - animals
-collections:
-  - Sharks
 style: Cottagecore
 medium: Markers
 cf_image_id: 06c2eab3-3240-4e9d-df1a-ff14c5ef8c00

@@ -89,24 +89,24 @@ async function validateTaxonomy(): Promise<ValidationResult> {
         }
       }
 
-      // Check if file has collections
-      if (!frontmatter.collections || frontmatter.collections.length === 0) {
-        result.errors.push({
-          file,
-          type: 'missing_collection',
-          message: 'Missing collections in frontmatter'
-        });
-        hasErrors = true;
-      } else {
-        // Validate each collection matches its category
-        const category = frontmatter.categories?.[0];
-        for (const collection of frontmatter.collections) {
-          const allowed = ALLOWED_COLLECTIONS[category as keyof typeof ALLOWED_COLLECTIONS] || [];
-          if (!allowed.includes(collection)) {
+      // Validate collection based on directory structure (not frontmatter)
+      // File should be in content/<category>/<collection>/filename.md
+      const pathParts = file.split(path.sep);
+      const categoryIndex = pathParts.indexOf('content') + 1;
+      const collectionIndex = categoryIndex + 1;
+      
+      if (pathParts.length > collectionIndex) {
+        const categoryFromPath = pathParts[categoryIndex];
+        const collectionFromPath = pathParts[collectionIndex];
+        
+        // Validate collection directory matches allowed values
+        if (categoryFromPath && collectionFromPath) {
+          const allowed = ALLOWED_COLLECTIONS[categoryFromPath as keyof typeof ALLOWED_COLLECTIONS] || [];
+          if (allowed.length > 0 && !allowed.includes(collectionFromPath.toLowerCase())) {
             result.errors.push({
               file,
-              type: 'invalid_collection',
-              message: `Invalid collection "${collection}" for category "${category}". Allowed: ${allowed.join(', ')}`
+              type: 'invalid_collection_path',
+              message: `Invalid collection directory "${collectionFromPath}" for category "${categoryFromPath}". Allowed: ${allowed.join(', ')}`
             });
             hasErrors = true;
           }
