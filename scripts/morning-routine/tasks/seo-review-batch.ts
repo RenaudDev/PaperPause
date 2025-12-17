@@ -191,8 +191,9 @@ if (require.main === module) {
       console.log('\n');
       console.log(JSON.stringify(results, null, 2));
 
-      // Exit with error code if any failed
-      process.exit(failed > 0 ? 1 : 0);
+      // Always exit 0 for best-effort SEO optimization
+      // The workflow should continue even if some SEO reviews fail
+      process.exit(0);
     } catch (error) {
       logger.error('Batch SEO review failed', error as Error);
       process.exit(1);
