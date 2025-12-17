@@ -4,14 +4,61 @@
     <!-- LEFT: Visual Stage (65%) -->
     <div class="lg:w-[65%] bg-stone-100 flex items-center justify-center p-4 lg:p-12 relative">
         <div
-            class="bg-white shadow-2xl p-4 lg:p-8 max-w-2xl w-full mx-auto transform hover:scale-[1.01] transition duration-500">
-            {{ if .Params.image_url }}
-            <img src="{{ .Params.image_url }}" alt="{{ .Title }}" class="w-full h-auto border border-slate-100">
-            {{ else }}
-            <div class="aspect-[3/4] bg-slate-50 flex items-center justify-center text-slate-300 font-mono">
-                [High Res Image Placeholder]
-            </div>
+            class="bg-white shadow-2xl p-4 lg:p-8 max-w-2xl w-full mx-auto">
+            {{/* Pinterest Save data (for prefilled pin) */}}
+            {{ $pinUrl := .Permalink }}
+            {{ $pinImage := "" }}
+            {{ if .Params.cf_image_id }}
+                {{ $pinImage = printf "https://imagedelivery.net/%s/%s/rss" $.Site.Params.cf_images_hash .Params.cf_image_id }}
+            {{ else if .Params.image_url }}
+                {{ $pinImage = .Params.image_url | absURL }}
             {{ end }}
+            {{ $pinDesc := .Params.pinterest_description | default .Description | default .Title }}
+            {{ $pinSaveUrl := "" }}
+            {{ if $pinImage }}
+                {{ $pinSaveUrl = printf "https://www.pinterest.com/pin/create/button/?url=%s&media=%s&description=%s" (urlquery $pinUrl) (urlquery $pinImage) (urlquery $pinDesc) }}
+            {{ end }}
+
+            <div class="relative">
+                <style>
+                    /* Local-only styles for the Pinterest button on single pages */
+                    .pp-pin-save {
+                        transition: filter 120ms ease, transform 120ms ease, box-shadow 120ms ease;
+                    }
+                    .pp-pin-save:hover {
+                        filter: brightness(0.95);
+                        transform: translateY(-1px);
+                    }
+                    .pp-pin-save:active {
+                        transform: translateY(0);
+                        filter: brightness(0.92);
+                    }
+                </style>
+                {{ if .Params.image_url }}
+                <img src="{{ .Params.image_url }}" alt="{{ .Title }}" class="w-full h-auto border border-slate-100">
+                {{ else }}
+                <div class="aspect-[3/4] bg-slate-50 flex items-center justify-center text-slate-300 font-mono">
+                    [High Res Image Placeholder]
+                </div>
+                {{ end }}
+
+                {{ if $pinSaveUrl }}
+                <a href="{{ $pinSaveUrl }}"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="pp-pin-save absolute z-50 flex items-center gap-3 rounded-full text-sm font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-teal-600 focus:ring-offset-2"
+                   style="top: 0.25rem; right: 0.75rem; background: #E60023; color: #fff; padding-left: 4px; padding-right: 16px; padding-top: 4px; padding-bottom: 4px;"
+                   aria-label="Save to Pinterest">
+                    <span class="w-6 h-6 rounded-full flex items-center justify-center leading-none"
+                          style="background: #fff; color: #E60023;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                            <path fill="currentColor" d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.39 18.592.026 11.985.026L12.017 0z"/>
+                        </svg>
+                    </span>
+                    <span>Save</span>
+                </a>
+                {{ end }}
+            </div>
         </div>
     </div>
 
