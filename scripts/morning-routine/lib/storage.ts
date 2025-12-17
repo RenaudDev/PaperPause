@@ -23,7 +23,7 @@ export interface UploadResult {
         desktop: string;        // 1200x1600 - Desktop web preview
         mobile: string;         // 600x800 - Mobile web preview
         thumbnail: string;      // 300x400 - Grid/masonry thumbnails
-        rss: string;            // 1125x1500 - RSS feeds (3:4 ratio)
+        rss: string;            // 1000x1500 - RSS feeds (2:3 ratio)
         pinterest: string;      // 1000x1500 - Pinterest/og:image (2:3 ratio)
     };
 }

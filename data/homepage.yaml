@@ -1,0 +1,18 @@
+seasonal:
+  - title: "Cats"
+    subtitle: "Cute, realistic, kawaii, and more"
+    taxonomy: "collections"
+    term: "cats"
+  - title: "Dogs"
+    subtitle: "From simple to detailed"
+    taxonomy: "collections"
+    term: "dogs"
+  - title: "Butterflies"
+    subtitle: "Calming patterns & wings"
+    taxonomy: "collections"
+    term: "butterflies"
+  - title: "Horses"
+    subtitle: "Elegant and fun to color"
+    taxonomy: "collections"
+    term: "horses"
+

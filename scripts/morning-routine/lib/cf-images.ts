@@ -71,7 +71,7 @@ export function getCFImageVariants(imageId: string) {
     desktop: getCFImageUrl(imageId, 'desktop'),      // 1200x1600 - Desktop display
     mobile: getCFImageUrl(imageId, 'mobile'),        // 600x800 - Mobile display
     thumbnail: getCFImageUrl(imageId, 'thumbnail'),  // 300x400 - Grid previews
-    rss: getCFImageUrl(imageId, 'rss'),             // 1125x1500 - RSS feeds (3:4 ratio)
+    rss: getCFImageUrl(imageId, 'rss'),             // 1000x1500 - RSS feeds (2:3 ratio)
     pinterest: getCFImageUrl(imageId, 'pinterest')   // 1000x1500 - Pinterest/social (2:3 ratio)
   };
 }

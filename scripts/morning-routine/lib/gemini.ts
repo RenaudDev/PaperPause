@@ -35,8 +35,8 @@ export const generateImage = async (prompt: string, negativePrompt?: string): Pr
             }
 
             // Generate image using Gemini with image generation capability
-            // Strongly emphasize 2:3 aspect ratio in the prompt
-            const aspectRatioPrompt = `${fullPrompt}\n\n[CRITICAL: Image must be in 2:3 PORTRAIT aspect ratio. VERTICAL format. Height should be 1.5x the width. Like a standard coloring page - TALL and NARROW, not square.]`;
+            // Strongly emphasize 2:3 aspect ratio at 2160×3240 resolution in the prompt
+            const aspectRatioPrompt = `${fullPrompt}\n\n[CRITICAL: Image must be in 2:3 PORTRAIT aspect ratio at 2160×3240 pixels resolution. VERTICAL format. Height must be exactly 1.5x the width. Like a standard coloring page - TALL and NARROW, not square. Minimum dimensions: 2160 pixels wide × 3240 pixels tall.]`;
             
             const result = await model.generateContent(aspectRatioPrompt);
 

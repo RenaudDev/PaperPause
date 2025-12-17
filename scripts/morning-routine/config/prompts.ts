@@ -1,19 +1,19 @@
 export const PROMPT_CONFIG = {
     base: `
     TYPE: Vector Line Art Coloring Page.
-    ASPECT RATIO: 3:4 (Portrait) - Vertical composition.
+    ASPECT RATIO: 2:3 (2160×3240 pixels) (Portrait) - Vertical composition.
     OUTPUT FORMAT: PNG with black outlines on pure white background.
     SUBJECT: A cute, cozy cat.
     
     TECHNICAL REQUIREMENTS:
-    - Image dimensions: 3:4 aspect ratio (e.g., 1500x2000px or 1800x2400px)
+    - Image dimensions: 2:3 aspect ratio (2160×3240 pixels minimum)
     - Background: Pure white (#FFFFFF) - NOT transparent, NOT transparent background
     - Lines: Pure black (#000000) outlines only
     - Line weight: Thick, consistent, 4-6px width
     - Style: Clean vector-style line art suitable for coloring
     
     COMPOSITION:
-    - Centered subject within 3:4 frame
+    - Centered subject within 2:3 frame
     - Leave adequate margins (10-15% on all sides)
     - Vertical (portrait) orientation
     - Subject should fit comfortably within the frame
