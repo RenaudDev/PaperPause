@@ -1,4 +1,4 @@
-<div id="pp-cookie-banner" class="fixed bottom-0 left-0 right-0 bg-slate-900 text-slate-300 shadow-2xl border-t border-slate-700 z-40" role="dialog" aria-labelledby="pp-cookie-title" aria-modal="true" style="display: none;">
+<div id="pp-cookie-banner" class="fixed bottom-0 left-0 right-0 bg-slate-900 text-slate-300 shadow-2xl border-t border-slate-700 z-[60]" role="dialog" aria-labelledby="pp-cookie-title" aria-modal="true" style="display: none;">
     <div class="container mx-auto px-4 py-6">
         <div class="max-w-4xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <!-- Text Content -->
@@ -26,104 +26,125 @@
 <script>
     /**
      * Cookie Banner Controller
-     * Manages display, user interactions, and consent persistence
+     * Waits for consent manager to be ready, then manages display
      */
     
-    const CONSENT_KEY = 'pp_cookie_consent';
-    const CONSENT_EXPIRY_DAYS = 180;
-    const CONSENT_STATES = {
-        ACCEPTED: 'accepted',
-        REJECTED: 'rejected'
-    };
+    (function() {
+        const CONSENT_STATES = {
+            ACCEPTED: 'accepted',
+            REJECTED: 'rejected'
+        };
 
-    const banner = document.getElementById('pp-cookie-banner');
-    const acceptBtn = document.getElementById('pp-cookie-accept');
-    const rejectBtn = document.getElementById('pp-cookie-reject');
+        let banner = null;
+        let acceptBtn = null;
+        let rejectBtn = null;
 
-    // Check if consent is stored and valid
-    function isConsentValid() {
-        const stored = localStorage.getItem(CONSENT_KEY);
-        if (!stored) return false;
-
-        try {
-            const parsed = JSON.parse(stored);
-            const expiryDate = new Date(parsed.timestamp);
-            expiryDate.setDate(expiryDate.getDate() + CONSENT_EXPIRY_DAYS);
-            return new Date() < expiryDate;
-        } catch (e) {
-            return false;
+        // Wait for consent manager to be ready
+        function waitForConsentManager(callback, attempts = 0) {
+            if (window.ppConsentManagerReady && window.ppGetConsentState) {
+                callback();
+            } else if (attempts < 100) {
+                setTimeout(() => waitForConsentManager(callback, attempts + 1), 50);
+            } else {
+                console.error('Cookie consent manager failed to load');
+            }
         }
-    }
 
-    // Show banner
-    function showBanner() {
-        if (banner) {
-            banner.style.display = 'block';
-            // Focus first button for accessibility
-            setTimeout(() => acceptBtn?.focus(), 100);
+        // Initialize banner
+        function initBanner() {
+            banner = document.getElementById('pp-cookie-banner');
+            acceptBtn = document.getElementById('pp-cookie-accept');
+            rejectBtn = document.getElementById('pp-cookie-reject');
+
+            if (!banner || !acceptBtn || !rejectBtn) {
+                console.error('Cookie banner elements not found');
+                return;
+            }
+
+            // Attach event listeners
+            acceptBtn.addEventListener('click', handleAccept);
+            rejectBtn.addEventListener('click', handleReject);
+
+            // Listen for open banner event
+            window.addEventListener('ppOpenBanner', showBanner);
+
+            // Listen for consent changes (in case another tab changed it)
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'pp_cookie_consent') {
+                    updateBannerVisibility();
+                }
+            });
+
+            // Keyboard support (Escape to dismiss - treats as reject)
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && banner && banner.style.display !== 'none') {
+                    handleReject();
+                }
+            });
+
+            // Check if we should show banner
+            updateBannerVisibility();
         }
-    }
 
-    // Hide banner
-    function hideBanner() {
-        if (banner) {
-            banner.style.display = 'none';
+        // Show banner
+        function showBanner() {
+            if (banner) {
+                banner.style.display = 'block';
+                // Focus accept button for accessibility
+                setTimeout(() => {
+                    if (acceptBtn) acceptBtn.focus();
+                }, 100);
+            }
         }
-    }
 
-    // Handle accept
-    function handleAccept() {
-        window.ppSetConsentAndLoad(CONSENT_STATES.ACCEPTED);
-        hideBanner();
-    }
+        // Hide banner
+        function hideBanner() {
+            if (banner) {
+                banner.style.display = 'none';
+            }
+        }
 
-    // Handle reject
-    function handleReject() {
-        window.ppSetConsentAndLoad(CONSENT_STATES.REJECTED);
-        hideBanner();
-    }
-
-    // Attach event listeners
-    acceptBtn?.addEventListener('click', handleAccept);
-    rejectBtn?.addEventListener('click', handleReject);
-
-    // Listen for open banner event
-    window.addEventListener('ppOpenBanner', showBanner);
-
-    // Listen for consent changes (in case another tab changed it)
-    window.addEventListener('storage', function(e) {
-        if (e.key === CONSENT_KEY) {
-            if (!isConsentValid()) {
+        // Update banner visibility based on consent state
+        function updateBannerVisibility() {
+            const consentState = window.ppGetConsentState ? window.ppGetConsentState() : null;
+            
+            if (consentState === null) {
+                // No consent stored, show banner
                 showBanner();
             } else {
+                // Consent exists (accepted or rejected), hide banner
                 hideBanner();
             }
         }
-    });
 
-    // Show banner if no consent is stored
-    document.addEventListener('DOMContentLoaded', function() {
-        if (!isConsentValid()) {
-            showBanner();
-        } else {
+        // Handle accept
+        function handleAccept() {
+            if (window.ppSetConsentAndLoad) {
+                window.ppSetConsentAndLoad(CONSENT_STATES.ACCEPTED);
+            }
             hideBanner();
         }
-    });
 
-    // If DOMContentLoaded already fired
-    if (document.readyState !== 'loading') {
-        if (!isConsentValid()) {
-            showBanner();
-        } else {
+        // Handle reject
+        function handleReject() {
+            if (window.ppSetConsentAndLoad) {
+                window.ppSetConsentAndLoad(CONSENT_STATES.REJECTED);
+            }
             hideBanner();
         }
-    }
 
-    // Keyboard support (Escape to dismiss)
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && banner?.style.display !== 'none') {
-            handleReject();
+        // Wait for both DOM and consent manager to be ready
+        function initialize() {
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function() {
+                    waitForConsentManager(initBanner);
+                });
+            } else {
+                waitForConsentManager(initBanner);
+            }
         }
-    });
+
+        // Start initialization
+        initialize();
+    })();
 </script>
-

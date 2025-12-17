@@ -19,11 +19,14 @@
         const stored = localStorage.getItem(CONSENT_KEY);
         if (!stored) return false;
 
-        const parsed = JSON.parse(stored);
-        const expiryDate = new Date(parsed.timestamp);
-        expiryDate.setDate(expiryDate.getDate() + CONSENT_EXPIRY_DAYS);
-
-        return new Date() < expiryDate && parsed.value === CONSENT_STATES.ACCEPTED;
+        try {
+            const parsed = JSON.parse(stored);
+            const expiryDate = new Date(parsed.timestamp);
+            expiryDate.setDate(expiryDate.getDate() + CONSENT_EXPIRY_DAYS);
+            return new Date() < expiryDate && parsed.value === CONSENT_STATES.ACCEPTED;
+        } catch (e) {
+            return false;
+        }
     }
 
     // Store consent decision
@@ -38,17 +41,22 @@
     function getConsentState() {
         const stored = localStorage.getItem(CONSENT_KEY);
         if (!stored) return null;
-        const parsed = JSON.parse(stored);
         
-        const expiryDate = new Date(parsed.timestamp);
-        expiryDate.setDate(expiryDate.getDate() + CONSENT_EXPIRY_DAYS);
-        
-        if (new Date() >= expiryDate) {
-            localStorage.removeItem(CONSENT_KEY);
+        try {
+            const parsed = JSON.parse(stored);
+            
+            const expiryDate = new Date(parsed.timestamp);
+            expiryDate.setDate(expiryDate.getDate() + CONSENT_EXPIRY_DAYS);
+            
+            if (new Date() >= expiryDate) {
+                localStorage.removeItem(CONSENT_KEY);
+                return null;
+            }
+            
+            return parsed.value;
+        } catch (e) {
             return null;
         }
-        
-        return parsed.value;
     }
 
     // Load GA4
@@ -119,38 +127,25 @@
         window.dispatchEvent(new CustomEvent('ppConsentChanged', { detail: decision }));
     };
 
+    window.ppGetConsentState = function() {
+        return getConsentState();
+    };
+
+    window.ppIsConsentValid = function() {
+        return isConsentValid();
+    };
+
     window.ppOpenCookieBanner = function() {
         window.dispatchEvent(new CustomEvent('ppOpenBanner'));
     };
 
-    // Load on page load if consent exists
-    document.addEventListener('DOMContentLoaded', function() {
-        ppLoadAnalyticsIfConsented();
-    });
+    // Mark consent manager as ready
+    window.ppConsentManagerReady = true;
 
-    // Also try immediately in case DOMContentLoaded already fired
+    // Load on page load if consent exists
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', ppLoadAnalyticsIfConsented);
     } else {
         ppLoadAnalyticsIfConsented();
     }
-</script>
-
-<!-- Expose consent state to other scripts -->
-<script>
-    window.ppGetConsentState = function() {
-        const stored = localStorage.getItem('pp_cookie_consent');
-        if (!stored) return null;
-        const parsed = JSON.parse(stored);
-        
-        const expiryDate = new Date(parsed.timestamp);
-        expiryDate.setDate(expiryDate.getDate() + 180);
-        
-        if (new Date() >= expiryDate) {
-            localStorage.removeItem('pp_cookie_consent');
-            return null;
-        }
-        
-        return parsed.value;
-    };
 </script>
