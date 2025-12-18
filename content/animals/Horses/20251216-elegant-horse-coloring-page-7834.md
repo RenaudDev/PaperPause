@@ -24,6 +24,8 @@ tags:
   - Elegant
   - Bold Line Pop Art
 has_pdf: true
+slug: elegant-horse-coloring-page-7834
+audience: Kids
 ---
 
 A beautiful Horses coloring page in Bold Line Pop Art style.

@@ -109,6 +109,7 @@ export async function reviewBatch(
 
         const style = String(fm.style || 'Kawaii');
         const medium = String(fm.medium || 'Markers');
+        const audience = String(fm.audience || 'Kids');
 
         // Call SEO agent
         const seoResult = await reviewSEO({
@@ -116,20 +117,40 @@ export async function reviewBatch(
           subject,
           style,
           medium,
+          audience,
           originalPrompt: typeof fm.prompt === 'string' ? fm.prompt : undefined
         });
 
-        // Update the file with SEO-optimized fields only
-        updateContentFrontmatter(file.path, seoResult);
+        // Determine final filename and slug
+        const datePrefix = new Date().toISOString().split('T')[0].replace(/-/g, '');
+        const baseSlug = seoResult.slug;
+        let finalSlug = baseSlug;
+        const dir = path.dirname(file.path);
+        let newPath = path.join(dir, `${datePrefix}-${finalSlug}.md`);
+        let counter = 1;
+
+        // Collision Handling
+        while (await fs.pathExists(newPath)) {
+          finalSlug = `${baseSlug}-${counter}`;
+          newPath = path.join(dir, `${datePrefix}-${finalSlug}.md`);
+          counter++;
+        }
+
+        // Update the file with SEO-optimized fields and final slug
+        updateContentFrontmatter(file.path, { ...seoResult, slug: finalSlug });
+
+        // Rename temp file to final YYYYMMDD-slug.md
+        await fs.move(file.path, newPath, { overwrite: true });
 
         const duration = Date.now() - startTime;
         logger.success(`[${i + 1}/${targetFiles.length}] Optimized`, {
-          file: file.filename,
+          oldFile: file.filename,
+          newFile: `${datePrefix}-${finalSlug}.md`,
           duration: `${duration}ms`
         });
 
         results.push({
-          file: file.filename,
+          file: `${datePrefix}-${finalSlug}.md`,
           status: 'success',
           duration
         });

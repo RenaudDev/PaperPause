@@ -94,6 +94,7 @@ function validateOutput(o: SEOReviewOutput): void {
   const errors: Record<string, unknown> = {};
 
   if (!o.title || o.title.length > 50) errors.title = { length: o.title?.length, max: 50 };
+  if (!o.slug || o.slug.length > 50) errors.slug = { length: o.slug?.length, max: 50 };
   if (!o.description || o.description.length < 140 || o.description.length > 160) {
     errors.description = { length: o.description?.length, min: 140, max: 160 };
   }
@@ -113,6 +114,7 @@ function validateOutput(o: SEOReviewOutput): void {
 function coerceOutput(raw: any): SEOReviewOutput {
   return {
     title: normalizeString(raw?.title),
+    slug: normalizeString(raw?.slug),
     description: normalizeString(raw?.description),
     pinterest_title: normalizeString(raw?.pinterest_title),
     pinterest_description: normalizeString(raw?.pinterest_description),
@@ -132,6 +134,14 @@ function autoFixOutput(o: SEOReviewOutput, subject: string): SEOReviewOutput {
   // Titles - remove trailing connectors if truncated
   o.title = truncateAtWordBoundary(o.title, 50).replace(/\s+(And|With|Or|In|On|Of)$/i, '');
   o.pinterest_title = truncateAtWordBoundary(o.pinterest_title, 80).replace(/\s+(And|With|Or|In|On|Of)$/i, '');
+
+  // Slug: lowercase, hyphens, alphanumeric only
+  o.slug = o.slug
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '')
+    .substring(0, 50)
+    .replace(/^-+|-+$/g, '');
 
   // Description (140-160) - use sentence-aware truncation
   if (o.description.length > 160) {

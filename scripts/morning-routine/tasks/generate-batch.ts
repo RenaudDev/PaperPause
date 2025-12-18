@@ -121,27 +121,6 @@ function generatePinterestDescription(
  * Format: {style}-{collection}-coloring-pages-{uuid}
  * Example: "totem-butterflies-coloring-pages-7292"
  */
-function generateSlugFromStyle(styleName: string, collection: string, timestamp: number): string {
-  // Convert style name to filename-friendly format (lowercase, spaces to hyphens)
-  // Example: "Bold Line Pop Art" -> "bold-line-pop-art"
-  const styleSlug = styleName
-    .toLowerCase()
-    .replace(/\s+/g, '-')
-    .replace(/[^a-z0-9-]/g, ''); // Remove any non-alphanumeric characters except hyphens
-
-  // Keep collection name as-is (lowercase, preserve plural)
-  // "Butterflies" -> "butterflies", "cats" -> "cats"
-  const collectionSlug = collection.toLowerCase();
-
-  // Get last 4 digits of timestamp for uniqueness (short UUID)
-  const uuid = String(timestamp).slice(-4);
-
-  // Construct slug: {style}-{collection}-coloring-pages-{uuid}
-  const slug = `${styleSlug}-${collectionSlug}-coloring-pages-${uuid}`;
-
-  return slug;
-}
-
 /**
  * Generate a batch of coloring pages for a specific collection
  * Uses rate limiting to respect API quotas
@@ -191,12 +170,12 @@ export const generateBatch = async (
         variantPrompt
       );
 
-      // Generate slug-based ID from style and collection
-      const id = generateSlugFromStyle(style.name, collection, timestamp);
+      // 1. Generate unique temporary filename
+      const tempId = `temp-${timestamp}`;
 
       try {
         logger.info(`[${i + 1}/${batchSize}] Generating`, {
-          id,
+          tempId,
           variant: variantPrompt.substring(0, 40),
           style: style.name
         });
@@ -205,7 +184,7 @@ export const generateBatch = async (
         const imageBuffer = await generateImage(fullPrompt, negative_prompt);
 
         // 2. Upload to R2 and CF Images
-        const filename = `${id}.png`;
+        const filename = `${tempId}.png`;
         const uploadResult = await uploadImage(imageBuffer, filename, collection);
 
         // 3. Create Draft Markdown with full metadata
@@ -214,6 +193,9 @@ export const generateBatch = async (
           style: style.name,
           medium: 'Markers'
         };
+
+        // Determine audience from style
+        const audience = style.targetAudience;
 
         // Generate SEO-optimized content
         const title = generateTitle(variantPrompt);
@@ -235,6 +217,7 @@ categories:
   - ${category}
 style: "${style.name}"
 medium: "${template.medium || 'Markers'}"
+audience: "${audience}"
 cf_image_id: "${uploadResult.cfImageId}"
 image_url: "${uploadResult.imageUrl}"
 download_url: "${uploadResult.downloadUrl}"
@@ -254,7 +237,7 @@ A beautiful ${collection} coloring page in ${style.name} style.
 ![Coloring Page](${uploadResult.imageUrl})
 `;
 
-        const mdPath = path.join(contentDir, `${id}.md`);
+        const mdPath = path.join(contentDir, `${tempId}.md`);
         await fs.writeFile(mdPath, mdContent);
 
         // Record created file for manifest (repo-relative path)
@@ -265,13 +248,13 @@ A beautiful ${collection} coloring page in ${style.name} style.
 
         const duration = Date.now() - startTime;
         logger.success(`[${i + 1}/${batchSize}] Complete`, {
-          id,
+          tempId,
           path: mdPath,
           duration: `${duration}ms`
         });
 
         results.push({
-          id,
+          id: tempId,
           status: 'success',
           path: mdPath,
           duration
@@ -283,7 +266,7 @@ A beautiful ${collection} coloring page in ${style.name} style.
         logger.error(`[${i + 1}/${batchSize}] Generation failed`, error as Error);
 
         results.push({
-          id,
+          id: tempId,
           status: 'failed',
           error: errorMsg,
           duration

@@ -28,6 +28,8 @@ prompt: >-
 tags:
   - Cottagecore
 pinterest_title: Grumpy Miniature Horse Cottagecore Stable Flowers Coloring Page
+slug: cottagecore-horses-coloring-pages-4899
+audience: Adults
 ---
 
 A beautiful Horses coloring page in Cottagecore style.

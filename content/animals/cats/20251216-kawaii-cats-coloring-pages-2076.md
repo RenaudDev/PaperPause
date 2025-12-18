@@ -27,6 +27,8 @@ tags:
   - Kawaii
 has_pdf: true
 pinterest_title: Kawaii Cat Playing Chess Bakery Coloring Page
+slug: kawaii-cats-coloring-pages-2076
+audience: Kids
 ---
 
 A beautiful cats coloring page in Kawaii style.

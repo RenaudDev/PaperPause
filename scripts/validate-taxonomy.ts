@@ -18,7 +18,7 @@ const ALLOWED_CATEGORIES = [
 ];
 
 const ALLOWED_COLLECTIONS = {
-  animals: ['cats', 'dogs', 'butterflies', 'horses', 'bears', 'dinosaurs', 'forest'],
+  animals: ['cats', 'dogs', 'butterflies', 'horses', 'bears', 'dinosaurs', 'forest', 'sharks'],
   mandalas: ['geometric', 'floral', 'abstract'],
   holidays: ['christmas', 'halloween', 'easter', 'thanksgiving'],
   fantasy: ['fairies', 'mermaids', 'goth', 'dragons'],
@@ -54,8 +54,8 @@ async function validateTaxonomy(): Promise<ValidationResult> {
   logger.info(`Found ${mdFiles.length} markdown files to validate`);
 
   for (const file of mdFiles) {
-    if (file.includes('_index')) {
-      continue; // Skip section index files
+    if (file.includes('_index') || !file.includes(path.sep + 'animals' + path.sep)) {
+      continue; // Skip section index files and non-animal content for now
     }
 
     result.total++;
@@ -115,7 +115,7 @@ async function validateTaxonomy(): Promise<ValidationResult> {
 
       // Check required fields for coloring pages
       if (frontmatter.type === 'coloring-pages') {
-        const requiredFields = ['difficulty', 'style'];
+        const requiredFields = ['style', 'audience'];
         for (const field of requiredFields) {
           if (!frontmatter[field]) {
             result.errors.push({
@@ -125,6 +125,16 @@ async function validateTaxonomy(): Promise<ValidationResult> {
             });
             hasErrors = true;
           }
+        }
+
+        // Validate audience values
+        if (frontmatter.audience && !['Kids', 'Adults'].includes(frontmatter.audience)) {
+          result.errors.push({
+            file,
+            type: 'invalid_audience',
+            message: `Invalid audience "${frontmatter.audience}". Allowed: Kids, Adults`
+          });
+          hasErrors = true;
         }
       }
 

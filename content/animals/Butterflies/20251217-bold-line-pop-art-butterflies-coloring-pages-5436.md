@@ -29,6 +29,8 @@ prompt: >-
 tags:
   - Bold Line Pop Art
 pinterest_title: Zebra Longwing Butterfly Clouds Stars Moons Bold Line Pop Art Coloring Page
+slug: bold-line-pop-art-butterflies-coloring-pages-5436
+audience: Kids
 ---
 
 A beautiful Butterflies coloring page in Bold Line Pop Art style.

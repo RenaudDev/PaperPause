@@ -56,55 +56,14 @@
       <a href="/animals/" class="hidden md:inline text-teal-700 font-bold hover:underline">Browse all →</a>
     </div>
 
-    <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
       {{- $subsectionsWithCounts := slice -}}
       {{- range $allSubsections -}}
         {{- $subsectionsWithCounts = $subsectionsWithCounts | append (dict "section" . "count" (len .RegularPagesRecursive)) -}}
       {{- end -}}
       {{- $sortedSubsections := sort $subsectionsWithCounts "count" "desc" -}}
       {{- range first 12 $sortedSubsections -}}
-      {{- $subsection := .section -}}
-      {{- $subsectionPages := $subsection.RegularPagesRecursive -}}
-      {{- $preview := "" -}}
-      {{- $previewAlt := printf "%s coloring pages" $subsection.Title -}}
-      {{- if gt (len $subsectionPages) 0 -}}
-        {{- $first := "" -}}
-        {{- range first 1 (where $subsectionPages "Params.cf_image_id" "!=" nil) -}}
-          {{- $first = . -}}
-        {{- end -}}
-        {{- if not $first -}}
-          {{- range first 1 (where $subsectionPages "Params.image_url" "!=" nil) -}}
-            {{- $first = . -}}
-          {{- end -}}
-        {{- end -}}
-        {{- with $first -}}
-          {{- if .Params.cf_image_id -}}
-            {{- $preview = printf "https://imagedelivery.net/%s/%s/thumbnail" $.Site.Params.cf_images_hash .Params.cf_image_id -}}
-          {{- else if .Params.image_url -}}
-            {{- $preview = .Params.image_url -}}
-          {{- end -}}
-        {{- end -}}
-      {{- end -}}
-
-      <a href="{{ $subsection.RelPermalink }}"
-        class="group block bg-white rounded-2xl shadow-sm hover:shadow-lg transition overflow-hidden border border-slate-100">
-        <div class="aspect-[3/4] bg-slate-100 relative overflow-hidden">
-          {{ if $preview }}
-            <img src="{{ $preview }}" alt="{{ $previewAlt }}" class="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300" loading="lazy">
-          {{ else }}
-            <div class="w-full h-full grid grid-cols-2 gap-0.5">
-              <div class="bg-teal-50"></div>
-              <div class="bg-teal-100"></div>
-              <div class="bg-teal-100"></div>
-              <div class="bg-teal-50"></div>
-            </div>
-          {{ end }}
-        </div>
-        <div class="p-4">
-          <div class="font-heading font-bold text-slate-800 group-hover:text-teal-700 transition">{{ $subsection.Title }}</div>
-          <div class="text-slate-500 text-sm mt-1">{{ len $subsectionPages }} pages</div>
-        </div>
-      </a>
+        {{ partial "collection-card.html" .section }}
       {{- end -}}
     </div>
   </div>

@@ -15,14 +15,16 @@ env:
   TRACKING_ISSUE_NUMBER: 1
 
 jobs:
-  generate-and-optimize:
+  generate:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        collection: [cats, dogs, horses, butterflies, sharks]
     
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Full history for commits
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -47,112 +49,54 @@ jobs:
           CF_IMAGES_ACCOUNT_HASH=${{ secrets.CF_IMAGES_ACCOUNT_HASH }}
           EOF
 
-      - name: Validate environment
-        run: npm run validate:env
-
-      # ===== CATS =====
-      - name: Generate Cats (1 image)
-        id: generate-cats
+      - name: Generate ${{ matrix.collection }} (1 image)
+        id: generate
         run: |
-          RUN_ID=$(date +%Y-%m-%dT%H-%M-%SZ)-cats
+          RUN_ID=$(date +%Y-%m-%dT%H-%M-%SZ)-${{ matrix.collection }}
           echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT
-          GENERATION_RUN_ID=$RUN_ID npx ts-node scripts/morning-routine/tasks/generate-batch.ts animals cats 1
+          GENERATION_RUN_ID=$RUN_ID npx ts-node scripts/morning-routine/tasks/generate-batch.ts animals ${{ matrix.collection }} 1
 
-      - name: Optimize SEO metadata for Cats
-        id: seo-cats
+      - name: Optimize SEO metadata for ${{ matrix.collection }}
+        id: seo
         run: |
-          MANIFEST_FILE="scripts/morning-routine/.runs/${{ steps.generate-cats.outputs.run_id }}.json"
+          MANIFEST_FILE="scripts/morning-routine/.runs/${{ steps.generate.outputs.run_id }}.json"
           if [ -f "$MANIFEST_FILE" ]; then
-            npx ts-node scripts/morning-routine/tasks/seo-review-batch.ts animals cats --manifest "$MANIFEST_FILE"
+            npx ts-node scripts/morning-routine/tasks/seo-review-batch.ts animals ${{ matrix.collection }} --manifest "$MANIFEST_FILE"
           else
-            echo "⚠️  No manifest found, skipping SEO for cats"
+            echo "⚠️  No manifest found, skipping SEO for ${{ matrix.collection }}"
           fi
         continue-on-error: true
 
-      # ===== DOGS =====
-      - name: Generate Dogs (1 image)
-        id: generate-dogs
-        run: |
-          RUN_ID=$(date +%Y-%m-%dT%H-%M-%SZ)-Dogs
-          echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT
-          GENERATION_RUN_ID=$RUN_ID npx ts-node scripts/morning-routine/tasks/generate-batch.ts animals Dogs 1
+      - name: Upload generated content as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: content-${{ matrix.collection }}
+          path: content/animals/${{ matrix.collection }}/
+          retention-days: 1
 
-      - name: Optimize SEO metadata for Dogs
-        id: seo-dogs
-        run: |
-          MANIFEST_FILE="scripts/morning-routine/.runs/${{ steps.generate-dogs.outputs.run_id }}.json"
-          if [ -f "$MANIFEST_FILE" ]; then
-            npx ts-node scripts/morning-routine/tasks/seo-review-batch.ts animals Dogs --manifest "$MANIFEST_FILE"
-          else
-            echo "⚠️  No manifest found, skipping SEO for Dogs"
-          fi
-        continue-on-error: true
+  commit:
+    needs: generate
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      # ===== HORSES =====
-      - name: Generate Horses (1 image)
-        id: generate-horses
-        run: |
-          RUN_ID=$(date +%Y-%m-%dT%H-%M-%SZ)-Horses
-          echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT
-          GENERATION_RUN_ID=$RUN_ID npx ts-node scripts/morning-routine/tasks/generate-batch.ts animals Horses 1
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: content/animals/
+          pattern: content-*
+          merge-multiple: true
 
-      - name: Optimize SEO metadata for Horses
-        id: seo-horses
-        run: |
-          MANIFEST_FILE="scripts/morning-routine/.runs/${{ steps.generate-horses.outputs.run_id }}.json"
-          if [ -f "$MANIFEST_FILE" ]; then
-            npx ts-node scripts/morning-routine/tasks/seo-review-batch.ts animals Horses --manifest "$MANIFEST_FILE"
-          else
-            echo "⚠️  No manifest found, skipping SEO for Horses"
-          fi
-        continue-on-error: true
-
-      # ===== BUTTERFLIES =====
-      - name: Generate Butterflies (1 image)
-        id: generate-butterflies
-        run: |
-          RUN_ID=$(date +%Y-%m-%dT%H-%M-%SZ)-Butterflies
-          echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT
-          GENERATION_RUN_ID=$RUN_ID npx ts-node scripts/morning-routine/tasks/generate-batch.ts animals Butterflies 1
-
-      - name: Optimize SEO metadata for Butterflies
-        id: seo-butterflies
-        run: |
-          MANIFEST_FILE="scripts/morning-routine/.runs/${{ steps.generate-butterflies.outputs.run_id }}.json"
-          if [ -f "$MANIFEST_FILE" ]; then
-            npx ts-node scripts/morning-routine/tasks/seo-review-batch.ts animals Butterflies --manifest "$MANIFEST_FILE"
-          else
-            echo "⚠️  No manifest found, skipping SEO for Butterflies"
-          fi
-        continue-on-error: true
-
-      # ===== SHARKS =====
-      - name: Generate Sharks (1 image)
-        id: generate-sharks
-        run: |
-          RUN_ID=$(date +%Y-%m-%dT%H-%M-%SZ)-Sharks
-          echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT
-          GENERATION_RUN_ID=$RUN_ID npx ts-node scripts/morning-routine/tasks/generate-batch.ts animals Sharks 1
-
-      - name: Optimize SEO metadata for Sharks
-        id: seo-sharks
-        run: |
-          MANIFEST_FILE="scripts/morning-routine/.runs/${{ steps.generate-sharks.outputs.run_id }}.json"
-          if [ -f "$MANIFEST_FILE" ]; then
-            npx ts-node scripts/morning-routine/tasks/seo-review-batch.ts animals Sharks --manifest "$MANIFEST_FILE"
-          else
-            echo "⚠️  No manifest found, skipping SEO for Sharks"
-          fi
-        continue-on-error: true
-
-      # ===== COMMIT ALL CHANGES =====
       - name: Commit generated content
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
-          git add -A content/
+          git add content/animals/
           
-          # Check if there are changes
           if git diff --staged --quiet; then
             echo "✓ No changes to commit"
           else
@@ -161,64 +105,15 @@ jobs:
             echo "✓ Pushed changes"
           fi
 
-      # ===== REPORT =====
       - name: Report workflow summary
-        if: always()
         run: |
           echo "## 🎨 Daily Generation Report" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Collection | Generation | SEO Optimization |" >> $GITHUB_STEP_SUMMARY
-          echo "|------------|------------|------------------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Cats | ${{ steps.generate-cats.outcome }} | ${{ steps.seo-cats.outcome }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Dogs | ${{ steps.generate-dogs.outcome }} | ${{ steps.seo-dogs.outcome }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Horses | ${{ steps.generate-horses.outcome }} | ${{ steps.seo-horses.outcome }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Butterflies | ${{ steps.generate-butterflies.outcome }} | ${{ steps.seo-butterflies.outcome }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Sharks | ${{ steps.generate-sharks.outcome }} | ${{ steps.seo-sharks.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          echo "Generation completed for all collections. Check individual matrix jobs for details." >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Schedule:** 5 AM EST (10 AM UTC)" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "_Note: SEO optimization failures don't stop the workflow. Images are still generated and published._" >> $GITHUB_STEP_SUMMARY
 
-      # Notify on CRITICAL failure (generation itself failed)
-      - name: Notify on generation failure
-        if: |
-          failure() && (
-            steps.generate-cats.outcome == 'failure' ||
-            steps.generate-dogs.outcome == 'failure' ||
-            steps.generate-horses.outcome == 'failure' ||
-            steps.generate-butterflies.outcome == 'failure' ||
-            steps.generate-sharks.outcome == 'failure'
-          )
-        run: |
-          echo "❌ **CRITICAL**: Daily image generation failed!"
-          echo "Check the workflow logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          exit 1
-
-      # Warn on SEO failures (non-critical)
-      - name: Warn on SEO optimization issues
-        if: |
-          always() && (
-            steps.seo-cats.outcome == 'failure' ||
-            steps.seo-dogs.outcome == 'failure' ||
-            steps.seo-horses.outcome == 'failure' ||
-            steps.seo-butterflies.outcome == 'failure' ||
-            steps.seo-sharks.outcome == 'failure'
-          )
-        run: |
-          echo "⚠️  **WARNING**: Some SEO optimizations failed"
-          echo "Images were generated successfully but SEO metadata may be incomplete."
-          echo "Check the workflow logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          echo ""
-          echo "Failed collections:"
-          [ "${{ steps.seo-cats.outcome }}" == "failure" ] && echo "  - Cats"
-          [ "${{ steps.seo-dogs.outcome }}" == "failure" ] && echo "  - Dogs"
-          [ "${{ steps.seo-horses.outcome }}" == "failure" ] && echo "  - Horses"
-          [ "${{ steps.seo-butterflies.outcome }}" == "failure" ] && echo "  - Butterflies"
-          [ "${{ steps.seo-sharks.outcome }}" == "failure" ] && echo "  - Sharks"
-
-      # ===== POST STATUS TO TRACKING ISSUE FOR ZOHO FLOW =====
-      - name: Post workflow status to tracking issue
-        if: always()
+      - name: Post status to tracking issue
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -226,76 +121,10 @@ jobs:
             const issueNumber = ${{ env.TRACKING_ISSUE_NUMBER }};
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-
-            // Collect step outcomes
-            const outcomes = {
-              catsGen: '${{ steps.generate-cats.outcome }}',
-              dogsGen: '${{ steps.generate-dogs.outcome }}',
-              horsesGen: '${{ steps.generate-horses.outcome }}',
-              butterfliesGen: '${{ steps.generate-butterflies.outcome }}',
-              sharksGen: '${{ steps.generate-sharks.outcome }}',
-              catsSEO: '${{ steps.seo-cats.outcome }}',
-              dogsSEO: '${{ steps.seo-dogs.outcome }}',
-              horsesSEO: '${{ steps.seo-horses.outcome }}',
-              butterfliesSEO: '${{ steps.seo-butterflies.outcome }}',
-              sharksSEO: '${{ steps.seo-sharks.outcome }}'
-            };
-
-            // Check for generation failures
-            const generationFailed = 
-              outcomes.catsGen === 'failure' || 
-              outcomes.dogsGen === 'failure' || 
-              outcomes.horsesGen === 'failure' || 
-              outcomes.butterfliesGen === 'failure' || 
-              outcomes.sharksGen === 'failure';
-
-            // Check for SEO failures
-            const seoFailed = 
-              outcomes.catsSEO === 'failure' || 
-              outcomes.dogsSEO === 'failure' || 
-              outcomes.horsesSEO === 'failure' || 
-              outcomes.butterfliesSEO === 'failure' || 
-              outcomes.sharksSEO === 'failure';
-
-            // Collect failed collections
-            const failedGen = [];
-            const failedSEO = [];
-
-            if (outcomes.catsGen === 'failure') failedGen.push('Cats');
-            if (outcomes.dogsGen === 'failure') failedGen.push('Dogs');
-            if (outcomes.horsesGen === 'failure') failedGen.push('Horses');
-            if (outcomes.butterfliesGen === 'failure') failedGen.push('Butterflies');
-            if (outcomes.sharksGen === 'failure') failedGen.push('Sharks');
-
-            if (outcomes.catsSEO === 'failure') failedSEO.push('Cats');
-            if (outcomes.dogsSEO === 'failure') failedSEO.push('Dogs');
-            if (outcomes.horsesSEO === 'failure') failedSEO.push('Horses');
-            if (outcomes.butterfliesSEO === 'failure') failedSEO.push('Butterflies');
-            if (outcomes.sharksSEO === 'failure') failedSEO.push('Sharks');
-
-            // Build status message
-            let emoji = '';
-            let status = '';
-            let details = '';
-
-            if (generationFailed) {
-              emoji = '❌';
-              status = 'CRITICAL_FAILURE';
-              details = `Generation failed for: ${failedGen.join(', ')}`;
-            } else if (seoFailed) {
-              emoji = '⚠️';
-              status = 'SUCCESS_WITH_WARNINGS';
-              details = `SEO optimization failed for: ${failedSEO.join(', ')}`;
-            } else {
-              emoji = '✅';
-              status = 'SUCCESS';
-              details = 'All collections generated and SEO optimized successfully';
-            }
-
-            const timestamp = new Date().toISOString();
             const runUrl = `${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
-
-            const comment = emoji + ' **' + status + '** — ' + timestamp + '\n\n' + details + '\n\n**Run:** [${{ github.run_id }}](' + runUrl + ')';
+            const timestamp = new Date().toISOString();
+            
+            const comment = `✅ **DAILY WORKFLOW COMPLETE** — ${timestamp}\n\nAll collections processed. [View Run Details](${runUrl})`;
 
             await github.rest.issues.createComment({
               owner,

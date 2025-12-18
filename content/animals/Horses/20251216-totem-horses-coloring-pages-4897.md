@@ -23,6 +23,8 @@ prompt: Adventurous Dutch Warmblood in a desert Walk
 tags:
   - Totem
 has_pdf: true
+slug: totem-horses-coloring-pages-4897
+audience: Adults
 ---
 
 A beautiful Horses coloring page in Totem style.

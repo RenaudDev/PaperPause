@@ -28,6 +28,8 @@ prompt: >-
 tags:
   - Cottagecore
 pinterest_title: Shark With Treasure Map Jellyfish Cottagecore Coloring Page
+slug: cottagecore-sharks-coloring-pages-1067
+audience: Adults
 ---
 
 A beautiful Sharks coloring page in Cottagecore style.

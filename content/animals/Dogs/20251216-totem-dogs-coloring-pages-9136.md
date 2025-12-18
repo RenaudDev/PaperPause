@@ -23,6 +23,8 @@ prompt: Sleepy Golden Retriever in a beach painting
 tags:
   - Totem
 has_pdf: true
+slug: totem-dogs-coloring-pages-9136
+audience: Adults
 ---
 
 A beautiful Dogs coloring page in Totem style.

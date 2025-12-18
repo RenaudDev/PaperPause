@@ -26,6 +26,8 @@ prompt: >-
 tags:
   - Kawaii
 pinterest_title: Kawaii Tabby Cat Bakery Scene Coloring Page
+slug: kawaii-cats-coloring-pages-4894
+audience: Kids
 ---
 
 A beautiful cats coloring page in Kawaii style.

@@ -31,6 +31,8 @@ tags:
   - Cottagecore
 has_pdf: true
 pinterest_title: Butterfly Flowers Mushrooms Cottagecore Coloring Page
+slug: cottagecore-butterflies-coloring-pages-7744
+audience: Adults
 ---
 
 A beautiful Butterflies coloring page in Cottagecore style.

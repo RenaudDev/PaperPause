@@ -68,14 +68,15 @@ async function run() {
   }
 
   // Derive subject from path (collection parameter or derive from file path)
-  const pathParts = filePath.split(path.sep);
+  const pathParts = mdPath.split(path.sep);
   const collectionFromPath = pathParts[pathParts.indexOf('content') + 2] || collection;
   const subject = collectionFromPath;
   const style = String(fm.style || '');
   const medium = String(fm.medium || 'Markers');
+  const audience = String(fm.audience || 'Kids');
 
   if (verbose) {
-    logger.info('SEO review context', { mdPath, imageUrl, subject, style, medium });
+    logger.info('SEO review context', { mdPath, imageUrl, subject, style, medium, audience });
   }
 
   const output = await reviewSEO({
@@ -83,6 +84,7 @@ async function run() {
     subject,
     style,
     medium,
+    audience,
     originalPrompt: typeof fm.prompt === 'string' ? fm.prompt : undefined
   });
 

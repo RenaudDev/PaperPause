@@ -5,7 +5,7 @@
 */ -}}
 
 {{- $section := . -}}
-{{- $allPages := $section.Pages -}}
+{{- $allPages := $section.RegularPagesRecursive -}}
 {{- $images := slice -}}
 
 {{- /* Collect last 2 images (static) from pages */ -}}
@@ -63,7 +63,7 @@
         <h3 class="font-heading text-xl font-bold group-hover:text-teal-600 transition">
             {{ $section.Title }}
         </h3>
-        <p class="text-slate-500 text-sm mt-1">{{ len $section.Pages }} {{ if eq (len $section.Pages) 1 }}Page{{ else }}Pages{{ end }}</p>
+        <p class="text-slate-500 text-sm mt-1">{{ len $allPages }} {{ if eq (len $allPages) 1 }}Page{{ else }}Pages{{ end }}</p>
     </div>
 </a>
 

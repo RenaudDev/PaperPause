@@ -28,6 +28,8 @@ tags:
   - Totem
 has_pdf: true
 pinterest_title: Butterfly Totem Pattern Flowers Coloring Page
+slug: totem-butterflie-coloring-page-7595
+audience: Adults
 ---
 
 A beautiful Butterflies coloring page in Totem style.

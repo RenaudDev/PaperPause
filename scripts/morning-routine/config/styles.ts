@@ -10,6 +10,7 @@ export interface StyleDefinition {
   name: string;
   description: string;
   promptModifier: string;
+  targetAudience: 'Kids' | 'Adults';
   tags?: string[];
 }
 
@@ -19,6 +20,7 @@ export const COLORING_STYLES: Record<string, StyleDefinition> = {
     name: "Kawaii",
     description: "Cute, simple, rounded. Good for kids, relaxing for adults.",
     promptModifier: "chibi style, super cute, rounded soft shapes, large eyes, simple details, thick joyful outlines, japanese kawaii aesthetic, minimal background noise, sticker art style",
+    targetAudience: "Kids",
     tags: ["cute", "kids", "simple", "rounded", "japanese"]
   },
   
@@ -26,7 +28,8 @@ export const COLORING_STYLES: Record<string, StyleDefinition> = {
     id: "cottagecore",
     name: "Cottagecore",
     description: "Cozy, nostalgic, storybook feel.",
-    promptModifier: "storybook illustration style, cozy atmosphere, surrounded by flowers and mushrooms and vines, whimsical details, hand-drawn aesthetic, soft organic lines, nostalgic children's book style, beatrix potter vibe",
+    promptModifier: "sophisticated botanical illustration, intricate cottagecore aesthetic, fine line work, detailed organic textures, adult coloring book quality, elegant and detailed composition, vintage lithograph style.",
+    targetAudience: "Adults",
     tags: ["cozy", "nostalgic", "storybook", "whimsical", "nature"]
   },
   
@@ -35,6 +38,7 @@ export const COLORING_STYLES: Record<string, StyleDefinition> = {
     name: "Totem",
     description: "Outline with internal patterns (Zentangle style).",
     promptModifier: "zentangle style, silhouette shape filled with intricate floral and geometric patterns, mandala elements, meditative detail, decorative internal line work, folk art inspired, symmetrical patterning",
+    targetAudience: "Adults",
     tags: ["patterns", "zentangle", "meditative", "detailed", "symmetrical"]
   },
   
@@ -43,6 +47,7 @@ export const COLORING_STYLES: Record<string, StyleDefinition> = {
     name: "Bold Line Pop Art",
     description: "Modern, sharp, sticker-like.",
     promptModifier: "pop art style, thick uniform bold outer lines, stained glass segments, graffiti art influence, clear segmentation, modern vector art, distinct shapes for easy coloring, dynamic angles",
+    targetAudience: "Kids",
     tags: ["bold", "modern", "sticker", "vector", "dynamic"]
   },
   
@@ -51,6 +56,7 @@ export const COLORING_STYLES: Record<string, StyleDefinition> = {
     name: "Magical Realism",
     description: "Realistic proportions but fantasy elements (The 'Enchanted' look).",
     promptModifier: "enchanted realism, biologically accurate anatomy blended with fantasy elements, elegant and regal, fine detailed line work, art nouveau influence, ethereal atmosphere, dreamlike composition, mystical details",
+    targetAudience: "Adults",
     tags: ["realistic", "fantasy", "elegant", "detailed", "enchanted"]
   }
 };

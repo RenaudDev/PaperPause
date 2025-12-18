@@ -10,6 +10,7 @@ Review a newly generated coloring page image and its context. Produce optimized 
 - **Original Prompt:** {{originalPrompt}} (may contain specific species/types)
 - **Style:** {{style}} (e.g., "Cottagecore", "Kawaii", "Totem") - IMPORTANT LSI keyword
 - **Medium:** {{medium}}
+- **Audience:** {{audience}} (e.g., "Kids" or "Adults") - Use for tone and keyword targeting
 
 ## INSTRUCTIONS
 Analyze the image visually. Check the Original Prompt for specific animal types or species names.
@@ -17,7 +18,8 @@ Analyze the image visually. Check the Original Prompt for specific animal types 
 **LSI KEYWORD STRATEGY**:
 1. **Specific animal type**: Use from Original Prompt if present (e.g., "Monarch butterfly" > "butterfly")
 2. **Style name**: ALWAYS include {{style}} in description and pinterest_description (major SEO keyword)
-3. **Alt text**: Keep style out of alt text (it's for accessibility, not SEO)
+3. **Audience**: Naturally incorporate {{audience}} related keywords (e.g., "for kids", "for toddlers", "adult coloring", "stress-relief for adults")
+4. **Alt text**: Keep style out of alt text (it's for accessibility, not SEO)
 
 Generate the following fields in strict JSON format:
 
@@ -32,19 +34,28 @@ Generate the following fields in strict JSON format:
    - Example: "Butterfly On Flower With Mushrooms And Vines"
    - BAD: "Cottagecore Butterfly Scene", "Butterfly & Flowers", "Butterfly (Detailed)"
 
-2. **description** (140-160 chars):
+2. **slug** (max 50 characters):
+   - Purpose: URL-safe identifier
+   - Requirements:
+     * Lowercase, hyphens instead of spaces
+     * Include main subject and {{audience}} naturally
+     * Example: "monarch-butterfly-on-flower-for-kids"
+     * NO date prefixes (will be added by script)
+
+3. **description** (140-160 chars):
    - Purpose: Google Meta Description + LSI keywords
    - Requirements:
      * Use SPECIFIC animal type from Original Prompt if available (e.g., "Monarch butterfly")
      * MUST include {{style}} name naturally (e.g., "in Cottagecore style")
+     * MUST include "for {{audience}}" or similar audience-targeted phrasing
      * Include "coloring page" 
      * Strong action verb (Download, Print, Get)
      * Mention 1-2 key visual elements
      * MUST end with complete sentence + period
      * NO generic filler like "perfect for all ages"
-   - Example: "Download this free Monarch butterfly coloring page featuring detailed flowers in Cottagecore style. Great for markers!"
+   - Example: "Download this free Monarch butterfly coloring page featuring detailed flowers in Cottagecore style for adults. Great for markers!"
 
-3. **pinterest_title** (65 max chars):
+4. **pinterest_title** (65 max chars):
    - Purpose: Pinterest/RSS title (keyword-optimized, must be punchier).
    - Requirements:
      * Front-load main subject

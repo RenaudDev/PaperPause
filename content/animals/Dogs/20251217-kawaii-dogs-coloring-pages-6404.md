@@ -27,6 +27,8 @@ prompt: >-
 tags:
   - Kawaii
 pinterest_title: Beagle Beach Umbrella Kawaii Coloring Page
+slug: kawaii-dogs-coloring-pages-6404
+audience: Kids
 ---
 
 A beautiful Dogs coloring page in Kawaii style.

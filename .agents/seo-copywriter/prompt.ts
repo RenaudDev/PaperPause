@@ -16,12 +16,16 @@ export function buildSEOSystemPrompt(input: SEOReviewInput): string {
   return replaceAllCompat(
     replaceAllCompat(
       replaceAllCompat(
-        replaceAllCompat(spec, '{{subject}}', input.subject),
-        '{{style}}',
-        input.style
+        replaceAllCompat(
+          replaceAllCompat(spec, '{{subject}}', input.subject),
+          '{{style}}',
+          input.style
+        ),
+        '{{medium}}',
+        input.medium
       ),
-      '{{medium}}',
-      input.medium
+      '{{audience}}',
+      input.audience
     ),
     '{{originalPrompt}}',
     input.originalPrompt || 'Not provided'

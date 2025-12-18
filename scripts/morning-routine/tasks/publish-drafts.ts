@@ -20,7 +20,7 @@ async function publishDrafts() {
   logger.info('Searching for draft coloring pages...');
 
   let publishedCount = 0;
-  const collections = ['cats', 'Dogs', 'Horses', 'Butterflies', 'Sharks'];
+  const collections = ['cats', 'dogs', 'horses', 'butterflies', 'sharks'];
 
   for (const collection of collections) {
     const collectionDir = path.join(animalsDir, collection);
