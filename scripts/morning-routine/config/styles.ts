@@ -19,7 +19,7 @@ export const COLORING_STYLES: Record<string, StyleDefinition> = {
     id: "kawaii",
     name: "Kawaii",
     description: "Cute, simple, rounded. Good for kids, relaxing for adults.",
-    promptModifier: "chibi style, super cute, rounded soft shapes, large eyes, simple details, thick joyful outlines, japanese kawaii aesthetic, minimal background noise, sticker art style",
+    promptModifier: "chibi style, super cute, rounded soft shapes, large eyes, simple details, thick joyful outlines, japanese kawaii aesthetic, minimal background noise",
     targetAudience: "Kids",
     tags: ["cute", "kids", "simple", "rounded", "japanese"]
   },
@@ -28,7 +28,7 @@ export const COLORING_STYLES: Record<string, StyleDefinition> = {
     id: "cottagecore",
     name: "Cottagecore",
     description: "Cozy, nostalgic, storybook feel.",
-    promptModifier: "sophisticated botanical illustration, intricate cottagecore aesthetic, fine line work, detailed organic textures, adult coloring book quality, elegant and detailed composition, vintage lithograph style.",
+    promptModifier: "sophisticated botanical illustration, intricate cottagecore aesthetic, fine line work, detailed organic textures, adult coloring book quality, elegant and detailed composition.",
     targetAudience: "Adults",
     tags: ["cozy", "nostalgic", "storybook", "whimsical", "nature"]
   },

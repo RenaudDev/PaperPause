@@ -145,6 +145,7 @@ CRITICAL REQUIREMENTS FOR COLORING PAGES:
 - ALL AREAS MUST BE COLORABLE: Every part of the image should be an empty space inside black outlines.
 - Background: Pure white (#FFFFFF). NO shading, NO gradients, NO gray tones.
 - NO BORDERS: Do not include any frames, decorative borders, or boxed edges around the image.
+- ASPECT RATIO: 3:4 portrait orientation (2400x3200 pixels).
 
 VISUAL QUALITY:
 - LINES: Thick, uniform, consistent line weight (4-6px). Solid black outlines only.
@@ -157,7 +158,7 @@ CONTENT:
 
 ATMOSPHERE: Whimsical, inviting, clean line art ready for coloring.`,
     negative_prompt:
-      'border, frame, framed, boxed, edges, decorative border, ornate frame, transparent background, transparency, color, shading, gray, gradient, photo, realistic, 3d, rendering, text, signature, watermark, blurry, broken lines, thin lines, sketch, messy, horizontal orientation, landscape, filled areas, solid colors',
+      'border, frame, framed, boxed, edges, decorative border, ornate frame, die cut, contour, margin line, sticker edge, transparent background, transparency, color, shading, gray, gradient, photo, realistic, 3d, rendering, text, signature, watermark, blurry, broken lines, thin lines, sketch, messy, horizontal orientation, landscape, filled areas, solid colors',
     attributes: {
       tones: ['Cozy', 'Playful', 'Sleepy', 'Adventurous', 'Elegant', 'Curious', 'Grumpy', 'Zen'],
       types: [],
@@ -211,7 +212,7 @@ export function buildPromptWithStyle(
   }
 
   // Inject style modifier into base prompt
-  const styledBase = `${promptConfig.base}\n\nSTYLE MODIFIER: ${style.promptModifier}`;
+  const styledBase = `${promptConfig.base}\n\nSTYLE MODIFIER: ${style.promptModifier}\n\nCRITICAL ENFORCEMENT: NO BORDERS, NO FRAMES, NO EDGES. The art must exist freely on the white background without any containing box or boundary lines.`;
   const fullPrompt = `${styledBase}\n\nSCENE: ${variantPrompt}`;
 
   return {

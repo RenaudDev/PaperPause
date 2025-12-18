@@ -24,8 +24,8 @@
 <a href="{{ $section.RelPermalink }}"
     class="group block bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-100">
     
-    {{- /* Container sized for 2 images with 2:3 aspect ratio each, side by side = 4:3 total */ -}}
-    <div class="aspect-[4/3] bg-slate-100 relative overflow-hidden">
+    {{- /* Container sized for 2 images with 3:4 aspect ratio each, side by side = 3:2 total */ -}}
+    <div class="aspect-[3/2] bg-slate-100 relative overflow-hidden">
         {{- if eq (len $images) 0 -}}
             {{- /* No images found - check for frontmatter image_url or show placeholder */ -}}
             {{- if $section.Params.image_url -}}
@@ -43,7 +43,7 @@
             {{- /* Show last 2 images side by side (or just 1 if only 1 available) */ -}}
             <div class="grid grid-cols-2 gap-1 h-full">
                 {{- range first 2 $images -}}
-                    <div class="w-full h-full aspect-[2/3]">
+                    <div class="w-full h-full aspect-[3/4]">
                         <img src="{{ .url }}" 
                              alt="{{ .alt }}" 
                              class="w-full h-full object-cover" 

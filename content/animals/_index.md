@@ -1,7 +1,7 @@
 ---
-title: "Cats"
-h1: "Free Printable Coloring Pages Of Cats"
-description: "Explore our collection of kittens and cat coloring pages."
+title: "Animals"
+h1: "Free Printable Coloring Pages Of Animals"
+description: "Explore our collection of animal coloring pages."
 cms_enabled: true
 cms_batch_size: 5
 cms_frontmatter_template:

@@ -13,7 +13,7 @@ draft: false
 categories:
   - animals
 difficulty: Easy
-style: Bold
+style: Bold Line Pop Art
 medium: Markers
 cf_image_id: e94e0eba-47b4-4b5c-c7fa-83d8852f5600
 image_url: >-
