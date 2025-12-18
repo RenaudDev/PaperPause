@@ -6,7 +6,7 @@
         <div
             class="bg-white shadow-2xl p-4 lg:p-8 max-w-2xl w-full mx-auto">
             {{/* Pinterest Save data (for prefilled pin) */}}
-            {{ $pinUrl := .Permalink }}
+            {{ $pinUrl := printf "%s?utm_source=pinterest&utm_medium=social&utm_campaign=onsite-save" .Permalink }}
             {{ $pinImage := "" }}
             {{ if .Params.cf_image_id }}
                 {{ $pinImage = printf "https://imagedelivery.net/%s/%s/rss" $.Site.Params.cf_images_hash .Params.cf_image_id }}
