@@ -197,13 +197,16 @@ export const generateBatch = async (
         // Determine audience from style
         const audience = style.targetAudience;
 
+        // Determine medium (Priority: PromptConfig > Style > Collection Meta > Default)
+        const medium = promptConfig.medium || style.preferredMedium || template.medium || 'Markers';
+
         // Generate SEO-optimized content
         const title = generateTitle(variantPrompt);
         const seoDescription = generateSEODescription(variantPrompt, style.name);
         const pinterestDescription = generatePinterestDescription(
           variantPrompt,
           style.name,
-          template.medium || 'Markers'
+          medium
         );
 
         const mdContent = `---
@@ -216,7 +219,7 @@ draft: false
 categories:
   - ${category}
 style: "${style.name}"
-medium: "${template.medium || 'Markers'}"
+medium: "${medium}"
 audience: "${audience}"
 cf_image_id: "${uploadResult.cfImageId}"
 image_url: "${uploadResult.imageUrl}"
@@ -230,7 +233,7 @@ tags:
 A beautiful ${collection} coloring page in ${style.name} style.
 
 **Style:** ${style.name}
-**Medium:** ${template.medium || 'Markers'}, crayons, or colored pencils
+**Medium:** ${medium}, crayons, or colored pencils
 
 ---
 

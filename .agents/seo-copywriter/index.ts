@@ -98,6 +98,7 @@ function validateOutput(o: SEOReviewOutput): void {
   if (!o.description || o.description.length < 140 || o.description.length > 160) {
     errors.description = { length: o.description?.length, min: 140, max: 160 };
   }
+  if (!o.medium) errors.medium = { value: o.medium };
   if (!o.pinterest_title || o.pinterest_title.length > 80) {
     errors.pinterest_title = { length: o.pinterest_title?.length, max: 80 };
   }
@@ -116,6 +117,7 @@ function coerceOutput(raw: any): SEOReviewOutput {
     title: normalizeString(raw?.title),
     slug: normalizeString(raw?.slug),
     description: normalizeString(raw?.description),
+    medium: normalizeString(raw?.medium),
     pinterest_title: normalizeString(raw?.pinterest_title),
     pinterest_description: normalizeString(raw?.pinterest_description),
     prompt: normalizeString(raw?.prompt)

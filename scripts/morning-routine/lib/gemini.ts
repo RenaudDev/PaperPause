@@ -23,9 +23,23 @@ export const generateImage = async (prompt: string, negativePrompt?: string): Pr
 
             const genAI = new GoogleGenerativeAI(ENV.GEMINI_API_KEY);
             
-            // Use Gemini 3 Pro Image model
+            // Use Gemini 3 Pro Image model with specialized image configuration
             const model = genAI.getGenerativeModel({ 
-                model: 'gemini-3-pro-image-preview'
+                model: 'gemini-3-pro-image-preview',
+                generationConfig: {
+                    // Explicitly request images and text in the output
+                    response_modalities: ["IMAGE", "TEXT"],
+
+                    // Group image-specific settings under image_config
+                    image_config: {
+                        aspect_ratio: "3:4",  // Standard supported ratio for coloring pages
+                        image_size: "2K",
+                                // Exact height for 3:4 at 4K
+                    },
+
+                    // Model behavior controls
+                    temperature: 1.0          // Recommended default
+                } as any
             });
 
             // Construct the full prompt with negative prompt if provided
@@ -35,8 +49,8 @@ export const generateImage = async (prompt: string, negativePrompt?: string): Pr
             }
 
             // Generate image using Gemini with image generation capability
-            // Strongly emphasize 3:4 aspect ratio at 2400×3200 resolution in the prompt
-            const aspectRatioPrompt = `${fullPrompt}\n\n[CRITICAL: Image must be in 3:4 PORTRAIT aspect ratio at 2400×3200 pixels resolution. VERTICAL format. Height must be exactly 1.33x the width. Like a standard coloring page - TALL, not square. Minimum dimensions: 2400 pixels wide × 3200 pixels tall.]`;
+            // Strongly emphasize 3:4 aspect ratio at 3072×4096 pixels resolution in the prompt
+            const aspectRatioPrompt = `${fullPrompt}\n\n[CRITICAL: aspectRatio = "3:4", Resolution: "4K", 3:4 aspect ratio, high-resolution 4K detail. Image must be in 3:4 PORTRAIT aspect ratio at 3072×4096 pixels resolution. VERTICAL format. Height must be exactly 1.33x the width. Like a standard coloring page - TALL, not square. Minimum dimensions: 3072 pixels wide × 4096 pixels tall.]`;
             
             const result = await model.generateContent(aspectRatioPrompt);
 

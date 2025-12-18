@@ -7,7 +7,9 @@
 
         <!-- Header -->
         <header class="max-w-6xl">
-            <h1 class="font-heading text-3xl md:text-5xl font-bold text-white mb-4">{{ .Params.h1 }}</h1>
+            <h1 class="font-heading text-3xl md:text-5xl font-bold text-white mb-4">
+                {{- if gt (len .Pages) 0 }}{{ len .Pages }} {{ end }}{{ .Params.h1 -}}
+            </h1>
             {{ if .Params.description }}
             <p class="text-white text-lg mb-4">{{ .Params.description }}</p>
             {{ end }}
@@ -24,123 +26,129 @@
     {{- $hasSubsections := gt (len .Sections) 0 -}}
 
     {{ if $hasSubsections }}
-        {{- /* Show collection cards for subsections */ -}}
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-            {{ range .Sections }}
-                {{ partial "collection-card.html" . }}
-            {{ end }}
-        </div>
+    {{- /* Show collection cards for subsections */ -}}
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+        {{ range .Sections }}
+        {{ partial "collection-card.html" . }}
+        {{ end }}
+    </div>
     {{ else }}
-        {{- /* Show individual pages in masonry grid */ -}}
-        <div class="flex flex-col lg:flex-row gap-8 lg:gap-12">
-            <!-- Sidebar Filter -->
-            <aside class="lg:w-64 flex-shrink-0">
-                <div class="lg:sticky lg:top-24 space-y-10">
-                    
-                    <!-- Age Group Filter (Primary) -->
-                    <div>
-                        <h3 class="font-bold text-slate-900 mb-4 uppercase text-sm tracking-wider">Age Group</h3>
-                        <div class="flex flex-col gap-3 mb-4">
-                            <label class="w-full cursor-pointer">
-                                <input type="radio" name="age-filter" value="" class="peer sr-only" checked>
-                                <span class="block w-full px-5 py-3 text-center lg:text-left rounded-xl border-2 border-slate-200 text-base font-semibold bg-white text-slate-700 peer-checked:bg-teal-600 peer-checked:border-teal-600 peer-checked:text-white hover:border-teal-400 transition-all shadow-sm">
-                                    All Ages
-                                </span>
-                            </label>
-                            <label class="w-full cursor-pointer">
-                                <input type="radio" name="age-filter" value="Kids" class="peer sr-only">
-                                <span class="block w-full px-5 py-3 text-center lg:text-left rounded-xl border-2 border-slate-200 text-base font-semibold bg-white text-slate-700 peer-checked:bg-teal-600 peer-checked:border-teal-600 peer-checked:text-white hover:border-teal-400 transition-all shadow-sm">
-                                    Kids
-                                </span>
-                            </label>
-                            <label class="w-full cursor-pointer">
-                                <input type="radio" name="age-filter" value="Adults" class="peer sr-only">
-                                <span class="block w-full px-5 py-3 text-center lg:text-left rounded-xl border-2 border-slate-200 text-base font-semibold bg-white text-slate-700 peer-checked:bg-teal-600 peer-checked:border-teal-600 peer-checked:text-white hover:border-teal-400 transition-all shadow-sm">
-                                    Adults
-                                </span>
-                            </label>
-                        </div>
-                    </div>
+    {{- /* Show individual pages in masonry grid */ -}}
+    <div class="flex flex-col lg:flex-row gap-8 lg:gap-12">
+        <!-- Sidebar Filter -->
+        <aside class="lg:w-64 flex-shrink-0">
+            <div class="lg:sticky lg:top-24 space-y-10">
 
-                    <!-- Art Style Filter -->
-                    <div>
-                        <h3 class="font-bold text-slate-900 mb-4 uppercase text-sm tracking-wider">Art Style</h3>
-                        <div class="flex flex-col gap-3">
-                            <!-- Show All option -->
-                            <label class="w-full cursor-pointer style-filter-option" data-audience="all">
-                                <input type="radio" name="style-filter" value="" class="peer sr-only" checked>
-                                <span class="block w-full px-5 text-sm py-3 text-center lg:text-left rounded-xl border-2 border-slate-200 text-base font-semibold bg-white text-slate-700 peer-checked:bg-teal-600 peer-checked:border-teal-600 peer-checked:text-white hover:border-teal-400 transition-all shadow-sm">
-                                    All Styles
-                                </span>
-                            </label>
-                            
-                            <!-- Dynamically generate style filters -->
-                            {{ $styles := slice }}
-                            {{ range .Pages }}
-                                {{ with .Params.style }}
-                                    {{ $styles = $styles | append . }}
-                                {{ end }}
-                            {{ end }}
-                            
-                            {{ range $styles | uniq }}
-                                {{ $style := . }}
-                                {{ $styleAudience := "Kids" }}
-                                {{ if or (eq $style "Cottagecore") (eq $style "Totem") (eq $style "Magical Realism") }}
-                                    {{ $styleAudience = "Adults" }}
-                                {{ end }}
-                                <label class="w-full cursor-pointer style-filter-option" data-audience="{{ $styleAudience }}">
-                                    <input type="radio" name="style-filter" value="{{ $style }}" class="peer sr-only">
-                                    <span class="block w-full px-5 text-sm py-3 text-center lg:text-left rounded-xl border-2 border-slate-200 text-base font-semibold bg-white text-slate-700 peer-checked:bg-teal-600 peer-checked:border-teal-600 peer-checked:text-white hover:border-teal-400 transition-all shadow-sm">
-                                        {{ $style }}
-                                    </span>
-                                </label>
-                            {{ end }}
-                        </div>
+                <!-- Age Group Filter (Primary) -->
+                <div>
+                    <h3 class="font-bold text-slate-900 mb-4 uppercase text-sm tracking-wider">Age Group</h3>
+                    <div class="flex flex-col gap-3 mb-4">
+                        <label class="w-full cursor-pointer">
+                            <input type="radio" name="age-filter" value="" class="peer sr-only" checked>
+                            <span
+                                class="block w-full px-5 py-3 text-center lg:text-left rounded-xl border-2 border-slate-200 text-base font-semibold bg-white text-slate-700 peer-checked:bg-teal-600 peer-checked:border-teal-600 peer-checked:text-white hover:border-teal-400 transition-all shadow-sm">
+                                All Ages
+                            </span>
+                        </label>
+                        <label class="w-full cursor-pointer">
+                            <input type="radio" name="age-filter" value="Kids" class="peer sr-only">
+                            <span
+                                class="block w-full px-5 py-3 text-center lg:text-left rounded-xl border-2 border-slate-200 text-base font-semibold bg-white text-slate-700 peer-checked:bg-teal-600 peer-checked:border-teal-600 peer-checked:text-white hover:border-teal-400 transition-all shadow-sm">
+                                Kids
+                            </span>
+                        </label>
+                        <label class="w-full cursor-pointer">
+                            <input type="radio" name="age-filter" value="Adults" class="peer sr-only">
+                            <span
+                                class="block w-full px-5 py-3 text-center lg:text-left rounded-xl border-2 border-slate-200 text-base font-semibold bg-white text-slate-700 peer-checked:bg-teal-600 peer-checked:border-teal-600 peer-checked:text-white hover:border-teal-400 transition-all shadow-sm">
+                                Adults
+                            </span>
+                        </label>
                     </div>
                 </div>
-            </aside>
 
-            <!-- The Masonry Grid -->
-            <div class="flex-grow min-w-0">
-                {{ if eq (len .Pages) 0 }}
-                <div class="p-12 text-center bg-stone-100 rounded-lg">
-                    <p class="text-slate-500">No pages found in this collection yet.</p>
-                </div>
-                {{ else }}
-                <div class="masonry-grid">
-                    {{ range .Pages }}
-                    <div class="masonry-item" data-style="{{ .Params.style }}" data-audience="{{ .Params.audience }}">
-                        <a href="{{ .RelPermalink }}"
-                            class="block group bg-white rounded-xl shadow-sm hover:shadow-lg transition overflow-hidden">
-                            <div class="relative bg-white aspect-[3/4]">
-                                <!-- Use Imgix/R2 placeholder logic if real image exists -->
-                                {{ if .Params.image_url }}
-                                <img src="{{ .Params.image_url }}" alt="{{ .Title }}" class="w-full h-full object-contain">
-                                {{ else }}
-                                <div class="w-full h-full bg-slate-50 flex items-center justify-center text-slate-300">No
-                                    Image</div>
-                                {{ end }}
+                <!-- Art Style Filter -->
+                <div>
+                    <h3 class="font-bold text-slate-900 mb-4 uppercase text-sm tracking-wider">Art Style</h3>
+                    <div class="flex flex-col gap-3">
+                        <!-- Show All option -->
+                        <label class="w-full cursor-pointer style-filter-option" data-audience="all">
+                            <input type="radio" name="style-filter" value="" class="peer sr-only" checked>
+                            <span
+                                class="block w-full px-5 text-sm py-3 text-center lg:text-left rounded-xl border-2 border-slate-200 text-base font-semibold bg-white text-slate-700 peer-checked:bg-teal-600 peer-checked:border-teal-600 peer-checked:text-white hover:border-teal-400 transition-all shadow-sm">
+                                All Styles
+                            </span>
+                        </label>
 
-                                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition"></div>
-                            </div>
-                            <div class="p-4 border-t border-slate-50">
-                                <h3 class="font-bold text-slate-700 text-sm leading-tight group-hover:text-teal-600">{{ .Title | title }}</h3>
-                            </div>
-                        </a>
+                        <!-- Dynamically generate style filters -->
+                        {{ $styles := slice }}
+                        {{ range .Pages }}
+                        {{ with .Params.style }}
+                        {{ $styles = $styles | append . }}
+                        {{ end }}
+                        {{ end }}
+
+                        {{ range $styles | uniq }}
+                        {{ $style := . }}
+                        {{ $styleAudience := "Kids" }}
+                        {{ if or (eq $style "Cottagecore") (eq $style "Totem") (eq $style "Magical Realism") }}
+                        {{ $styleAudience = "Adults" }}
+                        {{ end }}
+                        <label class="w-full cursor-pointer style-filter-option" data-audience="{{ $styleAudience }}">
+                            <input type="radio" name="style-filter" value="{{ $style }}" class="peer sr-only">
+                            <span
+                                class="block w-full px-5 text-sm py-3 text-center lg:text-left rounded-xl border-2 border-slate-200 text-base font-semibold bg-white text-slate-700 peer-checked:bg-teal-600 peer-checked:border-teal-600 peer-checked:text-white hover:border-teal-400 transition-all shadow-sm">
+                                {{ $style }}
+                            </span>
+                        </label>
+                        {{ end }}
                     </div>
-                    {{ end }}
+                </div>
+            </div>
+        </aside>
+
+        <!-- The Masonry Grid -->
+        <div class="flex-grow min-w-0">
+            {{ if eq (len .Pages) 0 }}
+            <div class="p-12 text-center bg-stone-100 rounded-lg">
+                <p class="text-slate-500">No pages found in this collection yet.</p>
+            </div>
+            {{ else }}
+            <div class="masonry-grid">
+                {{ range .Pages }}
+                <div class="masonry-item" data-style="{{ .Params.style }}" data-audience="{{ .Params.audience }}">
+                    <a href="{{ .RelPermalink }}"
+                        class="block group bg-white rounded-xl shadow-sm hover:shadow-lg transition overflow-hidden">
+                        <div class="relative bg-white aspect-[3/4]">
+                            <!-- Use Imgix/R2 placeholder logic if real image exists -->
+                            {{ if .Params.image_url }}
+                            <img src="{{ .Params.image_url }}" alt="{{ .Title }}" class="w-full h-full object-contain">
+                            {{ else }}
+                            <div class="w-full h-full bg-slate-50 flex items-center justify-center text-slate-300">No
+                                Image</div>
+                            {{ end }}
+
+                            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition"></div>
+                        </div>
+                        <div class="p-4 border-t border-slate-50">
+                            <h3 class="font-bold text-slate-700 text-sm leading-tight group-hover:text-teal-600">{{
+                                .Title | title }}</h3>
+                        </div>
+                    </a>
                 </div>
                 {{ end }}
             </div>
+            {{ end }}
         </div>
-        
-        <script>
-        document.addEventListener('DOMContentLoaded', function() {
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
             const styleInputs = document.querySelectorAll('input[name="style-filter"]');
             const ageInputs = document.querySelectorAll('input[name="age-filter"]');
             const masonryItems = document.querySelectorAll('.masonry-item');
             const styleFilterOptions = document.querySelectorAll('.style-filter-option');
-            
+
             // Function to update visual active states
             function updateActiveStates(inputs, name) {
                 inputs.forEach(input => {
@@ -155,23 +163,23 @@
                     }
                 });
             }
-            
+
             // Function to filter style options based on selected age group
             function filterStyleOptions() {
                 const selectedAge = document.querySelector('input[name="age-filter"]:checked').value;
                 const selectedStyle = document.querySelector('input[name="style-filter"]:checked').value;
-                
+
                 styleFilterOptions.forEach(option => {
                     const optionAudience = option.getAttribute('data-audience');
                     const styleInput = option.querySelector('input[name="style-filter"]');
                     const styleValue = styleInput ? styleInput.value : '';
-                    
+
                     // Always show "All Styles" option
                     if (optionAudience === 'all') {
                         option.style.display = '';
                         return;
                     }
-                    
+
                     // If "All Ages" is selected, show all style options
                     if (selectedAge === '' || selectedAge === 'All Ages') {
                         option.style.display = '';
@@ -191,27 +199,27 @@
                         }
                     }
                 });
-                
+
                 // Update visual states after filtering
                 updateActiveStates(styleInputs, 'style');
             }
-            
+
             function updateFilters() {
                 const selectedStyle = document.querySelector('input[name="style-filter"]:checked').value;
                 const selectedAge = document.querySelector('input[name="age-filter"]:checked').value;
-                
+
                 // Update visual states
                 updateActiveStates(styleInputs, 'style');
                 updateActiveStates(ageInputs, 'age');
-                
+
                 // Filter masonry items
                 masonryItems.forEach(item => {
                     const itemStyle = item.getAttribute('data-style') || '';
                     const itemAge = item.getAttribute('data-audience') || '';
-                    
+
                     const styleMatch = selectedStyle === '' || itemStyle === selectedStyle;
                     const ageMatch = selectedAge === '' || itemAge === selectedAge;
-                    
+
                     if (styleMatch && ageMatch) {
                         item.style.display = '';
                     } else {
@@ -230,13 +238,13 @@
             });
 
             ageInputs.forEach(input => {
-                input.addEventListener('change', function() {
+                input.addEventListener('change', function () {
                     filterStyleOptions(); // Filter style options when age changes
                     updateFilters(); // Update content filtering
                 });
             });
         });
-        </script>
+    </script>
     {{ end }}
 </div>
 {{ end }}

@@ -2,8 +2,9 @@
  * Batch SEO review and optimization for generated coloring pages
  * 
  * Usage:
- *   npx ts-node scripts/morning-routine/tasks/seo-review-batch.ts <category> <collection> [--manifest <file>] [--drafts-only]
+ *   npx ts-node scripts/morning-routine/tasks/seo-review-batch.ts <category> <collection> [--file <filename>] [--manifest <file>] [--drafts-only]
  * 
+ * If --file is provided, only that specific file in the collection is reviewed.
  * If --manifest is provided, only files in that manifest are reviewed.
  * Otherwise, all markdown files in the collection are reviewed.
  */
@@ -137,7 +138,12 @@ export async function reviewBatch(
         }
 
         // Update the file with SEO-optimized fields and final slug
-        updateContentFrontmatter(file.path, { ...seoResult, slug: finalSlug });
+        updateContentFrontmatter(file.path, { 
+          ...seoResult, 
+          slug: finalSlug,
+          // Explicitly ensure medium is updated if the agent chose a better one
+          medium: seoResult.medium || medium 
+        });
 
         // Rename temp file to final YYYYMMDD-slug.md
         await fs.move(file.path, newPath, { overwrite: true });
@@ -189,13 +195,29 @@ if (require.main === module) {
   (async () => {
     const category = process.argv[2] || 'animals';
     const collection = process.argv[3] || 'cats';
+    
+    // Parse flags
+    const fileFlag = process.argv.indexOf('--file');
+    const specificFile = fileFlag !== -1 ? process.argv[fileFlag + 1] : undefined;
+    
     const manifestFlag = process.argv.indexOf('--manifest');
     const manifestPath = manifestFlag !== -1 ? process.argv[manifestFlag + 1] : undefined;
 
     let filesToReview: string[] | undefined;
 
-    // If manifest provided, read it
-    if (manifestPath) {
+    // Priority: Specific File > Manifest > Full Collection
+    if (specificFile) {
+      const repoRoot = path.resolve(__dirname, '../../../');
+      const filePath = path.join(repoRoot, 'content', category, collection, specificFile);
+      
+      if (!await fs.pathExists(filePath)) {
+        logger.error(`File not found: ${filePath}`);
+        process.exit(1);
+      }
+      
+      filesToReview = [filePath];
+      logger.info(`Targeting specific file: ${specificFile}`);
+    } else if (manifestPath) {
       const manifest = await readManifest(manifestPath);
       if (manifest) {
         filesToReview = manifest.created;

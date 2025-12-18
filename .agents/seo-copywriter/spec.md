@@ -55,7 +55,17 @@ Generate the following fields in strict JSON format:
      * NO generic filler like "perfect for all ages"
    - Example: "Download this free Monarch butterfly coloring page featuring detailed flowers in Cottagecore style for adults. Great for markers!"
 
-4. **pinterest_title** (65 max chars):
+4. **medium** (variable):
+   - Purpose: Select the best coloring tool based on the line weight and complexity of the image.
+   - Instructions:
+     * If the image has very thick, simple lines and large areas: "Crayons"
+     * If the image has standard bold lines and moderate detail: "Markers"
+     * If the image has very fine lines and high complexity: "Fine-tip Markers"
+     * If the image has intricate patterns or "Zentangle" style: "Gel Pens"
+     * If the image has shading-like details or very elegant, thin lines: "Colored Pencils"
+   - Goal: Be helpful to the user by suggesting the right tool.
+
+5. **pinterest_title** (65 max chars):
    - Purpose: Pinterest/RSS title (keyword-optimized, must be punchier).
    - Requirements:
      * Front-load main subject

@@ -6,7 +6,7 @@ A fully automated GitHub Actions workflow that runs daily to generate and publis
 
 ## Files Created
 
-1. **`.github/workflows/daily-image-generation.yml`**
+1. **`.github/workflows/daily-generate-and-optimize.yml`**
    - Main GitHub Actions workflow file
    - Runs daily at 5:00 AM EST (10:00 AM UTC)
    - Can also be triggered manually
@@ -15,26 +15,18 @@ A fully automated GitHub Actions workflow that runs daily to generate and publis
    - Script that sets `draft: false` on all generated images
    - Makes images go live automatically
 
-3. **`.github/GITHUB_ACTIONS_SETUP.md`**
-   - Detailed setup instructions
-   - Lists all required GitHub secrets
-   - Troubleshooting guide
-
 ## What the Workflow Does
 
 The workflow runs **once daily** at 5:00 AM EST:
 
-1. ✅ **Generates 1 cat image** - Uses Recraft API with cat prompts
-2. ✅ **Generates 1 dog image** - Uses Recraft API with dog prompts
-3. ✅ **Generates 1 horse image** - Uses Recraft API with horse prompts
-4. ✅ **Generates 1 butterfly image** - Uses Recraft API with butterfly prompts
-5. ✅ **Generates 1 shark image** - Uses Recraft API with shark prompts
-6. ✅ **Automatically publishes** - Images are set to `draft: false` and go live immediately
-7. ✅ **Commits changes** - Pushes to repository with timestamp
+1. ✅ **Generates 5 images** - 1 per collection (cats, dogs, horses, butterflies, sharks) using **Gemini 3 Pro Image**.
+2. ✅ **Optimizes SEO** - Automatically generates meta descriptions and titles using AI.
+3. ✅ **Automatically publishes** - Images are set to `draft: false` and go live immediately.
+4. ✅ **Commits changes** - Pushes to repository with timestamp.
 
-**Total**: 5 images generated and published per day (1 cat + 1 dog + 1 horse + 1 butterfly + 1 shark)
+**Total**: 5 images generated, optimized, and published per day.
 
-**Important**: Images are automatically published and go live immediately.
+**Important**: Images are automatically optimized and published.
 
 ## Next Steps
 
@@ -45,7 +37,6 @@ You need to add these secrets to your GitHub repository:
 **Go to**: Repository → Settings → Secrets and variables → Actions → New repository secret
 
 **Required Secrets:**
-- `RECRAFT_API_KEY`
 - `GEMINI_API_KEY`
 - `R2_ACCOUNT_ID`
 - `R2_ACCESS_KEY_ID`
@@ -73,17 +64,10 @@ This allows the workflow to commit and push changes.
 
 #### Option B: Trigger Manually
 1. Go to **Actions** tab
-2. Select **"Daily Image Generation"**
+2. Select **"Daily Generate & Optimize Coloring Pages"**
 3. Click **"Run workflow"**
 4. Select branch
-5. Choose animal type:
-   - **all** - Generate all animals (cats, dogs, horses, butterflies, sharks)
-   - **cats** - Generate only cat images
-   - **Dogs** - Generate only dog images
-   - **Horses** - Generate only horse images
-   - **Butterflies** - Generate only butterfly images
-   - **Sharks** - Generate only shark images
-6. Click **"Run workflow"**
+5. Click **"Run workflow"** (This will generate 1 image for each collection)
 
 ## Local Testing
 
@@ -94,16 +78,16 @@ You can test the scripts locally:
 npm run generate animals cats 1
 
 # Generate 1 dog image  
-npm run generate animals Dogs 1
+npm run generate animals dogs 1
 
 # Generate 1 horse image
-npm run generate animals Horses 1
+npm run generate animals horses 1
 
 # Generate 1 butterfly image
-npm run generate animals Butterflies 1
+npm run generate animals butterflies 1
 
 # Generate 1 shark image
-npm run generate animals Sharks 1
+npm run generate animals sharks 1
 
 # Or generate multiple images
 npm run generate animals cats 5
@@ -132,7 +116,7 @@ npm run publish:drafts
 This will set `draft: false` on ALL draft images.
 
 **Option 2: Manually edit files**
-- Open the `.md` files in `content/animals/` subdirectories (cats, Dogs, Horses, Butterflies, Sharks)
+- Open the `.md` files in `content/animals/` subdirectories (cats, dogs, horses, butterflies, sharks)
 - Change `draft: true` to `draft: false`
 - Commit and push
 
@@ -140,7 +124,7 @@ This will set `draft: false` on ALL draft images.
 
 ### Change Schedule
 
-Edit `.github/workflows/daily-image-generation.yml`:
+Edit `.github/workflows/daily-generate-and-optimize.yml`:
 
 ```yaml
 schedule:
@@ -160,23 +144,13 @@ schedule:
 
 ### Change Number of Images
 
-Edit the workflow file and change the count parameter:
+Edit the workflow file and change the count parameter in the `generate` step:
 
 ```yaml
-- name: Generate 1 Cat Image
-  run: npm run generate animals cats 5  # Change 1 to 5
-
-- name: Generate 1 Dog Image
-  run: npm run generate animals Dogs 5  # Change 1 to 5
-
-- name: Generate 1 Horse Image
-  run: npm run generate animals Horses 5  # Change 1 to 5
-
-- name: Generate 1 Butterfly Image
-  run: npm run generate animals Butterflies 5  # Change 1 to 5
-
-- name: Generate 1 Shark Image
-  run: npm run generate animals Sharks 5  # Change 1 to 5
+- name: Generate ${{ matrix.collection }} (1 image)
+  run: |
+    # ...
+    npx ts-node scripts/morning-routine/tasks/generate-batch.ts animals ${{ matrix.collection }} 5  # Change 1 to 5
 ```
 
 This will generate 5 images per collection instead of 1.
@@ -186,11 +160,12 @@ This will generate 5 images per collection instead of 1.
 To generate images for additional animal types:
 
 1. Add new collection prompt files in `scripts/morning-routine/config/prompts/`
-2. Add generation step to workflow:
+2. Add the new collection name to the `matrix.collection` array in `.github/workflows/daily-generate-and-optimize.yml`:
 
 ```yaml
-- name: Generate 5 Rabbit Images
-  run: npm run generate animals rabbits 5
+strategy:
+  matrix:
+    collection: [cats, dogs, horses, butterflies, sharks, rabbits]
 ```
 
 ## Monitoring
@@ -203,10 +178,10 @@ To generate images for additional animal types:
 ### Check Generated Files
 - New images appear in:
   - `content/animals/cats/`
-  - `content/animals/Dogs/`
-  - `content/animals/Horses/`
-  - `content/animals/Butterflies/`
-  - `content/animals/Sharks/`
+  - `content/animals/dogs/`
+  - `content/animals/horses/`
+  - `content/animals/butterflies/`
+  - `content/animals/sharks/`
 - Each run creates a commit with timestamp
 
 ## Troubleshooting
@@ -228,13 +203,13 @@ To generate images for additional animal types:
 
 ## Support
 
-For detailed setup instructions, see:
-- `.github/GITHUB_ACTIONS_SETUP.md` - Complete setup guide
+For detailed setup instructions and logic, see:
 - `scripts/morning-routine/tasks/generate-batch.ts` - Image generation logic
 - `scripts/morning-routine/tasks/publish-drafts.ts` - Publishing logic
+- `scripts/morning-routine/tasks/seo-review-batch.ts` - SEO optimization logic
 
 ---
 
-**Status**: ✅ Ready to deploy
-**Last Updated**: December 15, 2024
+**Status**: ✅ Optimized and Operational
+**Last Updated**: December 18, 2025
 

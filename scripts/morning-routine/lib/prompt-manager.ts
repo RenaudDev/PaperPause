@@ -10,6 +10,7 @@ export interface PromptConfig {
   category: string;
   base: string;
   negative_prompt: string;
+  medium?: string;
   attributes: {
     tones: string[];
     types: string[];
@@ -82,7 +83,7 @@ export function savePrompt(
 
 /**
  * Generate random variant from prompt attributes
- * Format: {tone} {type} in a {setting} {action}
+ * Format: A {tone} {type}, {action}, in {setting}. {detail}
  */
 export function getRandomVariant(category: string, collection: string): string {
   const prompt = loadPrompt(category, collection);
@@ -92,14 +93,20 @@ export function getRandomVariant(category: string, collection: string): string {
     return '';
   }
 
-  const { tones, types, actions, settings } = prompt.attributes;
+  const { tones, types, actions, settings, details } = prompt.attributes;
 
-  const randomTone = tones[Math.floor(Math.random() * tones.length)];
-  const randomType = types[Math.floor(Math.random() * types.length)];
-  const randomAction = actions[Math.floor(Math.random() * actions.length)];
-  const randomSetting = settings[Math.floor(Math.random() * settings.length)];
+  const randomTone = tones.length > 0 ? tones[Math.floor(Math.random() * tones.length)] : '';
+  const randomType = types.length > 0 ? types[Math.floor(Math.random() * types.length)] : collection;
+  const randomAction = actions.length > 0 ? actions[Math.floor(Math.random() * actions.length)] : '';
+  const randomSetting = settings.length > 0 ? settings[Math.floor(Math.random() * settings.length)] : '';
+  const randomDetail = (details && details.length > 0) ? details[Math.floor(Math.random() * details.length)] : '';
 
-  return `${randomTone} ${randomType} in a ${randomSetting} ${randomAction}`;
+  let variant = `A ${randomTone} ${randomType}`.replace(/\s+/g, ' ').trim();
+  if (randomAction) variant += `, ${randomAction}`;
+  if (randomSetting) variant += `, in ${randomSetting}`;
+  if (randomDetail) variant += `. ${randomDetail}`;
+
+  return variant.trim();
 }
 
 /**
@@ -145,7 +152,7 @@ CRITICAL REQUIREMENTS FOR COLORING PAGES:
 - ALL AREAS MUST BE COLORABLE: Every part of the image should be an empty space inside black outlines.
 - Background: Pure white (#FFFFFF). NO shading, NO gradients, NO gray tones.
 - NO BORDERS: Do not include any frames, decorative borders, or boxed edges around the image.
-- ASPECT RATIO: 3:4 portrait orientation (2400x3200 pixels).
+- ASPECT RATIO: 3:4 portrait orientation (3072x4096 pixels), 4K resolution. aspectRatio = "3:4", Resolution: "4K", 3:4 aspect ratio, high-resolution 4K detail.
 
 VISUAL QUALITY:
 - LINES: Thick, uniform, consistent line weight (4-6px). Solid black outlines only.
@@ -153,7 +160,7 @@ VISUAL QUALITY:
 - COMPOSITION: Centered, balanced, with maximum negative space for coloring.
 
 CONTENT:
-- SUBJECT: A cute, cozy ${collection.slice(0, -1)}.
+- SUBJECT: A cute, cozy ${collection}.
 - NO FILLED AREAS: Everything must be outlined, nothing filled with black or gray.
 
 ATMOSPHERE: Whimsical, inviting, clean line art ready for coloring.`,
@@ -213,7 +220,7 @@ export function buildPromptWithStyle(
 
   // Inject style modifier into base prompt
   const styledBase = `${promptConfig.base}\n\nSTYLE MODIFIER: ${style.promptModifier}\n\nCRITICAL ENFORCEMENT: NO BORDERS, NO FRAMES, NO EDGES. The art must exist freely on the white background without any containing box or boundary lines.`;
-  const fullPrompt = `${styledBase}\n\nSCENE: ${variantPrompt}`;
+  const fullPrompt = `${styledBase}\n\nSCENE: ${variantPrompt}, aspectRatio = "3:4", Resolution: "4K", 3:4 aspect ratio, high-resolution 4K detail`;
 
   return {
     fullPrompt,
