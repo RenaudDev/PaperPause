@@ -1,89 +1,108 @@
 {{ define "main" }}
+<nav class="hidden md:block" style="padding: 0.5rem 0rem 0.5rem 2rem;">
+    <div class="container mx-auto ml-2">
+        {{ with .Parent }}
+        <a href=" {{ .RelPermalink }}"
+            class="inline-flex items-center gap-2 text-teal-600 hover:text-teal-700 font-bold text-sm transition-all duration-200 group focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 rounded-lg">
+            <svg class="w-4 h-4 transform group-hover:-translate-x-1 transition-transform duration-200" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            <span>Back to {{ .Title }}</span>
+        </a>
+        {{ end }}
+    </div>
+</nav>
 <div class="min-h-[90vh] flex flex-col lg:flex-row">
 
     <!-- LEFT: Visual Stage (65%) -->
     <div class="lg:w-[65%] bg-stone-100 flex items-center justify-center p-4 lg:p-12 relative">
-        <div
-            class="bg-white shadow-2xl p-4 lg:p-8 max-w-2xl w-full mx-auto transform hover:scale-[1.01] transition duration-500">
+        <div class="bg-white shadow-2xl p-4 lg:p-8 max-w-2xl w-full mx-auto">
+            {{/* Pinterest Save data (for prefilled pin) */}}
+            {{ $pinUrl := printf "%s?utm_source=pinterest&utm_medium=social&utm_campaign=onsite-save" .Permalink }}
+            {{ $pinImage := "" }}
             {{ if .Params.cf_image_id }}
-                <!-- Cloudflare Images with responsive variants -->
-                <picture>
-                    <!-- Mobile: 600x800 -->
-                    <source 
-                        media="(max-width: 640px)"
-                        srcset="https://imagedelivery.net/{{ $.Site.Params.cf_images_hash }}/{{ .Params.cf_image_id }}/mobile"
-                    />
-                    <!-- Tablet: desktop variant -->
-                    <source 
-                        media="(max-width: 1024px)"
-                        srcset="https://imagedelivery.net/{{ $.Site.Params.cf_images_hash }}/{{ .Params.cf_image_id }}/desktop"
-                    />
-                    <!-- Desktop: 1200x1600 -->
-                    <img 
-                        src="https://imagedelivery.net/{{ $.Site.Params.cf_images_hash }}/{{ .Params.cf_image_id }}/desktop"
-                        alt="{{ .Title }}"
-                        loading="lazy"
-                        decoding="async"
-                        class="w-full h-auto border border-slate-100 bg-white"
-                    />
-                </picture>
+            {{ $pinImage = printf "https://imagedelivery.net/%s/%s/rss" $.Site.Params.cf_images_hash .Params.cf_image_id
+            }}
             {{ else if .Params.image_url }}
-                <!-- Fallback to R2 if CF Images not available -->
-                <img src="{{ .Params.image_url }}" alt="{{ .Title }}" class="w-full h-auto border border-slate-100 bg-white" loading="lazy">
-            {{ else }}
+            {{ $pinImage = .Params.image_url | absURL }}
+            {{ end }}
+            {{ $pinDesc := .Params.pinterest_description | default .Description | default .Title }}
+            {{ $pinSaveUrl := "" }}
+            {{ if $pinImage }}
+            {{ $pinSaveUrl = printf "https://www.pinterest.com/pin/create/button/?url=%s&media=%s&description=%s"
+            (urlquery $pinUrl) (urlquery $pinImage) (urlquery $pinDesc) }}
+            {{ end }}
+
+            <div class="relative">
+                <style>
+                    /* Local-only styles for the Pinterest button on single pages */
+                    .pp-pin-save {
+                        transition: filter 120ms ease, transform 120ms ease, box-shadow 120ms ease;
+                    }
+
+                    .pp-pin-save:hover {
+                        filter: brightness(0.95);
+                        transform: translateY(-1px);
+                    }
+
+                    .pp-pin-save:active {
+                        transform: translateY(0);
+                        filter: brightness(0.92);
+                    }
+                </style>
+                {{ if .Params.image_url }}
+                <img src="{{ .Params.image_url }}" alt="{{ .Title }}" class="w-full h-auto border border-slate-100">
+                {{ else }}
                 <div class="aspect-[3/4] bg-slate-50 flex items-center justify-center text-slate-300 font-mono">
                     [High Res Image Placeholder]
                 </div>
-            {{ end }}
+                {{ end }}
+
+                {{ if $pinSaveUrl }}
+                <a href="{{ $pinSaveUrl }}" target="_blank" rel="noopener noreferrer"
+                    class="pp-pin-save absolute z-50 flex items-center gap-3 rounded-full text-sm font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-teal-600 focus:ring-offset-2"
+                    style="top: 0.25rem; right: 0.75rem; background: #E60023; color: #fff; padding-left: 4px; padding-right: 16px; padding-top: 4px; padding-bottom: 4px;"
+                    aria-label="Save to Pinterest" data-track-type="pinterest_save"
+                    data-asset-name="{{ .Title | title }}"
+                    data-category="{{ if .Params.categories }}{{ index .Params.categories 0 }}{{ else }}uncategorized{{ end }}">
+                    <span class="w-6 h-6 rounded-full flex items-center justify-center leading-none"
+                        style="background: #fff; color: #E60023;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                            <path fill="currentColor"
+                                d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.39 18.592.026 11.985.026L12.017 0z" />
+                        </svg>
+                    </span>
+                    <span>Save</span>
+                </a>
+                {{ end }}
+            </div>
         </div>
     </div>
 
     <!-- RIGHT: Action Panel (35%) -->
     <div class="lg:w-[35%] bg-white p-6 lg:p-12 flex flex-col h-full lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto"
         data-pagefind-body>
-        {{/* Clean title for display - remove prefix and parentheticals */}}
-        {{ $cleanTitle := .Title }}
-        {{ $cleanTitle = replaceRE "^Cat Coloring Page:\\s*" "" $cleanTitle }}
-        {{ $cleanTitle = replaceRE "\\s*\\([^)]*\\)\\s*" "" $cleanTitle }}
-        {{ $cleanTitle = replaceRE "\\.\\s*$" "" $cleanTitle }}
-        
         <!-- Breadcrumbs -->
-        <nav class="text-sm text-slate-400 mb-8 font-medium">
-            <a href="/" class="hover:text-teal-600">Home</a> /
-            {{ range .Page.Ancestors.Reverse }}
-            <a href="{{ .RelPermalink }}" class="hover:text-teal-600">{{ .LinkTitle }}</a> /
-            {{ end }}
-            <span class="text-slate-600">
-                {{ if gt (len $cleanTitle) 40 }}
-                    {{ $words := split $cleanTitle " " }}
-                    {{ $shortTitle := delimit (first 3 $words) " " }}
-                    {{ $shortTitle }}...
-                {{ else }}
-                    {{ $cleanTitle }}
-                {{ end }}
-            </span>
-        </nav>
+        {{ partial "breadcrumbs.html" (dict "Page" .Page "textColor" "text-teal-600" "hoverColor" "hover:text-teal-700")
+        }}
 
-        <h1 class="font-heading text-3xl lg:text-4xl font-bold text-slate-800 mb-4 leading-tight">{{ $cleanTitle }}</h1>
+        <h1 class="font-heading text-3xl lg:text-4xl font-bold text-slate-800 mb-4 leading-tight">{{ .Title | title }}
+        </h1>
 
         <div class="flex gap-2 mb-8">
-            <span class="px-3 py-1 bg-teal-50 text-teal-700 rounded-full text-sm font-bold">{{ .Params.difficulty
-                }}</span>
-            <span class="px-3 py-1 bg-stone-100 text-stone-600 rounded-full text-sm font-bold">{{ .Params.style
-                }}</span>
+            <span class="px-3 py-1 bg-teal-50 text-teal-700 rounded-full text-sm font-bold">{{ .Params.style }}</span>
         </div>
 
         <p class="text-slate-600 leading-relaxed mb-8">
-            Create your masterpiece with this {{ with .Parent }}{{ .Title }}{{ else }}{{ .Section }}{{ end }} coloring page. optimized for A4 and Letter printing.
-            Perfect for {{ .Params.medium | default "markers" }}
+            {{ .Description }}
         </p>
 
         <!-- Desktop Action (Hidden on Mobile) -->
-        <div class="hidden md:block space-y-4 mb-12">
-            <a href="{{ .Params.download_url | default .Params.r2_original }}" 
-               download="{{ $cleanTitle | urlize }}.pdf"
-               aria-label="Download {{ $cleanTitle }} as printable PDF"
-               class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg transform transition hover:-translate-y-1 flex items-center justify-center gap-3 text-lg">
+        <div class="hidden md:block space-y-4 mb-12" data-track-location="desktop_sidebar">
+            <a href="{{ .Params.download_url | default .Params.r2_original }}" download="{{ .Title | urlize }}.pdf"
+                aria-label="Download {{ .Title }} as printable PDF"
+                class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg transform transition hover:-translate-y-1 flex items-center justify-center gap-3 text-lg">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
@@ -120,15 +139,10 @@
 </div>
 
 <!-- Mobile Sticky Action Deck -->
-<div class="action-deck md:hidden fixed bottom-4 left-4 right-4 z-50">
-    {{ $cleanTitle := .Title }}
-    {{ $cleanTitle = replaceRE "^Cat Coloring Page:\\s*" "" $cleanTitle }}
-    {{ $cleanTitle = replaceRE "\\s*\\([^)]*\\)\\s*" "" $cleanTitle }}
-    {{ $cleanTitle = replaceRE "\\.\\s*$" "" $cleanTitle }}
-    <a href="{{ .Params.download_url | default .Params.r2_original }}" 
-       download="{{ $cleanTitle | urlize }}.pdf"
-       aria-label="Download {{ $cleanTitle }} as printable PDF"
-       class="w-full bg-teal-600 text-white font-bold py-4 rounded-xl shadow-2xl flex items-center justify-center gap-2 text-lg border border-teal-400">
+<div class="action-deck md:hidden fixed bottom-4 left-4 right-4 z-50" data-track-location="sticky_bar">
+    <a href="{{ .Params.download_url | default .Params.r2_original }}" download="{{ .Title | urlize }}.pdf"
+        aria-label="Download {{ .Title }} as printable PDF"
+        class="w-full bg-teal-600 text-white font-bold py-4 rounded-xl shadow-2xl flex items-center justify-center gap-2 text-lg border border-teal-400">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
@@ -136,4 +150,5 @@
         DOWNLOAD PDF
     </a>
 </div>
+
 {{ end }}

@@ -1,4 +1,4 @@
-# **🏛️ Visual Sanctuary: UX Specifications**
+# **🏛️ PaperPause: UX Specifications**
 
 ## **1. The Core User Journey**
 
@@ -10,7 +10,7 @@ We optimize for **two** distinct user flows. Your team must build the UI to supp
 *   **UX Goal:** Frictionless download + "Sticky" retention (show them 5 more similar images before they leave).
 
 ### **Flow B: The "Browser" (Homepage Traffic - 20% of users)**
-*   **Entry:** Typing yourdomain.com or clicking "Home" after downloading.
+*   **Entry:** Typing paperpause.app or clicking "Home" after downloading.
 *   **Intent:** "I need something to color, but I don't know what."
 *   **UX Goal:** Visual clarity. High-level categorization to narrow down their vague intent quickly.
 
@@ -70,22 +70,22 @@ We optimize for **two** distinct user flows. Your team must build the UI to supp
 *   **Body (Inter):**
     *   `text-lg text-slate-600 leading-relaxed` (Optimized for readability).
 
-### **3.2 The "Visual Sanctuary" Color Palette**
-We use a **Warm Grayscale** base to make the black line art "pop."
+### **3.2 The "PaperPause" Color Palette**
+We use a **Warm Grayscale** base with **Teal** accents to create a calming, premium feel.
 
 | Usage | Tailwind Class | Hex Code | Purpose |
 | :--- | :--- | :--- | :--- |
 | **Page BG** | `bg-stone-50` | #FAFAF9 | Warmer than pure white; easier on eyes. |
 | **Card BG** | `bg-white` | #FFFFFF | Maximum contrast for images. |
-| **Primary** | `bg-indigo-600` | #4F46E5 | Download buttons (Trust/Calm). |
+| **Primary** | `bg-teal-600` | #0d9488 | Download buttons (Trust/Calm). |
 | **Accent** | `text-rose-500` | #F43F5E | "New" badges, Sales. |
 | **Text Main** | `text-slate-800` | #1E293B | Soft black. |
 
 ### **3.3 UI Component: The "Download" Button**
-This is your most important element. It needs to look tactile.
+This is your most important element. It needs to look tactile and trustworthy.
 
 ```html
-<button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg transform transition hover:-translate-y-1 flex items-center justify-center gap-3">
+<button class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg transform transition hover:-translate-y-1 flex items-center justify-center gap-3">
   <svg>...</svg> <span>DOWNLOAD PDF (Printable)</span>
 </button>
 ```
@@ -93,7 +93,6 @@ This is your most important element. It needs to look tactile.
 ---
 
 ## **4. Frontend Implementation Notes**
-
-1.  **Masonry Layout:** Use a lightweight JS masonry script (like Macy.js or Alpine.js grid) for the Collection Page.
+1.  **Masonry Layout:** Use a grid system (Tailwind columns or lightweight JS) for the Collection Page.
 2.  **Print Styles (`print.css`):** ensure navbar and ads are hidden when printing.
-3.  **Analytics:** Tag the "Download" button with a GA4 event.
+3.  **Analytics:** Tag the "Download" button with the `asset_download` GA4 event.

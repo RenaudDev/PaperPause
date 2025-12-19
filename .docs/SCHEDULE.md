@@ -20,45 +20,50 @@
 schedule:
   # Both cats and dogs at 5 AM EST
   - cron: '0 10 * * *'
-```
+# **PaperPause: Automation Schedule**
 
-## Daylight Saving Time Adjustment
+This document outlines the daily automation schedule for content generation and publication.
 
-During **EDT** (March - November), EST becomes UTC-4 instead of UTC-5.
+## **1. Daily Generation Schedule**
 
-If you want to maintain the same local time (5 AM) during DST:
+The primary content pipeline runs automatically once per day.
 
-```yaml
-schedule:
-  # 5 AM EDT
-  - cron: '0 9 * * *'
-```
+| Task | Time (EST) | Time (UTC) | Frequency |
+| :--- | :--- | :--- | :--- |
+| **Image Generation & SEO** | 5:00 AM | 10:00 AM | Daily |
 
-## Time Zone Conversion Reference
+*Note: The schedule uses UTC time. Adjustments for Daylight Saving Time (EST to EDT) happen automatically via the cron configuration.*
 
-| Local Time | EST (UTC-5) | EDT (UTC-4) |
-|------------|-------------|-------------|
-| 5:00 AM    | 10:00 UTC   | 9:00 UTC    |
-| 6:00 AM    | 11:00 UTC   | 10:00 UTC   |
+## **2. Daily Content Yield**
 
-## What Happens Each Run
+Each run of the pipeline produces the following assets:
 
-1. ✅ Workflow triggers at 5:00 AM EST (10:00 AM UTC)
-2. ✅ Generates 5 cat images using Recraft API
-3. ✅ Generates 5 dog images using Recraft API
-4. ✅ Uploads all images to Cloudflare R2 and CF Images
-5. ✅ Creates markdown files with metadata
-6. ✅ Saves as **drafts** (`draft: true`) - NOT published automatically
-7. ✅ Commits and pushes to repository
+| Collection | Count | Status |
+| :--- | :--- | :--- |
+| **Cats** | 1 | Published |
+| **Dogs** | 1 | Published |
+| **Horses** | 1 | Published |
+| **Butterflies** | 1 | Published |
+| **Sharks** | 1 | Published |
+| **Total** | **5 Assets** | |
 
-**Note**: Images remain as drafts until manually published.
+## **3. Workflow Execution Steps**
 
-## Manual Override
+When the schedule triggers (10:00 AM UTC), the following sequence is executed:
 
-You can manually trigger the workflow anytime with options:
-- Generate **cats only** - 5 cat images
-- Generate **dogs only** - 5 dog images
-- Generate **both** - 5 cats + 5 dogs
+1.  **Environment Setup:** GitHub runner starts, installs Node.js dependencies.
+2.  **API Connections:** Connects to Gemini API (Vision/Pro) and Cloudflare.
+3.  **Batch Generation:** Runs `generate-batch.ts` for each collection in the matrix.
+    *   Generates a new, unique, high-quality coloring page image.
+    *   Uploads the raw image to Cloudflare R2.
+    *   Uploads the optimized image to Cloudflare Images.
+4.  **SEO Review:** Runs `seo-review-batch.ts` to analyze the new images and generate metadata (Title, Description, Alt Text).
+5.  **Commit & Push:** Commits the new markdown files to the repository.
+6.  **Reporting:** Posts a completion report to the tracking issue.
+
+## **4. Future Schedule Adjustments**
+
+To increase the volume of content, the matrix in `.github/workflows/daily-generate-and-optimize.yml` can be expanded to include more collections or higher counts per batch.
 
 ---
 

@@ -1,84 +1,45 @@
 # **Measurement Plan: Maximizing Site Insights**
 
-Context: Visual Sanctuary (Hugo Static Site)  
+Context: PaperPause (Hugo Static Site)  
 Objective: Engineer a tracking system that identifies the "Most Downloaded" assets with precision and gathers deep behavioral insights to optimize future content generation.
 
 ## **1\. The Strategy: "Granular Event Tracking"**
 
-To get maximum insights, we cannot rely on default Google Analytics (which only tracks "Page Views"). We must inject a custom **Data Collector** that listens for specific user interactions.
+To get maximum insights, we cannot rely on default Google Analytics (which only tracks "Page Views"). We have implemented a custom **Analytics Collector** that listens for specific user interactions.
 
-### **The Insights We Will Capture:**
+### **The Insights We Capture:**
 
-1. **The Holy Grail:** Exact download counts per specific file (e.g., simple-cat-01.pdf).  
-2. **Category Affinity:** Which *Silos* are performing best (e.g., "Do users download more from /animals/ or /fantasy/?").  
+1. **The Holy Grail:** Exact download counts per specific file.  
+2. **Category Affinity:** Which *Silos* are performing best (e.g., "Do users download more from /animals/ or /mandalas/?").  
 3. **Acquisition Context:** Did the user land directly on the asset (SEO/Pinterest) or navigate there from the home page?
+4. **Social Engagement:** Tracking Pinterest "Save" interactions.
+5. **Search Intent:** Capturing internal search queries via Pagefind.
 
-## **2\. Implementation: The "Master Collector" Script**
+## **2\. Implementation: The "Analytics Events" Partial**
 
-Since you are automating site creation with Hugo, we will implement a single, robust JavaScript listener in your global footer. This script will automatically "tag" every download button across 10,000+ pages without manual work.
+The tracking logic is centralized in `layouts/partials/analytics-events.html`. This script is automatically included in the global footer and handles dual-tracking for Google Analytics 4 (GA4) and Pinterest Tag.
 
-**Action:** Place this code in layouts/partials/footer.html immediately before the \</body\> tag.
-
-\<script\>  
-/\*\*  
- \* Visual Sanctuary \- Master Analytics Collector  
- \* Tracks: Downloads, External Clicks, and Category Context  
- \*/  
-document.addEventListener('click', function(e) {  
-    // 1\. Identify the Click Target  
-    const link \= e.target.closest('a');  
-    if (\!link) return;
-
-    // 2\. DATA EXTRACTION LOGIC  
-      
-    // A. Track PDF Downloads (The Core Metric)  
-    if (link.href.endsWith('.pdf')) {  
-        const filename \= link.href.split('/').pop();  
-          
-        // Extract "Silo" from URL (e.g., \[domain.com/animals/cats/\](https://domain.com/animals/cats/)...)  
-        // Assumes structure: \[domain.com/\](https://domain.com/)\[silo\]/\[collection\]/...  
-        const pathSegments \= window.location.pathname.split('/').filter(Boolean);  
-        const silo \= pathSegments\[0\] || 'uncategorized';   
-        const collection \= pathSegments\[1\] || 'general';
-
-        if (typeof gtag \=== 'function') {  
-            gtag('event', 'asset\_download', {  
-                'file\_name': filename,          // "simple-cat-01.pdf"  
-                'file\_category': silo,          // "animals"  
-                'file\_subcategory': collection, // "cats"  
-                'link\_location': 'sticky\_bar'   // Helps optimize UI placement  
-            });  
-        }  
-    }
-
-    // B. Track Affiliate/Outbound Clicks (Monetization Insight)  
-    // Checks if link is external and NOT our domain  
-    if (link.hostname \!== window.location.hostname && \!link.href.endsWith('.pdf')) {  
-        if (typeof gtag \=== 'function') {  
-            gtag('event', 'outbound\_click', {  
-                'destination\_domain': link.hostname,  
-                'link\_url': link.href  
-            });  
-        }  
-    }  
-});  
-\</script\>
+**Key Features:**
+- **Consent Aware:** Only fires events if the user accepts the cookie consent banner.
+- **Robust PDF Tracking:** Detects downloads via file extension and `download` attributes.
+- **Context Rich:** Automatically extracts "Silo" and "Collection" metadata from the URL structure.
+- **Search Integration:** Monitors search input with a debounce to capture user intent.
 
 ## **3\. How to View the "Most Downloaded" Report**
 
-Default GA4 reports are messy. You must build a **Custom Exploration** to see the clean list of top downloads.
+Default GA4 reports are messy. You should build a **Custom Exploration** in GA4 to see the clean list of top downloads.
 
 ### **Configuration Steps (Do this once in GA4):**
 
-1. **Navigate:** Go to **Explore** (left sidebar) \-\> **Blank Report**.  
+1. **Navigate:** Go to **Explore** (left sidebar) -> **Blank Report**.  
 2. **Variables (Left Column):**  
-   * **Dimensions:** Add File Name and File Category (You must register these as *Custom Dimensions* in Admin settings first, or use the default Link URL if you want a quick start).  
-   * **Metrics:** Add Event Count.  
+   * **Dimensions:** Add `file_name`, `file_category`, and `file_subcategory`. (These should be registered as *Custom Dimensions* in GA4 Admin settings).  
+   * **Metrics:** Add `Event Count`.  
 3. **Tab Settings (Right Column):**  
-   * **Rows:** Drag File Name here.  
-   * **Values:** Drag Event Count here.  
-   * **Filters:** Drag Event Name and set it to match specifically asset\_download.  
-4. **Result:** You will see a spreadsheet-like table sorted by popularity:  
+   * **Rows:** Drag `file_name` here.  
+   * **Values:** Drag `Event Count` here.  
+   * **Filters:** Drag `Event Name` and set it to match specifically `asset_download`.  
+4. **Result:** You will see a table sorted by popularity:  
    * simple-cat-01.pdf | 1,204  
    * dino-rex-03.pdf | 892  
    * fantasy-fairy-01.pdf | 400
@@ -89,26 +50,24 @@ Beyond downloads, you need to know what users *wanted* but didn't find.
 
 ### **Internal Search Tracking**
 
-GA4 tracks Site Search by default, but you should review it weekly.
+GA4 tracks `search` events from the collector script. Review this weekly to identify content gaps.
 
-* **Report:** Reports \> Engagement \> Events \> view\_search\_results  
+* **Report:** Reports > Engagement > Events > search  
 * **Insight:** Look for terms with **High Search Volume** but **Low Engagement**.  
-  * *Example:* 500 searches for "Axolotl" but you have 0 Axolotl pages.  
-  * **Action:** Add "Axolotl" to your next automation batch immediately.
+* **Action:** Generate content for popular search terms that aren't yet in your library.
 
-## **5\. The Feedback Loop (Data \-\> Automation)**
-
-This implementation plan is designed to feed your automation engine.
+## **5\. The Feedback Loop (Data -> Automation)**
 
 | Insight | Automation Trigger |
 | :---- | :---- |
-| **High Volume Download** | If cats \> 50% of total downloads \-\> **Increase Cat Batch Size** by 2x. |
-| **Zero Downloads** | If bears \< 5% of downloads after month 1 \-\> **Stop Generating Bears**. |
-| **High Search / No Result** | If search term unicorn \> 100 queries \-\> **Create New Silo: Unicorns**. |
+| **High Volume Download** | If a category > 50% of total downloads -> **Increase Batch Size** for that category. |
+| **Zero Downloads** | If a category < 5% of downloads after month 1 -> **Pause Generation** for that category. |
+| **High Search / No Result** | If a search term > 100 queries -> **Create New Collection/Silo**. |
 
 ## **6\. Summary Checklist**
 
-1. **Install GA4 Base Code:** Standard setup in \<head\>.  
-2. **Inject Master Collector:** Place the script above in footer.html.  
-3. **Register Custom Dimensions:** In GA4 Admin \> Custom Definitions, create dimensions for file\_name and file\_category so they show up in reports.  
-4. **Weekly Review:** Check the "Exploration" report to identify your winners.
+1. **GA4 Measurement ID:** Configured in `hugo.toml`.  
+2. **Pinterest Tag ID:** Configured in `hugo.toml`.
+3. **Collector Script:** Handled by `layouts/partials/analytics-events.html`.  
+4. **Register Custom Dimensions:** In GA4 Admin > Custom Definitions, create dimensions for `file_name`, `file_category`, and `file_subcategory`.  
+5. **Weekly Review:** Check the "Exploration" report to identify your winners.

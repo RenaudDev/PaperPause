@@ -4,71 +4,52 @@ This document explains how to set up the daily image generation workflow.
 
 ## Overview
 
-The workflow runs once daily:
-- **5:00 AM EST (10:00 AM UTC)**: Generates 5 cat images + 5 dog images
+# GitHub Actions: Content Pipeline Setup
 
-Each run:
-1. Generates 10 images total (5 cats + 5 dogs)
-2. **Saves as drafts** (`draft: true`) - images are NOT published automatically
-3. Commits and pushes the changes to the repository
+This guide details the setup of the automated content pipeline that generates and publishes coloring pages daily.
 
-**Note**: Images remain as drafts until you manually publish them.
+## 1. Workflow Overview
 
-## Required GitHub Secrets
+The workflow (`.github/workflows/daily-generate-and-optimize.yml`) runs daily to:
+1.  **Generate:** Creates 1 new coloring page for each target collection (Cats, Dogs, Horses, Butterflies, Sharks).
+2.  **Optimize:** Uses AI to generate SEO titles, descriptions, and alt text.
+3.  **Commit:** Automatically pushes the new content to the repository.
 
-You need to add the following secrets to your GitHub repository:
+## 2. Required Secrets
 
-### Navigation
-Go to: **Repository Settings** → **Secrets and variables** → **Actions** → **New repository secret**
+The following secrets must be configured in GitHub (Settings > Secrets and variables > Actions):
 
-### Secrets to Add
+| Secret | Purpose |
+| :--- | :--- |
+| `GEMINI_API_KEY` | Powers the image generation and SEO analysis. |
+| `R2_ACCOUNT_ID` | Cloudflare R2 Account ID. |
+| `R2_ACCESS_KEY_ID` | R2 API Key ID. |
+| `R2_SECRET_ACCESS_KEY` | R2 API Secret. |
+| `R2_BUCKET_NAME` | R2 Bucket for raw image storage. |
+| `R2_PUBLIC_URL` | Public URL for the R2 bucket. |
+| `CF_IMAGES_ACCOUNT_ID` | Cloudflare Images Account ID. |
+| `CF_IMAGES_API_TOKEN` | Cloudflare Images API Token. |
+| `CF_IMAGES_ACCOUNT_HASH` | Cloudflare Images Account Hash. |
 
-#### Recraft API
-- `RECRAFT_API_KEY` - Your Recraft API key for image generation
+## 3. Manual Trigger
 
-#### Google Gemini API (if used as fallback)
-- `GEMINI_API_KEY` - Your Google Gemini API key
+You can trigger the generation manually for testing:
+1.  Go to the **Actions** tab in GitHub.
+2.  Select **Daily Generate & Optimize Coloring Pages**.
+3.  Click **Run workflow**.
 
-#### Cloudflare R2 Storage
-- `R2_ACCOUNT_ID` - Your Cloudflare account ID
-- `R2_ACCESS_KEY_ID` - R2 access key ID
-- `R2_SECRET_ACCESS_KEY` - R2 secret access key
-- `R2_BUCKET_NAME` - R2 bucket name (e.g., `paperpause`)
-- `R2_PUBLIC_URL` - Public URL for R2 bucket (e.g., `https://img.paperpause.app`)
+## 4. Content Status (Drafts vs. Published)
 
-#### Cloudflare Images
-- `CF_IMAGES_ACCOUNT_ID` - Cloudflare Images account ID
-- `CF_IMAGES_API_TOKEN` - Cloudflare Images API token
-- `CF_IMAGES_ACCOUNT_HASH` - Cloudflare Images account hash
+By default, the automated pipeline saves images with `draft: false` in the frontmatter, meaning they are **published immediately** upon the next Hugo build.
 
-## How to Get These Values
+*   To change this behavior to manual approval, modify the generation script to set `draft: true`.
+*   The `publish-drafts.ts` script can be used to bulk-approve drafts if needed.
 
-You can find all these values in your local `.dev.vars` file. Simply copy each value to the corresponding GitHub secret.
+## 5. Troubleshooting
 
-### Quick Copy Commands
-
-If you're on the repository settings page, copy these values from your `.dev.vars`:
-
-```bash
-# View your .dev.vars file (DO NOT commit this file!)
-cat .dev.vars
-```
-
-Then manually add each value as a secret in GitHub.
-
-## Manual Trigger
-
-You can also trigger the workflow manually:
-
-1. Go to **Actions** tab in your repository
-2. Select **Daily Image Generation** workflow
-3. Click **Run workflow**
-4. Choose the branch
-5. Select animal type:
-   - **cats** - Generate only cat images
-   - **Dogs** - Generate only dog images
-   - **both** - Generate both cats and dogs
-6. Click **Run workflow**
+*   **No images generated:** Check the `generate` job logs in GitHub Actions. Ensure all API keys are valid.
+*   **SEO optimization failed:** The `optimize` step is set to `continue-on-error: true`. If it fails, the image will still be committed with default metadata.
+*   **Permissions error:** Ensure the `GITHUB_TOKEN` has `write` permissions for `contents` and `issues`.
 
 ## Workflow Schedule
 

@@ -1,4 +1,4 @@
-<header class="bg-white shadow-sm sticky top-0 z-50" x-data="{ mobileMenuOpen: false }" role="banner">
+<header class="bg-white shadow-sm sticky top-0 z-50" x-data="{ mobileMenuOpen: false }">
     <div class="container mx-auto px-4 py-4 flex justify-between items-center relative">
         <!-- Logo -->
         <a href="/" class="text-2xl font-bold font-heading text-slate-800 tracking-tighter">
@@ -7,12 +7,12 @@
 
         <!-- Search (Desktop) -->
         <div class="hidden md:block w-1/3" x-data>
-            <input type="text" @click="$dispatch('open-search')" placeholder="Search 5,000+ coloring pages..."
+            <input type="text" @click="$dispatch('open-search')" placeholder="Search all coloring pages..."
                 class="w-full bg-stone-50 border border-slate-200 rounded-full px-5 py-2 text-slate-600 focus:outline-none focus:ring-2 focus:ring-teal-600 cursor-pointer">
         </div>
 
         <!-- Meta Nav -->
-        <nav class="hidden md:flex gap-6 text-slate-600 font-medium items-center" role="navigation" aria-label="Main navigation">
+        <nav class="hidden md:flex gap-6 text-slate-600 font-medium items-center">
             <a href="/" class="hover:text-teal-600">Home</a>
             <a href="/about/" class="hover:text-teal-600">About</a>
 
@@ -35,12 +35,9 @@
                     x-transition:leave-end="opacity-0 translate-y-2"
                     class="absolute left-0 mt-0 w-48 bg-white rounded-lg shadow-xl border border-slate-100 py-2 z-50"
                     style="display: none;">
-                    {{ range $name, $taxonomy := .Site.Taxonomies.categories }}
-                    <a href="/{{ $name | urlize }}/"
-                        class="block px-4 py-2 hover:bg-slate-50 hover:text-teal-600 capitalize">
-                        {{ $name | humanize }}
+                    <a href="/animals/" class="block px-4 py-2 hover:bg-slate-50 hover:text-teal-600 capitalize">
+                        Animals
                     </a>
-                    {{ end }}
                 </div>
             </div>
 
@@ -48,20 +45,15 @@
         </nav>
 
         <!-- Mobile Menu Icon -->
-        <button 
-            @click="mobileMenuOpen = !mobileMenuOpen" 
-            class="md:hidden text-slate-800 focus:outline-none"
-            :aria-label="mobileMenuOpen ? 'Close menu' : 'Open menu'"
-            aria-expanded="false"
-            x-bind:aria-expanded="mobileMenuOpen">
+        <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-slate-800 focus:outline-none">
             <!-- Hamburger Icon -->
-            <svg x-show="!mobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <svg x-show="!mobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16">
                 </path>
             </svg>
             <!-- Close Icon -->
             <svg x-show="mobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                style="display: none;" aria-hidden="true">
+                style="display: none;">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
         </button>
@@ -99,12 +91,9 @@
                 </button>
                 <div x-show="categoriesOpen" class="pl-4 mt-2 flex flex-col gap-3 border-l-2 border-slate-100 ml-1"
                     style="display: none;">
-                    {{ range $name, $taxonomy := .Site.Taxonomies.categories }}
-                    <a href="/{{ $name | urlize }}/"
-                        class="text-slate-600 hover:text-teal-600 capitalize">
-                        {{ $name | humanize }}
+                    <a href="/animals/" class="text-slate-600 hover:text-teal-600 capitalize">
+                        Animals
                     </a>
-                    {{ end }}
                 </div>
             </div>
 
