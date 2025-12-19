@@ -1,11 +1,18 @@
 <header class="bg-white shadow-sm sticky top-0 z-50" x-data="{ mobileMenuOpen: false }">
     <div class="container mx-auto px-4 py-4 flex justify-between items-center relative">
         <!-- Logo -->
-        <a href="/" class="text-2xl font-bold font-heading text-slate-800 tracking-tighter">
-            PaperPause
+        <a href="/" class="group flex items-center gap-3 transition-opacity duration-300">
+            <div class="flex-shrink-0">
+                <img src="{{ .Site.Params.logo }}" alt="PaperPause Logo"
+                    class="h-8 w-auto object-contain transition-transform duration-500 group-hover:scale-105">
+            </div>
+            <span
+                class="text-xl md:text-2xl font-black font-heading text-slate-800 tracking-tighter leading-none transition-colors group-hover:text-teal-600 uppercase">
+                PaperPause
+            </span>
         </a>
 
-        <!-- Search (Desktop) -->
+        <!-- Search (Desktop)-->
         <div class="hidden md:block w-1/3" x-data>
             <input type="text" @click="$dispatch('open-search')" placeholder="Search all coloring pages..."
                 class="w-full bg-stone-50 border border-slate-200 rounded-full px-5 py-2 text-slate-600 focus:outline-none focus:ring-2 focus:ring-teal-600 cursor-pointer">
