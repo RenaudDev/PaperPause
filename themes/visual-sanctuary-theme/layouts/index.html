@@ -85,7 +85,7 @@
         {{- if or $p.Params.cf_image_id $p.Params.image_url -}}
           {{- $url := "" -}}
           {{- if $p.Params.cf_image_id -}}
-            {{- $url = printf "https://imagedelivery.net/%s/%s/thumbnail" $.Site.Params.cf_images_hash $p.Params.cf_image_id -}}
+            {{- $url = printf "https://imagedelivery.net/%s/%s/tailthumb" $.Site.Params.cf_images_hash $p.Params.cf_image_id -}}
           {{- else -}}
             {{- $url = $p.Params.image_url -}}
           {{- end -}}
@@ -100,12 +100,10 @@
             <div class="grid grid-cols-2 gap-0.5 h-full">
               <div class="bg-teal-50"></div>
               <div class="bg-teal-100"></div>
-              <div class="bg-teal-100"></div>
-              <div class="bg-teal-50"></div>
             </div>
           {{- else -}}
             <div class="grid grid-cols-2 gap-0.5 h-full">
-              {{- range first 4 $images -}}
+              {{- range first 2 $images -}}
                 <img src="{{ .url }}" alt="{{ .alt }}" class="w-full h-full object-cover" loading="lazy">
               {{- end -}}
             </div>
