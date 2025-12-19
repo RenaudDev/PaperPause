@@ -6,7 +6,7 @@ theme = 'visual-sanctuary-theme'
 [params]
   description = "Discover the best free printable coloring pages for adults and kids. High-quality animals, mandalas, and more."
   cf_images_hash = "G92SwfasiUv-usR1s4VYvA"
-  logo = "/images/PAperPause.webp"
+  logo = "https://paperpause.app/images/PaperPause.webp"
   
 # GA4 Integration
 googleAnalytics = "G-R0NHTPYWFY"
