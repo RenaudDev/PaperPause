@@ -19,8 +19,8 @@
     "validate:env": "ts-node scripts/validate-env.ts",
     "validate:taxonomy": "ts-node scripts/validate-taxonomy.ts",
     "validate": "npm run validate:env && npm run validate:taxonomy",
-    "clean": "powershell -Command \"if (Test-Path public) { Remove-Item -Recurse -Force public }; if (Test-Path resources) { Remove-Item -Recurse -Force resources }\""
-  },
+    "clean": "node -e \"const fs = require('fs'); ['public', 'resources'].forEach(p => fs.rmSync(p, { recursive: true, force: true }))\""
+    },
   "dependencies": {
     "alpinejs": "^3.13.3",
     "autoprefixer": "^10.4.16",
