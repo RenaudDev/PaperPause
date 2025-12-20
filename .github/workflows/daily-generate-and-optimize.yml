@@ -23,6 +23,13 @@ jobs:
         collection: [cats, dogs, horses, butterflies, sharks]
     
     steps:
+      - name: Set daily style rotation key
+        id: daily_key
+        run: |
+          DAILY_KEY=$(date -u +%F)
+          echo "DAILY_STYLE_KEY=$DAILY_KEY" >> $GITHUB_ENV
+          echo "Daily style key set to: $DAILY_KEY"
+      
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -51,6 +58,9 @@ jobs:
 
       - name: Generate ${{ matrix.collection }} (1 image)
         id: generate
+        env:
+          STYLE_MODE: rotate
+          STYLE_ROTATION_KEY: ${{ env.DAILY_STYLE_KEY }}
         run: |
           RUN_ID=$(date +%Y-%m-%dT%H-%M-%SZ)-${{ matrix.collection }}
           echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT

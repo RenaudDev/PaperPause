@@ -4,7 +4,7 @@ import { generateImage } from '../lib/gemini';
 import { uploadImage } from '../lib/storage';
 import { RateLimiter } from '../lib/rate-limiter';
 import { logger } from '../lib/logger';
-import { loadPrompt, getRandomVariant, buildPromptWithStyle } from '../lib/prompt-manager';
+import { loadPrompt, getRandomVariant, buildPromptWithStyle, StyleSelectionOptions } from '../lib/prompt-manager';
 import { readIndexFile } from '../lib/hugo-manager';
 import { ENV } from '../config/env';
 
@@ -124,6 +124,10 @@ function generatePinterestDescription(
 /**
  * Generate a batch of coloring pages for a specific collection
  * Uses rate limiting to respect API quotas
+ * Style selection can be controlled via environment variables:
+ * - STYLE_MODE: 'random' (default) or 'rotate'
+ * - STYLE_ROTATION_KEY: Date key for rotation (YYYY-MM-DD format)
+ * - STYLE_NAME: Manual style override
  */
 export const generateBatch = async (
   category: string,
@@ -150,7 +154,22 @@ export const generateBatch = async (
     throw new Error(`Prompt not found for collection: ${category}/${collection}`);
   }
 
-  logger.info(`Starting batch generation for ${batchSize} images in ${category}/${collection}`);
+  // Read style selection options from environment
+  const styleMode = (process.env.STYLE_MODE as 'random' | 'rotate') || 'random';
+  const styleRotationKey = process.env.STYLE_ROTATION_KEY || new Date().toISOString().slice(0, 10);
+  const styleName = process.env.STYLE_NAME;
+
+  const styleOptions: StyleSelectionOptions = {
+    mode: styleMode,
+    rotationKey: styleMode === 'rotate' ? styleRotationKey : undefined,
+    styleName: styleName
+  };
+
+  logger.info(`Starting batch generation for ${batchSize} images in ${category}/${collection}`, {
+    styleMode,
+    rotationKey: styleMode === 'rotate' ? styleRotationKey : 'N/A',
+    styleName: styleName || 'N/A'
+  });
 
   const results: GenerationResult[] = [];
   const createdMdPaths: string[] = []; // repo-relative, for manifest
@@ -163,11 +182,12 @@ export const generateBatch = async (
       const timestamp = Date.now();
       const variantPrompt = getRandomVariant(category, collection);
 
-      // Build prompt with style (randomly picks from styles array in prompt config)
+      // Build prompt with style (mode and options controlled by env vars or defaults)
       const { fullPrompt, style, negative_prompt } = buildPromptWithStyle(
         category,
         collection,
-        variantPrompt
+        variantPrompt,
+        styleOptions
       );
 
       // 1. Generate unique temporary filename

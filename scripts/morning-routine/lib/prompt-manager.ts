@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 import { logger } from './logger';
-import { getStyleById, getRandomStyle, getStyleByName, StyleDefinition } from '../config/styles';
+import { getStyleById, getRandomStyle, getStyleByName, StyleDefinition, getAllStyleNames } from '../config/styles';
 
 const PROMPTS_DIR = path.resolve(__dirname, '../config/prompts');
 
@@ -181,17 +181,39 @@ ATMOSPHERE: Whimsical, inviting, clean line art ready for coloring.`,
 }
 
 /**
+ * Deterministic hash function to convert a string key to a stable integer index.
+ * Used for rotating styles deterministically based on date.
+ */
+function simpleStringHash(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  return Math.abs(hash);
+}
+
+export interface StyleSelectionOptions {
+  mode?: 'random' | 'rotate';
+  rotationKey?: string; // Expected format: YYYY-MM-DD
+  styleName?: string;   // Manual override
+}
+
+/**
  * Build full prompt with style modifier
- * Randomly selects a style from the prompt config's styles array, or uses random if none specified
+ * Supports deterministic rotation or random selection of styles.
  * @param category - Category name (e.g., "animals")
  * @param collection - Collection name (e.g., "cats")
  * @param variantPrompt - The scene/variant prompt (e.g., "Sleepy Cat napping")
+ * @param options - Optional style selection configuration
  * @returns Object with fullPrompt, style definition, and negative_prompt
  */
 export function buildPromptWithStyle(
   category: string,
   collection: string,
-  variantPrompt: string
+  variantPrompt: string,
+  options?: StyleSelectionOptions
 ): { fullPrompt: string; style: StyleDefinition; negative_prompt: string } {
   const promptConfig = loadPrompt(category, collection);
   
@@ -199,23 +221,86 @@ export function buildPromptWithStyle(
     throw new Error(`Prompt not found for collection: ${category}/${collection}`);
   }
 
+  const mode = options?.mode ?? 'random';
+  const rotationKey = options?.rotationKey;
+  const manualStyleName = options?.styleName;
+
   let style: StyleDefinition | null = null;
 
-  // Check if styles array exists and has values
-  const styles = promptConfig.attributes.styles || [];
-  
-  if (styles.length > 0) {
-    // Randomly pick from the styles array
-    const randomStyleName = styles[Math.floor(Math.random() * styles.length)];
-    style = getStyleByName(randomStyleName);
-    
+  // 1. Manual override takes highest priority
+  if (manualStyleName) {
+    style = getStyleByName(manualStyleName);
     if (!style) {
-      logger.warn(`Style not found in config: ${randomStyleName}, using random style`);
+      logger.warn(`Manual style not found: ${manualStyleName}, falling back to random`);
+    }
+  }
+
+  // 2. Deterministic rotation mode
+  if (!style && mode === 'rotate' && rotationKey) {
+    const allStyleNames = getAllStyleNames();
+    if (allStyleNames.length === 0) {
+      logger.warn('No global styles available for rotation');
+    } else {
+      const hash = simpleStringHash(rotationKey);
+      const canonicalStyleIndex = hash % allStyleNames.length;
+      const canonicalStyleName = allStyleNames[canonicalStyleIndex];
+
+      // Try to use the canonical style if it's in the collection's allowed styles
+      const collectionStyles = promptConfig.attributes.styles || [];
+      if (collectionStyles.length > 0) {
+        const matchingStyle = collectionStyles.find(
+          s => s.toLowerCase() === canonicalStyleName.toLowerCase()
+        );
+
+        if (matchingStyle) {
+          style = getStyleByName(matchingStyle);
+          if (!style) {
+            logger.warn(
+              `Canonical style "${canonicalStyleName}" not found in global registry. ` +
+              `Collection "${collection}" has styles: [${collectionStyles.join(', ')}]`
+            );
+          }
+        } else {
+          // Canonical style not in collection's allowed list, use first allowed style
+          logger.warn(
+            `Canonical style "${canonicalStyleName}" not in collection "${collection}" allowed styles: [${collectionStyles.join(', ')}]. ` +
+            `Using first allowed style instead.`
+          );
+          const firstAllowedStyleName = collectionStyles[0];
+          style = getStyleByName(firstAllowedStyleName);
+          if (!style) {
+            logger.warn(`First allowed style "${firstAllowedStyleName}" not found in registry`);
+          }
+        }
+      } else {
+        // No styles specified in collection, use canonical
+        style = getStyleByName(canonicalStyleName);
+        if (!style) {
+          logger.warn(
+            `Canonical style "${canonicalStyleName}" not found in global registry. ` +
+            `Collection "${collection}" has no allowed styles specified.`
+          );
+        }
+      }
+    }
+  }
+
+  // 3. Random selection (default or fallback)
+  if (!style) {
+    const styles = promptConfig.attributes.styles || [];
+    if (styles.length > 0) {
+      // Randomly pick from the collection's allowed styles
+      const randomStyleName = styles[Math.floor(Math.random() * styles.length)];
+      style = getStyleByName(randomStyleName);
+
+      if (!style) {
+        logger.warn(`Style not found in config: ${randomStyleName}, using random style`);
+        style = getRandomStyle();
+      }
+    } else {
+      // No styles specified in config, pick random from all available
       style = getRandomStyle();
     }
-  } else {
-    // No styles specified in config, pick random from all available
-    style = getRandomStyle();
   }
 
   // Inject style modifier into base prompt

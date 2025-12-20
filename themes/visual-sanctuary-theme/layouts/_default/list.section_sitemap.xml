@@ -2,7 +2,8 @@
 {{/* Only process if this is a section page, not home */}}
 {{ if not .IsHome }}
   {{/* Always create urlset - subsections are referenced directly from main index to avoid nested indexing */}}
-  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+          xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
     {{/* Include the section index page itself */}}
     {{- $htmlFormat := .OutputFormats.Get "HTML" -}}
     <url>
@@ -22,6 +23,33 @@
       {{ end }}
       {{ if ge .Sitemap.Priority 0.0 }}
       <priority>{{ .Sitemap.Priority }}</priority>
+      {{ end }}
+
+      {{/* Image extension (skip if private) */}}
+      {{ if not .Params.private }}
+        {{- $img := "" -}}
+        {{- if and .Params.image_url (ne .Params.image_url "") -}}
+          {{- $img = .Params.image_url -}}
+        {{- else if and .Params.cf_image_id .Site.Params.cf_images_hash -}}
+          {{- $img = printf "https://imagedelivery.net/%s/%s/desktop" .Site.Params.cf_images_hash .Params.cf_image_id -}}
+        {{- end -}}
+
+        {{- if $img -}}
+          <image:image>
+            <image:loc>{{ $img }}</image:loc>
+            <image:title>{{ printf "Printable Coloring Page: %s" .Title | plainify | htmlEscape }}</image:title>
+            <image:caption>
+              {{- if .Params.prompt -}}
+                {{ .Params.prompt | plainify | htmlEscape }}
+              {{- else if .Description -}}
+                {{ .Description | plainify | htmlEscape }}
+              {{- else -}}
+                {{ printf "Free printable coloring page of %s" .Title | plainify | htmlEscape }}
+              {{- end -}}
+            </image:caption>
+            <image:license>{{ "https://paperpause.app/terms/" | htmlEscape }}</image:license>
+          </image:image>
+        {{- end -}}
       {{ end }}
     </url>
     {{ end }}
