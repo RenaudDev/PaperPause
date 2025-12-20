@@ -34,13 +34,13 @@
     }
 
     #pp-cookie-accept {
-        background-color: #14b8a6;
+        background-color: #0d9488;
         transition: all 0.2s ease;
     }
 
     #pp-cookie-accept:hover {
-        background-color: #2dd4bf;
-        box-shadow: 0 10px 25px rgba(20, 184, 166, 0.5);
+        background-color: #14b8a6;
+        box-shadow: 0 10px 25px rgba(13, 148, 136, 0.5);
     }
 
     #pp-cookie-reject {
@@ -72,13 +72,14 @@
             <div class="flex-1 flex items-start gap-3">
                 <span style="font-size: 2rem; flex-shrink: 0;" role="img" aria-label="Cookie">🍪</span>
                 <div>
-                    <p style="font-size: 1.125rem; font-weight: 500; color: #ffffff; margin-bottom: 0.25rem;">
+                    <p id="pp-cookie-title" style="font-size: 1.125rem; font-weight: 500; color: #ffffff; margin-bottom: 0.25rem;">
                         We value your privacy
                     </p>
                     <p style="font-size: 0.95rem; color: #e2e8f0; line-height: 1.6;">
                         We use cookies to improve your experience and understand how our site is used.
                         <a href="/privacy/#cookies-and-web-beacons"
-                            style="color: #5eead4; text-decoration: underline; text-underline-offset: 2px; font-weight: 500;">Learn
+                            style="color: #5eead4; text-decoration: underline; text-underline-offset: 2px; font-weight: 500;"
+                            aria-label="Learn more about our cookie policy">Learn
                             more</a>
                     </p>
                 </div>

@@ -54,8 +54,8 @@
                 {{ if .Params.image_url }}
                 <img src="{{ .Params.image_url }}" alt="{{ .Title }}" class="w-full h-auto border border-slate-100">
                 {{ else }}
-                <div class="aspect-[3/4] bg-slate-50 flex items-center justify-center text-slate-300 font-mono">
-                    [High Res Image Placeholder]
+                <div class="aspect-[3/4] bg-slate-50 flex items-center justify-center text-slate-500 font-medium">
+                    No Image
                 </div>
                 {{ end }}
 
@@ -110,7 +110,7 @@
             }
         </style>
         <details class="mt-6 mb-8">
-            <summary class="cursor-pointer list-none p-4 bg-slate-50 rounded-lg border border-slate-100 hover:bg-slate-100 transition-colors select-none flex items-center justify-between" role="button" aria-expanded="false" aria-label="Toggle Image Details">
+            <summary class="cursor-pointer list-none p-4 bg-slate-50 rounded-lg border border-slate-100 hover:bg-slate-100 transition-colors select-none flex items-center justify-between" aria-label="Toggle Image Details">
                 <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wider">Image Details</h3>
                 <svg class="w-5 h-5 text-slate-600 transition-transform duration-200 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -136,8 +136,8 @@
 
         <!-- Ad Placeholder -->
         <div
-            class="bg-stone-50 border border-stone-200 rounded-lg p-6 text-center text-stone-400 text-sm mb-8 h-64 flex items-center justify-center">
-            Ads / Affiliate Recommendations
+            class="bg-stone-50 border border-stone-200 rounded-lg p-6 text-center text-slate-500 font-medium mb-8 h-64 flex items-center justify-center">
+            Ads
         </div>
     </div>
 
