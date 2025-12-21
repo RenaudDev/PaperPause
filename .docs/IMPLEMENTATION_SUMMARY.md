@@ -59,10 +59,9 @@ Added comprehensive npm scripts:
 - Matches new permalink structure
 
 #### 4. **Taxonomy Validation Script** (`scripts/validate-taxonomy.ts`)
-- Validates all content against allowed categories/collections
-- Checks for required fields in coloring pages
+- Enforces lightweight, future-proof invariants on content frontmatter (e.g., deprecated fields like `tags`)
+- Intentionally does **not** validate category/collection values (avoid brittle taxonomy coupling)
 - Reports detailed errors by file
-- Supports predefined taxonomy structure
 
 ---
 

@@ -1,5 +1,9 @@
 # Daily Workflow Setup - Complete ✅
 
+> Baseline doc: this describes the **current** GitHub Actions workflow.\n
+> Autonomy vNext scheduling is defined in `mission-control/rollout-schedule.md` and the PRD in `.docs/prd/`.\n
+> Foreman/Designer/QA/strict-JIT PDFs are part of the PRD rollout and may not be fully implemented yet.
+
 ## What Was Set Up
 
 A fully automated GitHub Actions workflow that runs daily to generate and publish coloring page images.

@@ -1,0 +1,20 @@
+{
+  "schema_version": "trashcan_v1",
+  "required_fields": [
+    "schema_version",
+    "timestamp_utc",
+    "run_id",
+    "asset_id",
+    "category",
+    "collection",
+    "qa_mode",
+    "qa_result",
+    "reason",
+    "reason_details",
+    "image_url",
+    "r2_original"
+  ],
+  "notes": "This is a human-maintained schema reference for Issue #4 JSON comment blocks."
+}
+
+

@@ -1,302 +1,255 @@
-# Product Requirements Document (PRD): PaperPause Autonomous Enterprise System
+# Product Requirements Document (PRD): PaperPause Autonomy System (PRD vNext)
 
-**Version:** 6.3 (The "Genesis" Edition)
+**Version:** 7.0
 
-**Date:** December 20, 2025
+**Date:** December 21, 2025
 
-**Status:** Approved for Execution
+**Status:** Draft (review-ready)
 
-**Core Stack:** Hugo, Cloudflare (Pages/R2/Images), GitHub Actions, Gemini 3 Flash (Reasoning/Vision), Gemini 3 Pro (Image), Make.com
+**Core stack:** Hugo, Cloudflare Pages, Cloudflare R2, Cloudflare Images, GitHub Actions, Gemini (image + vision), Make.com
 
-
-
----
-
-
-
-## 1. Executive Summary
-
-**Objective:** Transform PaperPause from a "Managed Factory" into a "Self-Expanding Empire" capable of scaling from 5 to 50 assets per day with zero human intervention in the production loop.
-
-
-
-**Key Innovations:**
-
-1. **Just-in-Time (JIT) Manufacturing:** Expensive operations (PDF generation, SEO renaming) occur *only* after an asset passes Quality Assurance (QA).
-
-2. **Auto-Genesis (Agent 0):** The system is not limited by existing configuration files. If the schedule calls for a collection that doesn't exist, the system designs and builds the infrastructure for it instantly.
-
-3. **Circuit Breaker Safety:** A "Two-Strike" rule prevents API waste by halting specific collections that are failing consecutively.
-
-
+**Companion docs:**
+- Issues & Questions Log: `.docs/prd/autonomy-prd.issues.md`
+- Agent Mapping (PRD roles ↔ repo): `.docs/prd/autonomy-prd.agent-mapping.md`
+- Dependency & Rollout Map: `.docs/prd/autonomy-prd.rollout.md`
 
 ---
 
+## 1) Executive summary
 
+### Objective
+Evolve PaperPause from a manually managed factory into an autonomous system that can reliably produce **5 → 50 assets/day** with **no human intervention required to complete the daily production run**.
 
-## 2. System Architecture: The Agent Fleet
+### Non-negotiable constraints
+- **Rollout safety**: every new capability ships with a clean “off switch” and a rollback path.
+- **Idempotency**: reruns must not multiply content or corrupt existing content.
+- **Budget control**: explicit ceilings per day and per collection, enforced by QA **fail-fast** and scheduling.
+- **Auditability**: all decisions that reject/skip must be explainable via logs and issue records.
 
+### Engineering guardrails (must follow)
+All implementation work for this PRD must follow the repo’s architecture rules in `.ai-rules.md` (especially Hugo layout hierarchy and “no root `layouts/` edits”).
 
+### Definition of “asset” (PRD default)
+An **asset** (for “assets/day” counting) is an **Approved PNG** that has **passed QA** and is ready to be turned into a PDF (and published as a Hugo page by finishing).
 
-### 🎨 Agent 0: The Designer (Auto-Genesis)
-
-* **Role:** R&D & Product Development.
-
-* **Trigger:** Pre-production check (Daily).
-
-* **Input:** The "Active Matrix" list from The Foreman.
-
-* **Logic:**
-
-1. Checks if `config/prompts/[category]-[collection].json` exists.
-
-2. **If Missing:**
-
-* Calls Gemini to brainstorm 50+ variables (Subjects, Actions, Settings).
-
-* Generates the JSON config file.
-
-* Creates the Hugo `_index.md` file with SEO title/description.
-
-3. **Output:** A ready-to-use configuration file.
-
-
-
-### 🧠 Agent 1: The Architect (Strategy & Immunization)
-
-* **Role:** Product Manager & Doctor.
-
-* **Trigger:** Weekly (Mondays @ 06:00).
-
-* **Input:** "The Trash Can" (GitHub Issue #4) & "Hall of Fame" (Issue #2).
-
-* **Action:**
-
-* Parses rejection reasons from Issue #4.
-
-* **Self-Healing:** If a specific error (e.g., "TEXT_OVERLAY") appears >5 times for a collection, it automatically edits the corresponding `.json` config to append "text, letters, watermark" to the `negative_prompt`.
-
-
-
-### 🏭 Agent 2: The Factory (Raw Production)
-
-* **Role:** Sketch Artist.
-
-* **Trigger:** Daily Production Job.
-
-* **Action:**
-
-* Generates **Raw PNGs** only (Fast & Cheap).
-
-* Uses temporary filenames: `temp-[timestamp].png`.
-
-* **Constraint:** Operates blindly on the config provided (whether old or newly created by Agent 0).
-
-
-
-### 🕵️‍♀️ Agent 3: The Art Critic (Quality Assurance)
-
-* **Role:** Quality Control & Whistleblower.
-
-* **Trigger:** Immediate Post-Generation.
-
-* **Model:** `gemini-3-flash-preview` (Vision).
-
-* **Rubric:** Text Overlay, Greyscale, Bad Anatomy, Blurring.
-
-* **The "Two-Strike" Rule:**
-
-* Maintains a counter for the current collection.
-
-* If **2 images fail consecutively**, the agent throws a `FatalError` for that specific matrix item, halting further generation to save budget.
-
-* **Rejection Handling:**
-
-* **Rename:** `REJECTED_[Reason]_[Timestamp].png`.
-
-* **Move:** Uploads to R2 folder `rejected/`.
-
-* **Log:** Posts a comment to **GitHub Issue #4** with the R2 URL for manual review (False Negative check).
-
-
-
-### ✍️ Agent 4: The SEO Copywriter (Finishing)
-
-* **Role:** Packaging & Finalization.
-
-* **Trigger:** Post-QA (Survivors only).
-
-* **JIT Actions:**
-
-1. **Renaming:** Renames `temp-[ts].png` to SEO-rich `kawaii-cat-reading.png`.
-
-2. **PDF Generation:** Converts the raw PNG to A4/Letter PDF (300 DPI) with branded footers.
-
-3. **Upload:** Pushes final PNG and PDF to R2 `public/` folder.
-
-4. **Metadata:** Writes the Hugo Markdown file with `download_url` (PDF) and `image_url` (PNG).
-
-
-
-### 📢 Agent 5: The Distributor (Syndication)
-
-* **Role:** Social Media Manager.
-
-* **Trigger:** Make.com (RSS Monitor).
-
-* **Action:** Detects new items in RSS feed, posts to Pinterest with UTM tracking.
-
-
+If this definition changes, update `.docs/prd/autonomy-prd.issues.md` and re-baseline metrics.
 
 ---
 
-
-
-## 3. The "Brain": Scheduling Logic (The Foreman)
-
-
-
-**Script:** `scripts/morning-routine/tasks/production-schedule.ts`
-
-
-
-### 3.1 The Master Schedule (The Menu)
-
-The Foreman relies on a "Master Taxonomy" (defined in code or `validate-taxonomy.ts`) representing the ideal full state of the business.
-
-
-
-### 3.2 The Ramp-Up Logic
-
-The Foreman calculates the number of weeks since `LAUNCH_DATE`.
-
-* **Week 1:** Unlocks top 5 collections.
-
-* **Week 2:** Unlocks top 10 collections.
-
-* **Week 3:** Unlocks top 15 collections.
-
-* **Week 4+:** Unlocks top 20 collections (Full Capacity).
-
-
-
-### 3.3 Maintenance Mode (The Cap)
-
-Before scheduling a collection, The Foreman calls `content-manager.ts` to count existing posts.
-
-* **The Cap:** 75 Posts.
-
-* **Logic:** If `Count >= 75`, the collection is **removed** from the Daily Production Matrix.
-
-* *Result:* The system naturally pivots resources to newer/under-filled collections.
-
-
+## 2) Glossary
+- **Category**: top-level bucket (e.g., `animals`) → `content/<category>/...`
+- **Collection**: sub-bucket (e.g., `cats`) → `content/<category>/<collection>/...`
+- **Matrix item**: unit of scheduling (typically `category/collection`)
+- **Run**: one daily workflow execution
+- **Survivor**: passes QA and is eligible for finishing/publishing
+- **Rejected**: fails QA; routed to rejection sink + logged
+- **Cap**: per-collection maximum post count; capped collections are excluded from scheduling
 
 ---
 
+## 3) Architecture overview
 
+The system is composed of:
+- **Agents** (`.agents/*`): LLM/vision modules returning structured output (validated, retry-safe).
+- **Tasks** (`scripts/morning-routine/tasks/*`): orchestration scripts (filesystem, Hugo, R2/CF, agent calls).
 
-## 4. Workflow Orchestration
+```mermaid
+flowchart TD
+  foreman[Foreman_Scheduler] --> matrix[Daily_Matrix_JSON]
+  matrix --> designer[Designer_AutoGenesis]
+  designer --> cfg[Prompt_Config_and_Index]
+  cfg --> generator[Factory_Generate]
+  generator --> critic[Critic_QA]
+  critic -->|pass| finisher[Finisher_SEO_and_Packaging]
+  critic -->|fail| rejectSink[RejectSink_R2_and_Issue]
+  finisher --> content[Content_MD_and_Assets]
+  content --> deploy[Build_and_Deploy]
+  content --> rss[RSS]
+  rss --> distributor[Distributor_Make_com]
+  architect[Architect_Immunization] --> cfg
+```
 
-
-
-**Pipeline File:** `.github/workflows/daily-generate-and-optimize.yml`
-
-
-
-### Job 1: Setup & Genesis
-
-1. **Run Foreman:** Executes `production-schedule.ts`.
-
-* *Output:* JSON Matrix (e.g., `["animals/cats", "space/aliens"]`).
-
-2. **Run Designer:** Executes `design-collection.ts` for every item in the Matrix.
-
-* *Check:* Does `config` exist?
-
-* *Action:* If no, create it (Auto-Genesis).
-
-
-
-### Job 2: Production (Matrix Strategy)
-
-*Runs in parallel based on the Matrix output from Job 1.*
-
-1. **Generate & QA:**
-
-* Agent 2 (Factory) creates image.
-
-* Agent 3 (Critic) validates.
-
-* *Circuit Breaker:* Job fails fast if 2 consecutive failures occur.
-
-2. **Optimize (JIT):**
-
-* Agent 4 (SEO) performs renaming and PDF generation for survivors.
-
-* Commits Markdown files to the repo.
-
-
-
-### Job 3: Deploy
-
-1. **Build:** Hugo Build.
-
-2. **Deploy:** Cloudflare Pages.
-
-
+Concrete mapping to the current repo (what exists vs missing) lives in `.docs/prd/autonomy-prd.agent-mapping.md`.
 
 ---
 
+## 4) State, artifacts, and schemas
+
+### Repo artifacts (source of truth)
+- **Content**: `content/<category>/<collection>/*.md`
+- **Collection metadata**: `content/<category>/<collection>/_index.md`
+- **Agents**: `.agents/<agent-name>/...`
+- **Task entrypoints**: `scripts/morning-routine/tasks/*.ts`
+
+### Run artifacts
+- **Generation manifest**: `scripts/morning-routine/.runs/<runId>.json`
+  - Current schema: `{ runId: string, created: string[] }` where `created` are repo-relative markdown paths.
+
+### External storage (PRD target)
+- **R2 originals**: stable key scheme, versioned (to avoid accidental breaking changes)
+- **R2 rejected**: `rejected/<category>/<collection>/<...>`
+- **Cloudflare Images**: optional; must always have an R2 fallback URL
+
+### Issue ledgers (PRD target)
+- **Trash Can (rejections)**: Issue #4
+- **Run tracker (daily completion)**: keep Issue #1 (current workflow) unless intentionally consolidated
+- **Note**: Issue #2 (Primary SEO Monitoring) exists as an external weekly reporting process but is **not part of the autonomy control loop** in this PRD. It may be integrated later as a separate enhancement.
+
+All issue comment formats must be machine-parseable and versioned (see `.docs/prd/autonomy-prd.issues.md`).
+
+---
+
+## 5) Agent fleet (responsibilities + acceptance)
+
+### Agent 0: Designer (Auto-Genesis)
+- **Role**: ensure a scheduled collection has the minimal infrastructure to produce content.
+- **Trigger**: pre-production (daily), per matrix item.
+- **Inputs**: `category`, `collection`, rollout schedule context, brand rules.
+- **Outputs**: prompt config + `_index.md` scaffolding within a bounded scope.
+- **Invariants**: non-destructive; supports dry-run.
+- **Disable switches**: `ENABLE_DESIGNER`, `DESIGNER_DRY_RUN`
+- **Acceptance**: a newly scheduled collection no longer fails generation due to missing prompts or `_index.md`.
+
+### Agent 1: Architect (Immunization)
+- **Role**: reduce failure rates by adjusting prompt configs based on rejection patterns.
+- **Trigger**: weekly, not on the daily critical path.
+- **Inputs**: Issue #4 (Trash Can) only.
+- **Outputs**: bounded edits to prompt configs (e.g., `negative_prompt` updates).
+- **Invariants**:
+  - **Scope-limited mutation**: Agent 1 may only modify `negative_prompt` (or a dedicated `immunization_terms` list that is merged into `negative_prompt`). It must never change positive prompt text, templates, or subject/style lists.
+  - **Capped edits**: bounded number of additions per collection per week; deduped terms; cooldown to avoid thrashing.
+  - **Hard prompt budget**: total model input prompt (positive + negative + separators) must be **≤ 500 characters**.
+    - If the cap would be exceeded, prune `immunization_terms` first (oldest-first / lowest-impact-first) until compliant.
+    - If still > 500, abort the immunization change and log a warning (do not truncate positive prompt).
+  - **Reversible**: every change is git-revertable and logged.
+  - **Deterministic parsing + schema versioning**: Issue #4 parsing must be stable and versioned.
+- **Disable switches**: `ENABLE_IMMUNIZATION`, `IMMUNIZATION_MAX_EDITS_PER_RUN`
+- **Acceptance**: targeted rejection reasons drop over N runs without introducing new dominant failures.
+- **Note**: Issue #2 (Primary SEO Monitoring) is not used as an input; it remains an external reporting process.
+
+### Agent 2: Factory (Generation)
+- **Role**: generate candidate images and draft content artifacts.
+- **Repo reality today**: `scripts/morning-routine/tasks/generate-batch.ts` generates temp markdown files and uploads assets.
+- **Outputs (PRD target)**: candidate assets + manifest for downstream steps.
+- **Invariants**: unique IDs; rate-limited; budget-aware.
+- **Acceptance**: produces requested candidates per collection without cross-collection interference.
+
+### Agent 3: Critic (QA)
+- **Role**: evaluate generated images and enforce quality gates.
+- **Modes (rollout-safe)**:
+  - `observe` (log only)
+  - `enforce_failfast` (1-strike: reject + log; halt the collection for the run)
+- **1-strike fail-fast rule (required)**:
+  - On the **first** QA failure in a collection during a run, the Critic must:
+    - mark the asset **Rejected**
+    - log the failure reason to the Trash Can issue (Issue #4)
+    - halt further generation/processing for that collection for the remainder of the run
+  - Other collections in the run continue normally.
+- **Outputs**: survivors + rejected items (routed + logged).
+- **Disable switches**: `ENABLE_QA`, `QA_MODE`
+- **Acceptance**: failures are rejected and logged to Issue #4; the collection halts after the first failure; survivors proceed end-to-end.
+
+### Agent 4: SEO Copywriter / Finisher (Packaging)
+- **Repo reality today**: `.agents/seo-copywriter/` + `scripts/morning-routine/tasks/seo-review-batch.ts` update SEO fields and rename markdown deterministically.
+- **Role (PRD target)**: post-QA finalization: SEO metadata + deterministic naming + ensuring downloadable artifacts exist (policy-defined).
+- **Invariants**: bounded frontmatter edits; never reintroduces deprecated fields; best-effort failure does not block the run.
+- **Disable switches**: `ENABLE_FINISHING`
+- **Acceptance**: survivor pages have consistent metadata and retain critical URLs (`image_url`, `download_url`, `r2_original`).
+
+### Agent 5: Distributor (Syndication)
+- **Role**: Make.com automation: RSS → Pinterest with UTM.
+- **Invariants**: distributor failure never blocks production.
+- **Acceptance**: new pages appear in RSS with the required fields and create Pinterest posts with correct destination URLs.
+
+---
+
+## 6) Foreman scheduling: ramp-up + maintenance
+
+### Rollout schedule file (source of truth)
+The Foreman is **not** selecting “top collections”. It reads an explicit weekly rollout schedule that specifies which collections should be active in each week.
+
+- **Schedule file**: `mission-control/rollout-schedule.md` (canonical; human-edited and machine-parseable)
+- **Week boundary**: weeks start **Monday 12:01 AM Eastern time** (EST/ET).
+- **Launch date source**: a single canonical file (to be created) referenced by Foreman (tracked in `.docs/prd/autonomy-prd.issues.md`).
+
+### Rollout schedule schema (rollout_schedule_v1)
+The schedule must be machine-parseable and deterministic.
+
+- **timezone**: `America/New_York`
+- **week_boundary**: Monday 00:01 ET
+- **week_id**: `Week_1`, `Week_2`, `Week_3`, `Week_4_plus`
+- **starts_at_et**: `YYYY-MM-DD` (Monday date for that week)
+- **collections**: list of `category/collection` items (active collections for production)
+  - Existing collections map to `content/<category>/<collection>/`
+  - New categories/collections (e.g., `fantasy/*`) are allowed and are created by Agent 0 (Designer) during Setup & Genesis.
+- **dry_run_collections** (optional): list of `category/collection` items (Foreman/Designer **dry-run only**)
+  - These are included in Foreman reporting and Designer dry-run output.
+  - These must **never** be scheduled for production generation/publishing.
+  - Existing collections map to `content/<category>/<collection>/`
+  - New categories/collections (e.g., `fantasy/*`) are allowed and are created by Agent 0 (Designer) during Setup & Genesis.
+
+### Ramp-up logic (schedule-driven)
+- Foreman determines the current “week” using the week boundary above.
+- Foreman selects the collections listed for that week in the rollout schedule file.
+- Foreman then applies the maintenance policy (below) to determine whether each collection is scheduled **daily** or **weekly**.
+
+### Maintenance mode (cap + weekly throttling)
+When a collection reaches the cap, it is not removed from production; it enters **Maintenance Mode**.
+
+- **Cap threshold**: **75** published pages in the collection.
+- **Counting rule**: count only **non-draft** pages (published) in `content/<category>/<collection>/` (excluding `_index.md`).
+- **Behavior**:
+  - If `published_count < 75`: schedule the collection **every day** (for the days included by the weekly rollout schedule).
+  - If `published_count >= 75`: schedule the collection **only once per week** (Maintenance Mode).
+- **Maintenance day rule (deterministic)**:
+  - Schedule the once-per-week run on the **first daily run after the week starts** (week starts Monday 12:01 AM ET, daily job is 5:00 AM ET → effectively Monday’s run).
+  - This keeps behavior deterministic and avoids needing extra persisted “already ran this week” state.
+
+**Acceptance**: Foreman output includes the scheduled collections for the current week, where each collection is included either daily (uncapped) or once per week (capped).
+
+---
+
+## 7) Workflow orchestration (GitHub Actions)
+
+### Baseline (exists today)
+`.github/workflows/daily-generate-and-optimize.yml` currently:
+- runs generation in a matrix over hardcoded collections
+- runs best-effort SEO optimization using the manifest
+- commits artifacts in a separate job
+
+### PRD target workflow shape
+- **Setup & Genesis**: Foreman → Designer (dry-run first)
+- **Production**: Generate → QA → Finish (per matrix item)
+- **Commit & Deploy**: consolidate artifacts → commit → build → deploy
+
+### Operational requirements
+- Each new step has a disable switch (see rollout doc).
+- Artifact/commit strategy must include any files expected to be committed (see risk R5 in `.docs/prd/autonomy-prd.issues.md`).
+
+---
+
+## 8) Data models & logging
+
+### Trash Can schema (Issue #4)
+Each rejection comment must include a versioned, machine-parseable block with at least:
+`schema_version`, `timestamp`, `category`, `collection`, `reason`, `prompt_or_prompt_id`, `asset_url`, `run_id`.
+
+**Note**: Issue #2 (Primary SEO Monitoring) is not part of the autonomy system. It remains an external weekly reporting process (GA4 + GSC data) and may be integrated later as a separate enhancement.
+
+---
+
+## 9) Rollout plan
+Canonical rollout plan: `.docs/prd/autonomy-prd.rollout.md`
+
+---
+
+## 10) Risks & open questions
+Canonical log: `.docs/prd/autonomy-prd.issues.md`
+
+---
+
+## 11) Implementation roadmap
+This PRD is intended to be decomposed into an Epic + stories. The derived outline lives at:
+`.docs/prd/autonomy-prd.epic-stories.md`
 
 
-## 5. Data Models & Logging
-
-
-
-### 5.1 The "Trash Can" (GitHub Issue #4)
-
-Used for autonomous feedback loops and manual review.
-
-
-**REJECTED**
-
-- **Collection:** animals/cats
-
-- **Reason:** TEXT_OVERLAY
-
-- **Prompt:** "A cute cat reading a book..."
-
-- **Asset:** [Link to R2/rejected/REJECTED_TEXT_OVERLAY_12345.png]
-
-
-
-5.2 The "Hall of Fame" (GitHub Issue #2)
-
-Used by Agent 1 to reinforce successful styles. Contains top-performing queries and pages from GSC/GA4.
-
-6. Implementation Roadmap
-
-Phase 1: The Autonomous Core (Current Sprint)
-
-* [ ] Task 1.1: Implement production-schedule.ts (The Foreman) with Master Taxonomy and Maintenance logic.
-
-* [ ] Task 1.2: Implement design-collection.ts (The Designer) for Auto-Genesis.
-
-* [ ] Task 1.3: Refactor GitHub Workflow to split Setup and Production jobs.
-
-* [ ] Task 1.4: Update generate-batch.ts to implement strict "Two-Strike" rule and R2 rejection uploading.
-
-* [ ] Task 1.5: Create seo-review-batch.ts to handle JIT PDF generation.
-
-Phase 2: Intelligence
-
-* [ ] Task 2.1: Connect Agent 3 to Issue #4 (Logging).
-
-* [ ] Task 2.2: Connect Agent 1 to Issue #4 (Self-Healing/Config Updates).
-
-Phase 3: Dashboarding
-
-* [ ] Task 3.1: Localhost Dashboard to visualize the status of the "Empire" (Active vs. Maintenance collections).
-
-<!-- end list -->

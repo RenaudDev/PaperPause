@@ -7,6 +7,7 @@ import { logger } from '../lib/logger';
 import { loadPrompt, getRandomVariant, buildPromptWithStyle, StyleSelectionOptions } from '../lib/prompt-manager';
 import { readIndexFile } from '../lib/hugo-manager';
 import { ENV } from '../config/env';
+import { logActiveFlags } from '../config/flags';
 
 export interface GenerationResult {
   id: string;
@@ -138,6 +139,9 @@ export const generateBatch = async (
   const runId =
     process.env.GENERATION_RUN_ID ||
     new Date().toISOString().replace(/[:.]/g, '-'); // safe for filenames on all OSes
+
+  // Log active autonomy flags for auditability
+  logActiveFlags();
 
   // Load collection metadata and prompt
   const contentDir = path.join(path.resolve(__dirname, '../../../content'), category, collection);
