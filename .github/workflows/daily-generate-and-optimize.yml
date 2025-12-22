@@ -21,6 +21,7 @@ env:
   ENABLE_PDF: '0'
   ENABLE_IMMUNIZATION: '0'
   NODE_VERSION: '20'
+  TRACKING_ISSUE_NUMBER: 1
 
 jobs:
   setup:
