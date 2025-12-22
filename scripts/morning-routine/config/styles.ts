@@ -20,7 +20,7 @@ export const COLORING_STYLES: Record<string, StyleDefinition> = {
     id: "kawaii",
     name: "Kawaii",
     description: "Cute, simple, rounded. Good for kids, relaxing for adults.",
-    promptModifier: "chibi style, super cute, rounded soft shapes, large eyes, simple details, thick joyful outlines, japanese kawaii aesthetic, minimal background noise",
+    promptModifier: "chibi style, super cute, rounded soft shapes, large eyes, simple details, thick joyful outlines, japanese kawaii aesthetic, minimal background noise, closed paths, bold easy-to-color segments",
     targetAudience: "Kids",
     preferredMedium: "Crayons",
     tags: ["cute", "kids", "simple", "rounded", "japanese"]
@@ -30,7 +30,7 @@ export const COLORING_STYLES: Record<string, StyleDefinition> = {
     id: "cottagecore",
     name: "Cottagecore",
     description: "Cozy, nostalgic, storybook feel.",
-    promptModifier: "sophisticated botanical illustration, intricate cottagecore aesthetic, fine line work, detailed organic textures, adult coloring book quality, elegant and detailed composition.",
+    promptModifier: "sophisticated botanical illustration, intricate cottagecore aesthetic, fine line work, detailed organic textures, adult coloring book quality, elegant and detailed composition, continuous lines, sharp vector edges.",
     targetAudience: "Adults",
     preferredMedium: "Fine-tip Markers",
     tags: ["cozy", "nostalgic", "storybook", "whimsical", "nature"]
@@ -40,7 +40,7 @@ export const COLORING_STYLES: Record<string, StyleDefinition> = {
     id: "totem",
     name: "Totem",
     description: "Outline with internal patterns (Zentangle style).",
-    promptModifier: "zentangle style, silhouette shape filled with intricate floral and geometric patterns, mandala elements, meditative detail, decorative internal line work, folk art inspired, symmetrical patterning",
+    promptModifier: "zentangle style, silhouette shape filled with intricate floral and geometric patterns, mandala elements, decorative internal line work, folk art inspired, symmetrical patterning, clear separation between patterns, distinct segments.",
     targetAudience: "Adults",
     preferredMedium: "Gel Pens",
     tags: ["patterns", "zentangle", "meditative", "detailed", "symmetrical"]
@@ -50,7 +50,7 @@ export const COLORING_STYLES: Record<string, StyleDefinition> = {
     id: "pop-art",
     name: "Bold Line Pop Art",
     description: "Modern, sharp, sticker-like.",
-    promptModifier: "pop art style, thick uniform bold outer lines, stained glass segments, graffiti art influence, clear segmentation, modern vector art, distinct shapes for easy coloring, dynamic angles",
+    promptModifier: "pop art style, thick uniform bold outer lines, stained glass segments, graffiti art influence, clear segmentation, modern vector art, distinct shapes for easy coloring, dynamic angles, no shading, monochrome line work.",
     targetAudience: "Kids",
     preferredMedium: "Markers",
     tags: ["bold", "modern", "sticker", "vector", "dynamic"]
@@ -60,7 +60,7 @@ export const COLORING_STYLES: Record<string, StyleDefinition> = {
     id: "magical-realism",
     name: "Magical Realism",
     description: "Realistic proportions but fantasy elements (The 'Enchanted' look).",
-    promptModifier: "enchanted realism, biologically accurate anatomy blended with fantasy elements, elegant and regal, fine detailed line work, art nouveau influence, ethereal atmosphere, dreamlike composition, mystical details",
+    promptModifier: "enchanted realism, biologically accurate anatomy blended with fantasy elements, elegant and regal, fine detailed line work, art nouveau influence, ethereal atmosphere, dreamlike composition, mystical details, sharp black and white outlines.",
     targetAudience: "Adults",
     preferredMedium: "Colored Pencils",
     tags: ["realistic", "fantasy", "elegant", "detailed", "enchanted"]

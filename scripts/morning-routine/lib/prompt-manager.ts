@@ -10,6 +10,7 @@ export interface PromptConfig {
   category: string;
   base: string;
   negative_prompt: string;
+  immunization_terms?: string[];
   medium?: string;
   attributes: {
     tones: string[];
@@ -356,10 +357,27 @@ export function buildPromptWithStyle(
   const styledBase = `${promptConfig.base}\n\nSTYLE MODIFIER: ${style.promptModifier}\n\nCRITICAL ENFORCEMENT: NO BORDERS, NO FRAMES, NO EDGES. The art must exist freely on the white background without any containing box or boundary lines.`;
   const fullPrompt = `${styledBase}\n\nSCENE: ${variantPrompt}, aspectRatio = "3:4", Resolution: "4K", 3:4 aspect ratio, high-resolution 4K detail`;
 
+  // Merge immunization terms if present
+  let finalNegative = promptConfig.negative_prompt;
+  if (promptConfig.immunization_terms && promptConfig.immunization_terms.length > 0) {
+    const terms = promptConfig.immunization_terms.join(', ');
+    finalNegative = `${finalNegative}, ${terms}`;
+  }
+
+  // Safety Check (Story 1.D.2)
+  const totalLength = fullPrompt.length + finalNegative.length;
+  if (totalLength > 500) {
+    logger.warn(`PROMPT BUDGET EXCEEDED: ${totalLength}/500 chars. Generation may be unstable.`, {
+      collection: `${category}/${collection}`,
+      positive: fullPrompt.length,
+      negative: finalNegative.length
+    });
+  }
+
   return {
     fullPrompt,
     style,
-    negative_prompt: promptConfig.negative_prompt
+    negative_prompt: finalNegative
   };
 }
 

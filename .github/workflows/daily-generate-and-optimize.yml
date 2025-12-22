@@ -12,13 +12,13 @@ permissions:
 
 env:
   # Autonomy System Feature Flags (Phase A-D rollout control)
-  ENABLE_FOREMAN: '0'
-  ENABLE_DESIGNER: '0'
+  ENABLE_FOREMAN: '1'
+  ENABLE_DESIGNER: '1'
   DESIGNER_DRY_RUN: '1'
-  ENABLE_QA: '0'
+  ENABLE_QA: '1'
   QA_MODE: 'observe'
-  ENABLE_FINISHING: '0'
-  ENABLE_PDF: '0'
+  ENABLE_FINISHING: '1'
+  ENABLE_PDF: '1'
   ENABLE_IMMUNIZATION: '0'
   NODE_VERSION: '20'
   TRACKING_ISSUE_NUMBER: 1
@@ -155,14 +155,14 @@ jobs:
           echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT
           GENERATION_RUN_ID=$RUN_ID npx ts-node scripts/morning-routine/tasks/generate-batch.ts ${{ steps.parse.outputs.category }} ${{ steps.parse.outputs.collection }} 1
 
-      - name: Optimize SEO metadata for ${{ steps.parse.outputs.collection }}
-        id: seo
+      - name: Finish batch (JIT PDF & SEO)
+        id: finish
         run: |
           MANIFEST_FILE="scripts/morning-routine/.runs/${{ steps.generate.outputs.run_id }}.json"
           if [ -f "$MANIFEST_FILE" ]; then
-            npx ts-node scripts/morning-routine/tasks/seo-review-batch.ts ${{ steps.parse.outputs.category }} ${{ steps.parse.outputs.collection }} --manifest "$MANIFEST_FILE"
+            npx ts-node scripts/morning-routine/tasks/finish-batch.ts "$MANIFEST_FILE"
           else
-            echo "⚠️  No manifest found, skipping SEO for ${{ steps.parse.outputs.collection }}"
+            echo "⚠️  No manifest found, skipping Finisher"
           fi
         continue-on-error: true
 
@@ -213,11 +213,19 @@ jobs:
           pattern: content-*
           merge-multiple: true
 
-      - name: Commit generated content
+      - name: Architect Immunization (Self-Healing)
+        if: env.ENABLE_IMMUNIZATION == '1'
+        run: |
+          npx ts-node scripts/morning-routine/tasks/architect-immunize.ts
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+
+      - name: Commit generated content & immunizations
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
-          git add content/
+          git add content/ scripts/morning-routine/config/prompts/
           
           if git diff --staged --quiet; then
             echo "✓ No changes to commit"

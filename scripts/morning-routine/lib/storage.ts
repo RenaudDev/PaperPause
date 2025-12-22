@@ -1,11 +1,11 @@
-import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 import { ENV } from '../config/env';
 import { uploadToCloudflareImages, getCFImageVariants, deleteFromCloudflareImages } from './cf-images';
 import PDFDocument from 'pdfkit';
 import sharp from 'sharp';
 
 // Initialize S3 Client for Cloudflare R2
-const R2 = new S3Client({
+export const R2 = new S3Client({
     region: 'auto',
     endpoint: `https://${ENV.R2.ACCOUNT_ID}.r2.cloudflarestorage.com`,
     credentials: {
@@ -100,32 +100,7 @@ export const uploadImage = async (buffer: Buffer, filename: string, collection?:
         const r2Url = `${ENV.R2.PUBLIC_URL_BASE}/${key}`;
         console.log(`[R2] ✅ PNG stored at ${r2Url}`);
 
-        // 2. Generate PDF from PNG (non-blocking - failures don't break PNG upload)
-        let downloadUrl = '';
-        try {
-            console.log(`[PDF] Converting PNG to PDF...`);
-            const pdfBuffer = await convertPngToPdf(buffer);
-            const pdfKey = key.replace('.png', '.pdf');
-            const pdfFilename = filename.replace('.png', '.pdf');
-
-            console.log(`[R2] Uploading PDF ${pdfKey}...`);
-            await R2.send(new PutObjectCommand({
-                Bucket: ENV.R2.BUCKET_NAME,
-                Key: pdfKey,
-                Body: pdfBuffer,
-                ContentType: 'application/pdf',
-                ContentDisposition: `attachment; filename="${pdfFilename}"`
-            }));
-
-            downloadUrl = `${ENV.R2.PUBLIC_URL_BASE}/${pdfKey}`;
-            console.log(`[R2] ✅ PDF stored at ${downloadUrl}`);
-        } catch (pdfError) {
-            console.warn(`[PDF] ⚠️ PDF generation failed, PNG fallback will be used:`, pdfError);
-            // Set downloadUrl to empty string so frontmatter knows no PDF exists
-            downloadUrl = '';
-        }
-
-        // 3. Upload to Cloudflare Images for web delivery (if configured)
+        // 2. Upload to Cloudflare Images for web delivery (if configured)
         let cfImageId = '';
         let imageUrl = r2Url; // Fallback to R2
         let variants = {
@@ -155,7 +130,7 @@ export const uploadImage = async (buffer: Buffer, filename: string, collection?:
             r2Url,
             cfImageId,
             imageUrl,
-            downloadUrl,
+            downloadUrl: '', // Reset in Finisher once PDF is JIT generated
             variants
         };
     } catch (error) {
@@ -203,4 +178,40 @@ export const deleteImage = async (filename: string, cfImageId?: string, collecti
         console.error(`[R2] ❌ Delete failed for ${key}:`, error);
         throw error; // Propagate so dashboard knows it failed
     }
+};
+
+/**
+ * Upload a PDF buffer to R2 for a given key
+ */
+export const uploadPdf = async (buffer: Buffer, key: string, filename: string): Promise<string> => {
+    console.log(`[R2] Uploading JIT PDF ${key}...`);
+    await R2.send(new PutObjectCommand({
+        Bucket: ENV.R2.BUCKET_NAME,
+        Key: key,
+        Body: buffer,
+        ContentType: 'application/pdf',
+        ContentDisposition: `attachment; filename="${filename}"`
+    }));
+    
+    const downloadUrl = `${ENV.R2.PUBLIC_URL_BASE}/${key}`;
+    console.log(`[R2] ✅ PDF stored at ${downloadUrl}`);
+    return downloadUrl;
+};
+
+/**
+ * Download an object from R2 as a Buffer
+ */
+export const downloadR2Object = async (key: string): Promise<Buffer> => {
+    const { Body } = await R2.send(new GetObjectCommand({
+        Bucket: ENV.R2.BUCKET_NAME,
+        Key: key
+    }));
+    
+    if (!Body) throw new Error(`Empty body for R2 object: ${key}`);
+    
+    const chunks: any[] = [];
+    for await (const chunk of Body as any) {
+        chunks.push(chunk);
+    }
+    return Buffer.concat(chunks);
 };

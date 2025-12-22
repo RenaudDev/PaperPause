@@ -1,0 +1,1272 @@
+{
+    "name": "Integration Webhooks, Data store, Pinterest",
+    "flow": [
+        {
+            "id": 1,
+            "module": "gateway:CustomWebHook",
+            "version": 1,
+            "parameters": {
+                "hook": 2559150,
+                "maxResults": 1
+            },
+            "mapper": {},
+            "metadata": {
+                "designer": {
+                    "x": 0,
+                    "y": 0
+                },
+                "restore": {
+                    "parameters": {
+                        "hook": {
+                            "data": {
+                                "editable": "true"
+                            },
+                            "label": "paperpause"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "hook",
+                        "type": "hook:gateway-webhook",
+                        "label": "Webhook",
+                        "required": true
+                    },
+                    {
+                        "name": "maxResults",
+                        "type": "number",
+                        "label": "Maximum number of results"
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "collection",
+                        "type": "text"
+                    },
+                    {
+                        "name": "board_name",
+                        "type": "text"
+                    },
+                    {
+                        "name": "rss_url",
+                        "type": "text"
+                    }
+                ],
+                "advanced": true
+            }
+        },
+        {
+            "id": 2,
+            "module": "datastore:GetRecord",
+            "version": 1,
+            "parameters": {
+                "datastore": 79819
+            },
+            "mapper": {
+                "key": "{{1.collection}}",
+                "returnWrapped": false
+            },
+            "metadata": {
+                "designer": {
+                    "x": 300,
+                    "y": 0
+                },
+                "restore": {
+                    "parameters": {
+                        "datastore": {
+                            "label": "Board_Mappings"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "datastore",
+                        "type": "datastore",
+                        "label": "Data store",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "key",
+                        "type": "text",
+                        "label": "Key",
+                        "required": true
+                    },
+                    {
+                        "name": "returnWrapped",
+                        "type": "boolean",
+                        "label": "Return Wrapped Output",
+                        "required": true
+                    }
+                ],
+                "interface": [
+                    {
+                        "help": "Test",
+                        "name": "Test",
+                        "type": "text",
+                        "label": null,
+                        "default": null,
+                        "required": false,
+                        "multiline": false
+                    }
+                ]
+            }
+        },
+        {
+            "id": 3,
+            "module": "builtin:BasicRouter",
+            "version": 1,
+            "mapper": null,
+            "metadata": {
+                "designer": {
+                    "x": 600,
+                    "y": 0
+                }
+            },
+            "routes": [
+                {
+                    "flow": [
+                        {
+                            "id": null,
+                            "module": "placeholder:Placeholder",
+                            "filter": {
+                                "name": "Board exist",
+                                "conditions": [
+                                    [
+                                        {
+                                            "a": "{{1.board_name}}",
+                                            "o": "exist"
+                                        }
+                                    ]
+                                ]
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 900,
+                                    "y": -150
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "flow": [
+                        {
+                            "id": 18,
+                            "module": "pinterest:listBoards",
+                            "version": 2,
+                            "parameters": {
+                                "__IMTCONN__": 4597163
+                            },
+                            "filter": {
+                                "name": "Boar doesn't exist",
+                                "conditions": [
+                                    [
+                                        {
+                                            "a": "{{2.Test}}",
+                                            "o": "notexist"
+                                        }
+                                    ]
+                                ]
+                            },
+                            "mapper": {
+                                "limit": "120",
+                                "privacy": "ALL"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 816,
+                                    "y": 288
+                                },
+                                "restore": {
+                                    "expect": {
+                                        "privacy": {
+                                            "mode": "chose",
+                                            "label": "All"
+                                        },
+                                        "ad_account_id": {
+                                            "mode": "chose"
+                                        }
+                                    },
+                                    "parameters": {
+                                        "__IMTCONN__": {
+                                            "data": {
+                                                "scoped": "true",
+                                                "connection": "pinterest2"
+                                            },
+                                            "label": "PaperPause Pinterest (paperpause)"
+                                        }
+                                    }
+                                },
+                                "parameters": [
+                                    {
+                                        "name": "__IMTCONN__",
+                                        "type": "account:pinterest2",
+                                        "label": "Connection",
+                                        "required": true
+                                    }
+                                ],
+                                "expect": [
+                                    {
+                                        "name": "privacy",
+                                        "type": "select",
+                                        "label": "Privacy",
+                                        "validate": {
+                                            "enum": [
+                                                "ALL",
+                                                "PUBLIC",
+                                                "PROTECTED",
+                                                "SECRET",
+                                                "PUBLIC_AND_SECRET"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "limit",
+                                        "type": "uinteger",
+                                        "label": "Limit"
+                                    },
+                                    {
+                                        "name": "ad_account_id",
+                                        "type": "select",
+                                        "label": "Ad Account"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "id": 22,
+                            "module": "builtin:BasicAggregator",
+                            "version": 1,
+                            "parameters": {
+                                "feeder": 18
+                            },
+                            "filter": {
+                                "name": "",
+                                "conditions": [
+                                    [
+                                        {
+                                            "a": "{{18.name}}",
+                                            "b": "{{1.board_name}}",
+                                            "o": "text:equal"
+                                        }
+                                    ]
+                                ]
+                            },
+                            "mapper": {
+                                "id": "{{18.id}}",
+                                "name": "{{18.name}}"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 1177,
+                                    "y": 358
+                                },
+                                "restore": {
+                                    "extra": {
+                                        "feeder": {
+                                            "label": "Pinterest - List Boards [18]"
+                                        },
+                                        "target": {
+                                            "label": "Custom"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "id": 23,
+                            "module": "builtin:BasicRouter",
+                            "version": 1,
+                            "mapper": null,
+                            "metadata": {
+                                "designer": {
+                                    "x": 1458,
+                                    "y": 394
+                                }
+                            },
+                            "routes": [
+                                {
+                                    "flow": [
+                                        {
+                                            "id": 5,
+                                            "module": "gemini-ai:createACompletionGeminiPro",
+                                            "version": 1,
+                                            "parameters": {
+                                                "__IMTCONN__": 4599766
+                                            },
+                                            "filter": {
+                                                "name": "Board doesn't exist",
+                                                "conditions": [
+                                                    [
+                                                        {
+                                                            "a": "{{22.array}}",
+                                                            "b": "0",
+                                                            "o": "array:equal"
+                                                        }
+                                                    ]
+                                                ]
+                                            },
+                                            "mapper": {
+                                                "model": "gemini-2.5-flash",
+                                                "contents": [
+                                                    {
+                                                        "role": "user",
+                                                        "parts": [
+                                                            {
+                                                                "text": "Constraints:\r\n\r\nLength: Maximum 300 characters.\r\nStructure: Natural, engaging sentences (not just a list of tags).\r\nKeywords: Include the primary keyword, plus LSI/Semantic terms like \"line art,\" \"sheets,\" \"for kids and adults,\" \"instant download,\" and \"DIY activity.\"\r\nTone: Creative, helpful, and inviting.\r\nOutput: Return ONLY the description text. No quotes, no intro.\r\nExample for \"Cat Coloring Pages\": Discover a charming collection of free printable cat coloring pages! From cute kittens to intricate feline line art, these high-quality sheets are perfect for kids and adults. Enjoy a relaxing DIY activity with instant download PDF coloring sheets. Grab your crayons and start coloring today!",
+                                                                "type": "text"
+                                                            }
+                                                        ]
+                                                    }
+                                                ],
+                                                "generationConfig": {
+                                                    "imageConfig": {},
+                                                    "thinkingConfig": {}
+                                                },
+                                                "system_instruction": {
+                                                    "parts": [
+                                                        {
+                                                            "text": "Pinterest SEO Expert and Copywriter. Task: Write a keyword-rich board description for a Pinterest board titled: \"{{1.collection}} Coloring Pages - Free Printables\"."
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            "metadata": {
+                                                "designer": {
+                                                    "x": 1748,
+                                                    "y": 143
+                                                },
+                                                "restore": {
+                                                    "expect": {
+                                                        "model": {
+                                                            "mode": "chose",
+                                                            "label": "Gemini 2.5 Flash"
+                                                        },
+                                                        "contents": {
+                                                            "mode": "chose",
+                                                            "items": [
+                                                                {
+                                                                    "role": {
+                                                                        "mode": "chose",
+                                                                        "label": "User"
+                                                                    },
+                                                                    "parts": {
+                                                                        "mode": "chose",
+                                                                        "items": [
+                                                                            {
+                                                                                "type": {
+                                                                                    "mode": "chose",
+                                                                                    "label": "Text"
+                                                                                }
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                }
+                                                            ]
+                                                        },
+                                                        "url_context": {
+                                                            "mode": "chose"
+                                                        },
+                                                        "code_execution": {
+                                                            "mode": "chose"
+                                                        },
+                                                        "safetySettings": {
+                                                            "mode": "chose"
+                                                        },
+                                                        "generationConfig": {
+                                                            "nested": {
+                                                                "imageConfig": {
+                                                                    "nested": {
+                                                                        "imageSize": {
+                                                                            "mode": "chose",
+                                                                            "label": "Empty"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "stopSequences": {
+                                                                    "mode": "chose"
+                                                                },
+                                                                "thinkingConfig": {
+                                                                    "nested": {
+                                                                        "thinking_level": {
+                                                                            "mode": "chose",
+                                                                            "label": "Empty"
+                                                                        },
+                                                                        "include_thoughts": {
+                                                                            "mode": "chose"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "mediaResolution": {
+                                                                    "mode": "chose",
+                                                                    "label": "Empty"
+                                                                },
+                                                                "responseMimeType": {
+                                                                    "mode": "chose",
+                                                                    "label": "Empty"
+                                                                },
+                                                                "responseModalities": {
+                                                                    "mode": "chose"
+                                                                }
+                                                            }
+                                                        },
+                                                        "system_instruction": {
+                                                            "nested": {
+                                                                "parts": {
+                                                                    "mode": "chose",
+                                                                    "items": [
+                                                                        null
+                                                                    ]
+                                                                }
+                                                            }
+                                                        },
+                                                        "google_maps_context": {
+                                                            "mode": "chose"
+                                                        },
+                                                        "google_search_context": {
+                                                            "mode": "chose"
+                                                        },
+                                                        "file_search_store_context": {
+                                                            "mode": "chose"
+                                                        },
+                                                        "function_declarations_context": {
+                                                            "mode": "chose"
+                                                        }
+                                                    },
+                                                    "parameters": {
+                                                        "__IMTCONN__": {
+                                                            "data": {
+                                                                "scoped": "true",
+                                                                "connection": "gemini-ai-q9zyjp"
+                                                            },
+                                                            "label": "My Gemini AI connection"
+                                                        }
+                                                    }
+                                                },
+                                                "parameters": [
+                                                    {
+                                                        "name": "__IMTCONN__",
+                                                        "type": "account:gemini-ai-q9zyjp",
+                                                        "label": "Connection",
+                                                        "required": true
+                                                    }
+                                                ],
+                                                "expect": [
+                                                    {
+                                                        "name": "model",
+                                                        "type": "select",
+                                                        "label": "AI Model",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "contents",
+                                                        "spec": [
+                                                            {
+                                                                "name": "role",
+                                                                "type": "select",
+                                                                "label": "Role",
+                                                                "options": [
+                                                                    {
+                                                                        "label": "User",
+                                                                        "value": "user"
+                                                                    },
+                                                                    {
+                                                                        "label": "Model",
+                                                                        "value": "model"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "name": "parts",
+                                                                "spec": [
+                                                                    {
+                                                                        "name": "type",
+                                                                        "type": "select",
+                                                                        "label": "Message Type",
+                                                                        "options": [
+                                                                            {
+                                                                                "label": "Text",
+                                                                                "value": "text",
+                                                                                "nested": [
+                                                                                    {
+                                                                                        "name": "text",
+                                                                                        "type": "text",
+                                                                                        "label": "Text",
+                                                                                        "required": false
+                                                                                    }
+                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "label": "File",
+                                                                                "value": "file",
+                                                                                "nested": [
+                                                                                    {
+                                                                                        "name": "file_data",
+                                                                                        "spec": [
+                                                                                            {
+                                                                                                "name": "mime_type",
+                                                                                                "type": "text",
+                                                                                                "label": "Mime Type",
+                                                                                                "required": false
+                                                                                            },
+                                                                                            {
+                                                                                                "help": "You get this from the 'Upload a File' module.",
+                                                                                                "name": "file_uri",
+                                                                                                "type": "text",
+                                                                                                "label": "File URI",
+                                                                                                "required": false
+                                                                                            }
+                                                                                        ],
+                                                                                        "type": "collection",
+                                                                                        "label": "File Data",
+                                                                                        "required": false
+                                                                                    }
+                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "label": "Function Call",
+                                                                                "value": "functionCall",
+                                                                                "nested": [
+                                                                                    {
+                                                                                        "name": "functionCall",
+                                                                                        "spec": [
+                                                                                            {
+                                                                                                "help": "The name of the function to call.",
+                                                                                                "name": "name",
+                                                                                                "type": "text",
+                                                                                                "label": "Name",
+                                                                                                "required": true,
+                                                                                                "validate": {
+                                                                                                    "max": 64
+                                                                                                }
+                                                                                            },
+                                                                                            {
+                                                                                                "help": "The function parameters and values in JSON object format.",
+                                                                                                "name": "args",
+                                                                                                "type": "json",
+                                                                                                "label": "Arguments"
+                                                                                            },
+                                                                                            {
+                                                                                                "help": "The unique ID of the function call.",
+                                                                                                "name": "id",
+                                                                                                "type": "text",
+                                                                                                "label": "Function Call ID"
+                                                                                            }
+                                                                                        ],
+                                                                                        "type": "collection",
+                                                                                        "label": "Function Call"
+                                                                                    }
+                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "label": "Function Response",
+                                                                                "value": "functionResponse",
+                                                                                "nested": [
+                                                                                    {
+                                                                                        "name": "functionResponse",
+                                                                                        "spec": [
+                                                                                            {
+                                                                                                "help": "The name of the function to call.",
+                                                                                                "name": "name",
+                                                                                                "type": "text",
+                                                                                                "label": "Name",
+                                                                                                "required": true,
+                                                                                                "validate": {
+                                                                                                    "max": 64
+                                                                                                }
+                                                                                            },
+                                                                                            {
+                                                                                                "help": "The function response in JSON object format.",
+                                                                                                "name": "response",
+                                                                                                "type": "json",
+                                                                                                "label": "Response",
+                                                                                                "required": true
+                                                                                            }
+                                                                                        ],
+                                                                                        "type": "collection",
+                                                                                        "label": "Function Response"
+                                                                                    }
+                                                                                ]
+                                                                            }
+                                                                        ]
+                                                                    },
+                                                                    {
+                                                                        "name": "thoughtSignature",
+                                                                        "type": "text",
+                                                                        "label": "Thought Signature"
+                                                                    }
+                                                                ],
+                                                                "type": "array",
+                                                                "label": "Parts"
+                                                            }
+                                                        ],
+                                                        "type": "array",
+                                                        "label": "Messages",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "system_instruction",
+                                                        "spec": [
+                                                            {
+                                                                "name": "parts",
+                                                                "spec": {
+                                                                    "name": "value",
+                                                                    "spec": [
+                                                                        {
+                                                                            "name": "text",
+                                                                            "type": "text",
+                                                                            "label": "Value"
+                                                                        }
+                                                                    ],
+                                                                    "type": "collection",
+                                                                    "label": "Prompt"
+                                                                },
+                                                                "type": "array",
+                                                                "label": "Prompts"
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "System Instructions"
+                                                    },
+                                                    {
+                                                        "name": "safetySettings",
+                                                        "spec": [
+                                                            {
+                                                                "name": "category",
+                                                                "type": "select",
+                                                                "label": "Category",
+                                                                "options": [
+                                                                    {
+                                                                        "label": "Harassment content",
+                                                                        "value": "HARM_CATEGORY_HARASSMENT"
+                                                                    },
+                                                                    {
+                                                                        "label": "Hate speech and content",
+                                                                        "value": "HARM_CATEGORY_HATE_SPEECH"
+                                                                    },
+                                                                    {
+                                                                        "label": "Sexually explicit content.",
+                                                                        "value": "HARM_CATEGORY_SEXUALLY_EXPLICIT"
+                                                                    },
+                                                                    {
+                                                                        "label": "Dangerous content:",
+                                                                        "value": "HARM_CATEGORY_DANGEROUS_CONTENT"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "name": "threshold",
+                                                                "type": "select",
+                                                                "label": "Threshold",
+                                                                "options": [
+                                                                    {
+                                                                        "label": "Block low and above.",
+                                                                        "value": "BLOCK_LOW_AND_ABOVE"
+                                                                    },
+                                                                    {
+                                                                        "label": "Block medium and above.",
+                                                                        "value": "BLOCK_MEDIUM_AND_ABOVE"
+                                                                    },
+                                                                    {
+                                                                        "label": "Block only high.",
+                                                                        "value": "BLOCK_ONLY_HIGH"
+                                                                    },
+                                                                    {
+                                                                        "label": "Block none.",
+                                                                        "value": "BLOCK_NONE"
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ],
+                                                        "type": "array",
+                                                        "label": "Safety Settings"
+                                                    },
+                                                    {
+                                                        "name": "generationConfig",
+                                                        "spec": [
+                                                            {
+                                                                "name": "stopSequences",
+                                                                "spec": {
+                                                                    "name": "value",
+                                                                    "type": "text",
+                                                                    "label": "Stop Sequence"
+                                                                },
+                                                                "type": "array",
+                                                                "label": "Stop Sequences"
+                                                            },
+                                                            {
+                                                                "name": "responseModalities",
+                                                                "type": "select",
+                                                                "label": "Response Modalities",
+                                                                "multiple": true,
+                                                                "validate": {
+                                                                    "enum": [
+                                                                        "text",
+                                                                        "image"
+                                                                    ]
+                                                                }
+                                                            },
+                                                            {
+                                                                "name": "maxOutputTokens",
+                                                                "type": "number",
+                                                                "label": "Max Output Tokens"
+                                                            },
+                                                            {
+                                                                "name": "temperature",
+                                                                "type": "number",
+                                                                "label": "Temperature",
+                                                                "validate": {
+                                                                    "max": 1,
+                                                                    "min": 0
+                                                                }
+                                                            },
+                                                            {
+                                                                "name": "topP",
+                                                                "type": "number",
+                                                                "label": "Top P",
+                                                                "validate": {
+                                                                    "max": 1,
+                                                                    "min": 0
+                                                                }
+                                                            },
+                                                            {
+                                                                "name": "topK",
+                                                                "type": "number",
+                                                                "label": "Top K"
+                                                            },
+                                                            {
+                                                                "name": "thinkingConfig",
+                                                                "spec": [
+                                                                    {
+                                                                        "name": "thinkingBudget",
+                                                                        "type": "number",
+                                                                        "label": "Thinking Budget"
+                                                                    },
+                                                                    {
+                                                                        "name": "include_thoughts",
+                                                                        "type": "boolean",
+                                                                        "label": "Include Thoughts"
+                                                                    },
+                                                                    {
+                                                                        "name": "thinking_level",
+                                                                        "type": "select",
+                                                                        "label": "Thinking Level",
+                                                                        "validate": {
+                                                                            "enum": [
+                                                                                "low",
+                                                                                "high"
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ],
+                                                                "type": "collection",
+                                                                "label": "Thinking Config"
+                                                            },
+                                                            {
+                                                                "name": "mediaResolution",
+                                                                "type": "select",
+                                                                "label": "Media Resolution",
+                                                                "validate": {
+                                                                    "enum": [
+                                                                        "media_resolution_low",
+                                                                        "media_resolution_medium",
+                                                                        "media_resolution_high"
+                                                                    ]
+                                                                }
+                                                            },
+                                                            {
+                                                                "name": "imageConfig",
+                                                                "spec": [
+                                                                    {
+                                                                        "name": "imageSize",
+                                                                        "type": "select",
+                                                                        "label": "Image Size",
+                                                                        "validate": {
+                                                                            "enum": [
+                                                                                "1K",
+                                                                                "2K",
+                                                                                "4K"
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ],
+                                                                "type": "collection",
+                                                                "label": "Image Configuration"
+                                                            },
+                                                            {
+                                                                "name": "responseMimeType",
+                                                                "type": "select",
+                                                                "label": "Response Format"
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "Generation configurations"
+                                                    },
+                                                    {
+                                                        "name": "tools",
+                                                        "type": "any",
+                                                        "label": "Tools"
+                                                    },
+                                                    {
+                                                        "name": "tool_config",
+                                                        "type": "any",
+                                                        "label": "Tool Config"
+                                                    },
+                                                    {
+                                                        "name": "function_declarations_context",
+                                                        "type": "boolean",
+                                                        "label": "Function Declarations Grounding"
+                                                    },
+                                                    {
+                                                        "name": "url_context",
+                                                        "type": "boolean",
+                                                        "label": "URL Context"
+                                                    },
+                                                    {
+                                                        "name": "google_search_context",
+                                                        "type": "boolean",
+                                                        "label": "Google Search Grounding"
+                                                    },
+                                                    {
+                                                        "name": "code_execution",
+                                                        "type": "boolean",
+                                                        "label": "Code Execution"
+                                                    },
+                                                    {
+                                                        "name": "google_maps_context",
+                                                        "type": "boolean",
+                                                        "label": "Google Maps Grounding"
+                                                    },
+                                                    {
+                                                        "name": "file_search_store_context",
+                                                        "type": "boolean",
+                                                        "label": "File Search Store Context"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "id": 4,
+                                            "module": "pinterest:createABoard",
+                                            "version": 2,
+                                            "parameters": {
+                                                "__IMTCONN__": 4597163
+                                            },
+                                            "mapper": {
+                                                "name": "{{1.board_name}} - Free Printables",
+                                                "privacy": "PUBLIC",
+                                                "description": "{{5.result}}"
+                                            },
+                                            "metadata": {
+                                                "designer": {
+                                                    "x": 2025,
+                                                    "y": 121
+                                                },
+                                                "restore": {
+                                                    "expect": {
+                                                        "privacy": {
+                                                            "mode": "chose",
+                                                            "label": "Public"
+                                                        },
+                                                        "ad_account_id": {
+                                                            "mode": "chose"
+                                                        }
+                                                    },
+                                                    "parameters": {
+                                                        "__IMTCONN__": {
+                                                            "data": {
+                                                                "scoped": "true",
+                                                                "connection": "pinterest2"
+                                                            },
+                                                            "label": "PaperPause Pinterest (paperpause)"
+                                                        }
+                                                    }
+                                                },
+                                                "parameters": [
+                                                    {
+                                                        "name": "__IMTCONN__",
+                                                        "type": "account:pinterest2",
+                                                        "label": "Connection",
+                                                        "required": true
+                                                    }
+                                                ],
+                                                "expect": [
+                                                    {
+                                                        "name": "name",
+                                                        "type": "text",
+                                                        "label": "Name",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "description",
+                                                        "type": "text",
+                                                        "label": "Description"
+                                                    },
+                                                    {
+                                                        "name": "privacy",
+                                                        "type": "select",
+                                                        "label": "Privacy",
+                                                        "validate": {
+                                                            "enum": [
+                                                                "PUBLIC",
+                                                                "PROTECTED",
+                                                                "SECRET"
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "ad_account_id",
+                                                        "type": "select",
+                                                        "label": "Ad Account"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "id": 9,
+                                            "module": "datastore:AddRecord",
+                                            "version": 1,
+                                            "parameters": {
+                                                "datastore": 79819
+                                            },
+                                            "mapper": {
+                                                "key": "{{1.collection}}",
+                                                "data": {
+                                                    "Test": "{{4.id}}"
+                                                },
+                                                "overwrite": true
+                                            },
+                                            "metadata": {
+                                                "designer": {
+                                                    "x": 2288,
+                                                    "y": 121
+                                                },
+                                                "restore": {
+                                                    "expect": {
+                                                        "overwrite": {
+                                                            "mode": "chose"
+                                                        }
+                                                    },
+                                                    "parameters": {
+                                                        "datastore": {
+                                                            "label": "Board_Mappings"
+                                                        }
+                                                    }
+                                                },
+                                                "parameters": [
+                                                    {
+                                                        "name": "datastore",
+                                                        "type": "datastore",
+                                                        "label": "Data store",
+                                                        "required": true
+                                                    }
+                                                ],
+                                                "expect": [
+                                                    {
+                                                        "name": "key",
+                                                        "type": "text",
+                                                        "label": "Key"
+                                                    },
+                                                    {
+                                                        "name": "overwrite",
+                                                        "type": "boolean",
+                                                        "label": "Overwrite an existing record",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "data",
+                                                        "spec": [
+                                                            {
+                                                                "name": "Test",
+                                                                "type": "text",
+                                                                "label": null
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "Record"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "id": 13,
+                                            "module": "rss:ActionReadArticles",
+                                            "version": 4,
+                                            "parameters": {
+                                                "include": []
+                                            },
+                                            "mapper": {
+                                                "url": "{{1.rss_url}}",
+                                                "gzip": true,
+                                                "password": "",
+                                                "username": "",
+                                                "maxResults": "1",
+                                                "filterDateTo": "",
+                                                "filterDateFrom": ""
+                                            },
+                                            "metadata": {
+                                                "designer": {
+                                                    "x": 2649,
+                                                    "y": 110
+                                                },
+                                                "restore": {},
+                                                "parameters": [
+                                                    {
+                                                        "name": "include",
+                                                        "type": "select",
+                                                        "label": "Process RSS fields",
+                                                        "multiple": true,
+                                                        "validate": {
+                                                            "enum": [
+                                                                "google-merchant-center",
+                                                                "itunes"
+                                                            ]
+                                                        }
+                                                    }
+                                                ],
+                                                "expect": [
+                                                    {
+                                                        "name": "url",
+                                                        "type": "url",
+                                                        "label": "URL",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "username",
+                                                        "type": "text",
+                                                        "label": "User name"
+                                                    },
+                                                    {
+                                                        "name": "password",
+                                                        "type": "text",
+                                                        "label": "Password"
+                                                    },
+                                                    {
+                                                        "name": "filterDateFrom",
+                                                        "type": "date",
+                                                        "label": "Date from"
+                                                    },
+                                                    {
+                                                        "name": "filterDateTo",
+                                                        "type": "date",
+                                                        "label": "Date to "
+                                                    },
+                                                    {
+                                                        "name": "maxResults",
+                                                        "type": "number",
+                                                        "label": "Maximum number of returned items",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "gzip",
+                                                        "type": "boolean",
+                                                        "label": "Request compressed content",
+                                                        "required": true
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "id": 15,
+                                            "module": "pinterest:createPin",
+                                            "version": 2,
+                                            "metadata": {
+                                                "designer": {
+                                                    "x": 2949,
+                                                    "y": 110
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "flow": [
+                                        {
+                                            "id": 11,
+                                            "module": "datastore:AddRecord",
+                                            "version": 1,
+                                            "parameters": {
+                                                "datastore": 79819
+                                            },
+                                            "filter": {
+                                                "name": "Board exist",
+                                                "conditions": [
+                                                    [
+                                                        {
+                                                            "a": "{{22.array}}",
+                                                            "b": "0",
+                                                            "o": "array:greater"
+                                                        }
+                                                    ]
+                                                ]
+                                            },
+                                            "mapper": {
+                                                "key": "{{1.collection}}",
+                                                "data": {
+                                                    "Test": ""
+                                                },
+                                                "overwrite": false
+                                            },
+                                            "metadata": {
+                                                "designer": {
+                                                    "x": 2281,
+                                                    "y": 564
+                                                },
+                                                "restore": {
+                                                    "expect": {
+                                                        "overwrite": {
+                                                            "mode": "chose"
+                                                        }
+                                                    },
+                                                    "parameters": {
+                                                        "datastore": {
+                                                            "label": "Board_Mappings"
+                                                        }
+                                                    }
+                                                },
+                                                "parameters": [
+                                                    {
+                                                        "name": "datastore",
+                                                        "type": "datastore",
+                                                        "label": "Data store",
+                                                        "required": true
+                                                    }
+                                                ],
+                                                "expect": [
+                                                    {
+                                                        "name": "key",
+                                                        "type": "text",
+                                                        "label": "Key"
+                                                    },
+                                                    {
+                                                        "name": "overwrite",
+                                                        "type": "boolean",
+                                                        "label": "Overwrite an existing record",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "data",
+                                                        "spec": [
+                                                            {
+                                                                "name": "Test",
+                                                                "type": "text",
+                                                                "label": null
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "Record"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "id": 14,
+                                            "module": "rss:ActionReadArticles",
+                                            "version": 4,
+                                            "parameters": {
+                                                "include": []
+                                            },
+                                            "mapper": {
+                                                "url": "{{1.rss_url}}",
+                                                "gzip": true,
+                                                "password": "",
+                                                "username": "",
+                                                "maxResults": "1",
+                                                "filterDateTo": "",
+                                                "filterDateFrom": ""
+                                            },
+                                            "metadata": {
+                                                "designer": {
+                                                    "x": 2630,
+                                                    "y": 570
+                                                },
+                                                "restore": {},
+                                                "parameters": [
+                                                    {
+                                                        "name": "include",
+                                                        "type": "select",
+                                                        "label": "Process RSS fields",
+                                                        "multiple": true,
+                                                        "validate": {
+                                                            "enum": [
+                                                                "google-merchant-center",
+                                                                "itunes"
+                                                            ]
+                                                        }
+                                                    }
+                                                ],
+                                                "expect": [
+                                                    {
+                                                        "name": "url",
+                                                        "type": "url",
+                                                        "label": "URL",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "username",
+                                                        "type": "text",
+                                                        "label": "User name"
+                                                    },
+                                                    {
+                                                        "name": "password",
+                                                        "type": "text",
+                                                        "label": "Password"
+                                                    },
+                                                    {
+                                                        "name": "filterDateFrom",
+                                                        "type": "date",
+                                                        "label": "Date from"
+                                                    },
+                                                    {
+                                                        "name": "filterDateTo",
+                                                        "type": "date",
+                                                        "label": "Date to "
+                                                    },
+                                                    {
+                                                        "name": "maxResults",
+                                                        "type": "number",
+                                                        "label": "Maximum number of returned items",
+                                                        "required": true
+                                                    },
+                                                    {
+                                                        "name": "gzip",
+                                                        "type": "boolean",
+                                                        "label": "Request compressed content",
+                                                        "required": true
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "metadata": {
+        "instant": true,
+        "version": 1,
+        "scenario": {
+            "roundtrips": 1,
+            "maxErrors": 3,
+            "autoCommit": true,
+            "autoCommitTriggerLast": true,
+            "sequential": false,
+            "slots": null,
+            "confidential": false,
+            "dataloss": false,
+            "dlq": false,
+            "freshVariables": false
+        },
+        "designer": {
+            "orphans": []
+        },
+        "zone": "us1.make.com",
+        "notes": []
+    }
+}

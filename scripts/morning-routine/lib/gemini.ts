@@ -48,11 +48,19 @@ export const generateImage = async (prompt: string, negativePrompt?: string): Pr
                 fullPrompt += `\n\nAVOID: ${negativePrompt}`;
             }
 
-            // Generate image using Gemini with image generation capability
-            // Strongly emphasize 3:4 aspect ratio at 3072×4096 pixels resolution in the prompt
-            const aspectRatioPrompt = `${fullPrompt}\n\n[CRITICAL: ASPECT RATIO = "3:4". THIS IMAGE MUST BE TALL PORTRAIT. It MUST be TALLER than it is wide. Do NOT output a square image. Minimum resolutions: 2K.]`;
+            // CRITIC SAFETY BLOCK: Enforce mandatory quality standards at the model level
+            const CRITIC_SAFETY_BLOCK = `
+[CRITICAL QUALITY RULES]:
+1. NO TEXT: No letters, words, numbers, or signatures.
+2. NO GRAYSCALE: No shading, no gradients, no gray fills. 1-bit monochrome only.
+3. CLOSED PATHS: All lines must touch to form closed shapes for coloring.
+4. HIGH OCCUPANCY: Subject must fill at least 80% of the canvas.
+5. ASPECT RATIO: 3:4 Tall Portrait orientation.
+`;
+
+            const finalPrompt = `${fullPrompt}\n${CRITIC_SAFETY_BLOCK}`;
             
-            const result = await model.generateContent(aspectRatioPrompt);
+            const result = await model.generateContent(finalPrompt);
 
             // Log response structure for debugging
             logger.info('Gemini response structure:', { 

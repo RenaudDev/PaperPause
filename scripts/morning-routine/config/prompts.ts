@@ -1,31 +1,17 @@
 export const PROMPT_CONFIG = {
     base: `
-    TYPE: Vector Line Art Coloring Page.
-    OUTPUT FORMAT: PNG with black outlines on pure white background.
+    Vector Line Art Coloring Page.
     SUBJECT: A cute, cozy cat.
     
-    TECHNICAL REQUIREMENTS:
-    - Background: Pure white (#FFFFFF) - NOT transparent, NOT transparent background
-    - Lines: Pure black (#000000) outlines only
-    - Line weight: Thick, consistent, 4-6px width
-    - Style: Clean vector-style line art suitable for coloring
-    
-    COMPOSITION:
-    - Centered subject within 2:3 frame
-    - Leave adequate margins (10-15% on all sides)
-    - Vertical (portrait) orientation
-    - Subject should fit comfortably within the frame
-    
-    WHAT TO AVOID:
-    - Transparent backgrounds
-    - Gray tones or shading
-    - Thin or broken lines
-    - Horizontal compositions
-    
-    ATMOSPHERE: Whimsical, cozy, detailed but colorable.
+    STYLE REQUIREMENTS:
+    - Pure black outlines on pure white background.
+    - Thick, consistent lines (4-6px).
+    - Centered subject, filling the frame (min 80% occupancy).
+    - No shading, no gray, no textures.
+    - All paths must be closed.
   `,
 
-    negative_prompt: "transparent background, transparency, color, shading, gray, gradient, photo, realistic, 3d, rendering, text, signature, watermark, blurry, broken lines, thin lines, sketch, messy, horizontal orientation, landscape, filled areas, solid colors",
+    negative_prompt: "text, letters, words, numbers, signature, watermark, logo, name, gray, shading, gradient, realistic, photorealistic, 3d, rendering, photo, blurry, broken lines, thin lines, sketch, messy, horizontal, landscape, colored, transparent, background patterns, complex shading",
 
     attributes: {
         tones: [

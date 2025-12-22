@@ -55,59 +55,47 @@ Your job is to scaffold a new collection with thoughtful, category-appropriate a
 CATEGORY: ${category}
 COLLECTION: ${collection}
 
-BRAND GUIDELINES:
-- Clean, thick black line art (vector style).
-- High colorability (lots of white space); "Pinky Finger Rule": no tiny details a child couldn't color.
-- Thematically coherent; respect audience sensibilities.
+CRITICAL QUALITY STANDARDS (Aligned with Art Critic):
+1. NO TEXT: Generations must never contain letters, words, numbers, or signatures.
+2. NO GRAYSCALE: No shading, gradients, or gray fills. 1-bit monochrome only.
+3. CLOSED PATHS: Lines must form fully enclosed shapes for easy coloring.
+4. HIGH OCCUPANCY: The subject must fill at least 80% of the canvas.
+5. VECTOR STYLE: Thick, consistent, black outlines on white background.
 
-CONTEXT:
-This collection will generate daily coloring pages by composing variants from attributes you define.
-The generator will pick randomly from your lists to create unique scenes.
-
-YOUR JOB (Think deeply about what makes sense for this category/collection):
+YOUR JOB:
 
 1. **Title & H1**: A human-friendly name and heading for this collection.
 
-2. **Base Prompt**: A foundational text that describes the coloring page style and requirements.
-   - Do NOT use placeholders like [SUBJECT].
-   - Focus on the aesthetic and technical constraints (line art, white background, colorability, etc.).
-   - This will be combined with variant details during generation.
+2. **Base Prompt**: A foundational text that describes the subject and composition.
+   - Do NOT use technical requirement lists (these are handled at the system level).
+   - FOCUS on: "Vector line art coloring page of a [Subject]. Subject filling the page (80% occupancy). Pure black outlines, no shading, no text."
 
-3. **Tones** (emotional vibe): 8-12 adjectives that meaningfully vary the mood/feel for this niche.
-   - Examples: "Cozy", "Playful", "Adventurous", "Zen" (not random adjectives; think about the niche).
+3. **Tones** (emotional vibe): 8-12 adjectives that meaningfully vary the mood.
+   - Examples: "Cozy", "Playful", "Zen", "Adventurous".
 
-4. **Types** (core subjects): 10-15 noun phrases for the main subject variants of this collection.
-   - Examples for animals/cats: "Persian Cat", "Tabby Cat", "Fluffy Kitten", "Cat Chasing Butterflies".
-   - Should be specific, visually distinct, and on-theme.
+4. **Types** (core subjects): 10-15 noun phrases for the main subject variants.
+   - Be specific and visually distinct within the collection.
 
-5. **Actions** (on-theme activities): 8-12 plausible actions that don't create micro-detail overload.
-   - Examples: "napping", "reading a book", "painting on a canvas", "watching the rain".
-   - Must stay true to the niche and avoid overly complex scenes.
+5. **Actions** (on-theme activities): 8-12 plausible activities that don't create micro-detail overload.
 
 6. **Settings** (on-theme contexts): 8-12 background locations that keep high colorability.
-   - Examples: "rustic kitchen", "sunlit garden", "cozy fireplace", "Parisian balcony".
-   - Avoid cluttered/busy backgrounds; favor simple, colorable spaces.
+   - Favor simple, colorable backgrounds. Avoid cluttered scenery.
 
-7. **Details** (optional small add-ons): 5-8 minor embellishments that add flavor without creating complexity.
-   - Examples: "wearing a scarf", "with a coffee cup", "near a window", "holding a book".
-   - These are optional and should not overwhelm the composition.
+7. **Details** (optional small add-ons): 5-8 minor embellishments (e.g., "wearing a scarf").
 
-8. **Styles** (visual art styles): Select 3-5 from the global list that suit this collection.
-   - Available styles: ${styleList}
-   - Be selective: pick styles that genuinely fit the niche, not all of them.
+8. **Styles**: Select 3-5 from: ${styleList}
 
-Return strict JSON (no markdown, no extra text):
-
+Return strict JSON:
 {
   "title": "string",
   "h1": "string",
-  "basePrompt": "string (no placeholders)",
+  "basePrompt": "string (optimized for Art Critic pass rate)",
   "tones": ["string", ...],
   "types": ["string", ...],
   "actions": ["string", ...],
   "settings": ["string", ...],
   "details": ["string", ...],
-  "styles": ["string (from the list above)", ...]
+  "styles": ["string", ...]
 }
 `;
 
@@ -202,7 +190,7 @@ async function run() {
               collection,
               category,
               base: genesis.basePrompt,
-              negative_prompt: "border, frame, framed, boxed, edges, decorative border, ornate frame, die cut, contour, margin line, sticker edge, realistic, photorealistic, thin lines, fine lines, hairline, delicate lines, transparent background, transparency, color, shading, gray, gradient, photo, 3d, rendering, text, signature, watermark, blurry, broken lines, sketch, messy, horizontal orientation, landscape, filled areas, solid colors, filled black areas, black shapes, solid black, black fill, dark areas, shadows, black spots, filled spaces, decorative borders, ornate frames, complex patterns, mandala patterns, intricate details, busy background, square format, 1:1 ratio, wide image",
+              negative_prompt: "text, letters, words, numbers, signature, watermark, logo, name, gray, shading, gradient, realistic, photorealistic, 3d, rendering, photo, blurry, broken lines, thin lines, sketch, messy, horizontal, landscape, colored, transparent, background patterns, complex shading",
               attributes: {
                 tones: genesis.tones,
                 types: genesis.types,

@@ -3,11 +3,14 @@ import path from 'path';
 import { generateImage } from '../lib/gemini';
 import { uploadImage } from '../lib/storage';
 import { RateLimiter } from '../lib/rate-limiter';
+import matter from 'gray-matter';
 import { logger } from '../lib/logger';
 import { loadPrompt, getVariantPrompt, buildPromptWithStyle, StyleSelectionOptions } from '../lib/prompt-manager';
 import { readIndexFile } from '../lib/hugo-manager';
 import { ENV } from '../config/env';
-import { logActiveFlags } from '../config/flags';
+import { FLAGS, logActiveFlags } from '../config/flags';
+import { assessImage } from '../../../.agents/art-critic';
+import { handleRejection } from '../lib/rejection-handler';
 
 export interface GenerationResult {
   id: string;
@@ -183,11 +186,12 @@ export const generateBatch = async (
   for (let i = 0; i < batchSize; i++) {
     await limiter.throttle(async () => {
       const startTime = Date.now();
-      const timestamp = Date.now();
-      // Variant selection: deterministic when styleMode is rotate (seeded by date + collection + slot)
+      
+      // Variant selection: ALWAYS RANDOM even if style is rotating
+      // Use 'random' mode to ensure content variety while style might rotate deterministically
       const variantSeed = `${styleRotationKey}:${category}/${collection}:slot_${i + 1}`;
       const variantPrompt = getVariantPrompt(category, collection, {
-        mode: styleMode === 'rotate' ? 'rotate' : 'random',
+        mode: 'random',
         seedKey: variantSeed
       });
 
@@ -199,8 +203,14 @@ export const generateBatch = async (
         styleOptions
       );
 
-      // 1. Generate unique temporary filename
-      const tempId = `temp-${timestamp}`;
+      // Story 1.C.1: Deterministic Asset Identity
+      // Format: YYYYMMDD-[style]-[collection]-slot-[N]
+      const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+      const styleSlug = style.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+      const assetId = `${dateStr}-${styleSlug}-${collection}-slot-${i + 1}`;
+
+      // 1. Use AssetID as the primary identifier
+      const tempId = assetId;
 
       try {
         logger.info(`[${i + 1}/${batchSize}] Generating`, {
@@ -215,6 +225,55 @@ export const generateBatch = async (
         // 2. Upload to R2 and CF Images
         const filename = `${tempId}.png`;
         const uploadResult = await uploadImage(imageBuffer, filename, collection);
+
+        // --- PHASE B: Art Critic (QA) ---
+        let qaResult = null;
+        if (FLAGS.ENABLE_QA) {
+          try {
+            qaResult = await assessImage({
+              imageUrl: uploadResult.imageUrl, // Use web preview URL for vision
+              category,
+              collection,
+              prompt: fullPrompt
+            });
+
+            if (qaResult.qa_result === 'fail') {
+              if (FLAGS.QA_MODE === 'enforce_failfast') {
+                logger.error(`[CRITICAL] QA Failure in Enforce mode. Halting collection '${collection}'.`, {
+                  reason: qaResult.reason,
+                  details: qaResult.reason_details
+                });
+
+                // Archive and Log to Issue #4
+                await handleRejection({
+                  asset_id: tempId,
+                  category,
+                  collection,
+                  qa_mode: FLAGS.QA_MODE,
+                  qa_result: qaResult.qa_result,
+                  reason: qaResult.reason!,
+                  reason_details: qaResult.reason_details || '',
+                  image_url: uploadResult.imageUrl,
+                  r2_original: uploadResult.r2Url,
+                  imageBuffer,
+                  run_id: runId
+                });
+
+                // Throw a special error to break the batch loop for this collection
+                throw new Error(`QA_FAIL_FAST: ${qaResult.reason}`);
+              } else {
+                logger.warn(`[Observe] QA Failure detected but allowing production to continue.`, {
+                  reason: qaResult.reason,
+                  details: qaResult.reason_details
+                });
+              }
+            }
+          } catch (qaError) {
+            logger.error('Art Critic assessment failed', qaError as Error);
+            // In observe mode, we fail-open and continue
+          }
+        }
+        // -------------------------------
 
         // 3. Create Draft Markdown with full metadata
         const template = collectionMeta.cms_frontmatter_template || {
@@ -238,25 +297,26 @@ export const generateBatch = async (
           medium
         );
 
-        const mdContent = `---
-title: "${title}"
-description: "${seoDescription}"
-pinterest_description: "${pinterestDescription}"
-date: ${new Date().toISOString()}
-type: "${template.type || 'coloring-pages'}"
-draft: true
-categories:
-  - ${category}
-style: "${style.name}"
-medium: "${medium}"
-audience: "${audience}"
-cf_image_id: "${uploadResult.cfImageId}"
-image_url: "${uploadResult.imageUrl}"
-download_url: "${uploadResult.downloadUrl}"
-r2_original: "${uploadResult.r2Url}"
-prompt: "${variantPrompt}"
----
+        const frontmatter = {
+          title,
+          description: seoDescription,
+          pinterest_description: pinterestDescription,
+          date: new Date().toISOString(),
+          type: template.type || 'coloring-pages',
+          draft: true,
+          categories: [category],
+          style: style.name,
+          medium: medium,
+          audience: audience,
+          cf_image_id: uploadResult.cfImageId,
+          image_url: uploadResult.imageUrl,
+          download_url: uploadResult.downloadUrl,
+          r2_original: uploadResult.r2Url,
+          asset_id: assetId,
+          prompt: variantPrompt
+        };
 
+        const mdBody = `
 A beautiful ${collection} coloring page in ${style.name} style.
 
 **Style:** ${style.name}
@@ -266,6 +326,8 @@ A beautiful ${collection} coloring page in ${style.name} style.
 
 ![Coloring Page](${uploadResult.imageUrl})
 `;
+
+        const mdContent = matter.stringify(mdBody, frontmatter);
 
         const mdPath = path.join(contentDir, `${tempId}.md`);
         await fs.writeFile(mdPath, mdContent);
