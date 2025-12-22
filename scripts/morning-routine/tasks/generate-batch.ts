@@ -244,7 +244,7 @@ description: "${seoDescription}"
 pinterest_description: "${pinterestDescription}"
 date: ${new Date().toISOString()}
 type: "${template.type || 'coloring-pages'}"
-draft: false
+draft: true
 categories:
   - ${category}
 style: "${style.name}"
