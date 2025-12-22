@@ -33,7 +33,9 @@ An **asset** is an **Approved PNG** that has **passed QA** and is ready to be tu
 ## Explicit non-goals (for this Epic)
 - **Issue #2 “Hall of Fame / Primary SEO Monitoring” integration**: out of the autonomy control loop for now (remains external weekly reporting).
 - Dashboarding (optional follow-on).
-- Syndication/Make.com distributor (later phase).
+- **Syndication (Nightwatcher)**:
+  - **Scheduler (Brain)**: daily queue generation with growth/maintenance throttling.
+  - **Conductor (Hands)**: JIT board creation and automated Pinterest pinning via Make.com.
 
 ---
 
@@ -85,7 +87,8 @@ Implement via the phases in `.docs/prd/autonomy-prd.rollout.md`:
 - Designer can create new category/collection scaffolding without manual steps (e.g., `fantasy/*`).
 - QA fail-fast works: first failure logs to Issue #4 and stops only that collection.
 - PDFs are created only for survivors (strict JIT).
-- Retry runs are idempotent (no duplicate markdown files/uploads), via a stable asset identity + upsert strategy.
+- retry runs are idempotent (no duplicate markdown files/uploads), via a stable asset identity + upsert strategy.
+- **Distribution**: New collections automatically receive dedicated Pinterest boards and daily/weekly pinning without manual configuration.
 
 ---
 

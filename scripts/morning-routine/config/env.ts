@@ -24,6 +24,9 @@ export const ENV = {
         ACCOUNT_HASH: process.env.CF_IMAGES_ACCOUNT_HASH || '', // For delivery URLs
     },
 
+    MAKE_WEBHOOK: process.env.MAKE_WEBHOOK || '',
+    MAKE_WEBHOOK_API: process.env.MAKE_WEBHOOK_API || '',
+
     PATHS: {
         CONTENT_DIR: path.resolve(__dirname, '../../../content'),
         DASHBOARD_PORT: parseInt(process.env.DASHBOARD_PORT || '3000', 10)

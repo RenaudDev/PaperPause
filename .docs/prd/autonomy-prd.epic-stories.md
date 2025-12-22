@@ -154,18 +154,43 @@ Ship the autonomy system in **phases** that preserve daily production stability 
 
 ---
 
-## Phase E (Syndication): Distributor (Make.com)
+## Phase E (Syndication): Nightwatcher Distribution System
 
-### Story E.1 — RSS contract for distribution (fields + UTM schema)
+### Story E.1 — RSS contract for distribution
 - **Description**: Define the exact RSS fields needed for Make.com posting and the UTM schema.
 - **Acceptance criteria**:
-  - A stable RSS “contract” exists and is testable (sample item meets requirements).
+  - Valid `index.xml` per collection with required media fields.
+  - Stable image URLs and Pinterest-ready descriptions.
 
 ### Story E.2 — Make.com scenario configuration + monitoring
-- **Description**: Configure the Make.com RSS monitor → Pinterest posting, with failure visibility.
+- **Description**: Configure the Make.com "Smart Router" for JIT board creation and Pin distribution.
 - **Acceptance criteria**:
-  - New content results in posts with correct URLs + UTM parameters.
-  - Failure alerts exist and do not affect production generation.
+  - Webhook captures payload and creates boards dynamically.
+  - Pinterest posts are created with correct URLs and cached Board IDs.
+
+### Story E.3 — Night Watchman scheduler and queue schema
+- **Description**: Implement `midnight-scheduler.ts` to compute the daily distribution queue.
+- **Acceptance criteria**:
+  - Growth vs Maintenance rules applied correctly.
+  - `distribution-queue.json` generated deterministically.
+
+### Story E.4 — Distribution Conductor and Webhook integration
+- **Description**: Implement `distribution-conductor.ts` to pop and fire the queue.
+- **Acceptance criteria**:
+  - Atomic pop-and-save logic prevents double-posting.
+  - Webhook fires successfully to Make.com.
+
+### Story E.5 — Nightwatcher workflow orchestration
+- **Description**: Integrate scheduler and conductor into GitHub Actions cron.
+- **Acceptance criteria**:
+  - Daily queue generation at 00:00 UTC.
+  - Hourly distribution at :45.
+
+### Story E.6 — Phase E Live Verification
+- **Description**: End-to-end validation of the distribution loop.
+- **Acceptance criteria**:
+  - Verified live Pin on Pinterest for a new collection.
+  - Verified state awareness (throttling) works in production.
 
 ---
 

@@ -30,7 +30,7 @@ export const FLAGS = {
  */
 export function logActiveFlags() {
   const activeFlags = Object.entries(FLAGS)
-    .filter(([_, value]) => value === true || (typeof value === 'string' && value !== '0'))
+    .filter(([_, value]) => value === true || (typeof value === 'string' && (value as string) !== '0'))
     .map(([key, value]) => `${key}: ${value}`);
 
   if (activeFlags.length > 0) {
