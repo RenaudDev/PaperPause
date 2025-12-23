@@ -1,0 +1,78 @@
+name: Distribution System
+
+on:
+  schedule:
+    # 1. The Night Watchman: Runs at midnight UTC to build the queue
+    - cron: '0 0 * * *'
+    # 2. The Conductor: Runs every hour at minute 45 to distribute
+    - cron: '45 * * * *'
+  workflow_dispatch:
+    inputs:
+      job_to_run:
+        description: 'Job to run'
+        required: true
+        default: 'scheduler'
+        type: choice
+        options:
+        - scheduler
+        - distributor
+
+permissions:
+  contents: write
+
+jobs:
+  scheduler:
+    name: Night Watchman (Scheduler)
+    if: (github.event_name == 'schedule' && github.event.schedule == '0 0 * * *') || (github.event_name == 'workflow_dispatch' && inputs.job_to_run == 'scheduler')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - run: npm ci
+      
+      - name: Run Night Watchman
+        run: npx ts-node scripts/morning-routine/tasks/midnight-scheduler.ts
+        
+      - name: Commit Queue
+        run: |
+          git config user.name "PaperPause Bot"
+          git config user.email "bot@paperpause.app"
+          git add config/distribution-queue.json
+          # Only commit if there are changes
+          git diff --staged --quiet || git commit -m "chore(schedule): generate daily distribution queue"
+          git push
+
+  distributor:
+    name: Conductor (Distributor)
+    if: (github.event_name == 'schedule' && github.event.schedule == '45 * * * *') || (github.event_name == 'workflow_dispatch' && inputs.job_to_run == 'distributor')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - run: npm ci
+      
+      - name: Run Conductor
+        env:
+          MAKE_WEBHOOK: ${{ secrets.MAKE_WEBHOOK_URL }}
+          MAKE_WEBHOOK_API: ${{ secrets.MAKE_WEBHOOK_API }}
+        run: npx ts-node scripts/morning-routine/tasks/distribution-conductor.ts
+        
+      - name: Commit Queue Update
+        if: success() # Only commit if script succeeded (item processed)
+        run: |
+          git config user.name "PaperPause Bot"
+          git config user.email "bot@paperpause.app"
+          git add config/distribution-queue.json
+          # Only commit if there are changes
+          git diff --staged --quiet || git commit -m "chore(distribution): update queue after successful fire"
+          git push

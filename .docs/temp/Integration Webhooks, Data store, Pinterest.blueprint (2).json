@@ -60,7 +60,7 @@
             "module": "datastore:GetRecord",
             "version": 1,
             "parameters": {
-                "datastore": 79819
+                "datastore": 79862
             },
             "mapper": {
                 "key": "{{1.collection}}",
@@ -74,7 +74,7 @@
                 "restore": {
                     "parameters": {
                         "datastore": {
-                            "label": "Board_Mappings"
+                            "label": "My data store"
                         }
                     }
                 },
@@ -102,7 +102,7 @@
                 ],
                 "interface": [
                     {
-                        "help": "Test",
+                        "help": "",
                         "name": "board_id",
                         "type": "text",
                         "label": null,
@@ -131,6 +131,9 @@
                             "id": 50,
                             "module": "rss:ActionReadArticles",
                             "version": 4,
+                            "parameters": {
+                                "include": []
+                            },
                             "filter": {
                                 "name": "Board exist",
                                 "conditions": [
@@ -142,18 +145,299 @@
                                     ]
                                 ]
                             },
-                            "parameters": {
-                                "include": []
-                            },
                             "mapper": {
                                 "url": "{{1.rss_url}}",
                                 "gzip": true,
                                 "password": "",
                                 "username": "",
-                                "maxResults": "1"
+                                "maxResults": "1",
+                                "filterDateTo": "",
+                                "filterDateFrom": ""
                             },
                             "metadata": {
-                                "designer": { "x": 900, "y": -150 }
+                                "designer": {
+                                    "x": 900,
+                                    "y": -150
+                                },
+                                "restore": {},
+                                "parameters": [
+                                    {
+                                        "name": "include",
+                                        "type": "select",
+                                        "label": "Process RSS fields",
+                                        "multiple": true,
+                                        "validate": {
+                                            "enum": [
+                                                "google-merchant-center",
+                                                "itunes"
+                                            ]
+                                        }
+                                    }
+                                ],
+                                "expect": [
+                                    {
+                                        "name": "url",
+                                        "type": "url",
+                                        "label": "URL",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "username",
+                                        "type": "text",
+                                        "label": "User name"
+                                    },
+                                    {
+                                        "name": "password",
+                                        "type": "text",
+                                        "label": "Password"
+                                    },
+                                    {
+                                        "name": "filterDateFrom",
+                                        "type": "date",
+                                        "label": "Date from"
+                                    },
+                                    {
+                                        "name": "filterDateTo",
+                                        "type": "date",
+                                        "label": "Date to "
+                                    },
+                                    {
+                                        "name": "maxResults",
+                                        "type": "number",
+                                        "label": "Maximum number of returned items",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "gzip",
+                                        "type": "boolean",
+                                        "label": "Request compressed content",
+                                        "required": true
+                                    }
+                                ],
+                                "interface": [
+                                    {
+                                        "name": "title",
+                                        "type": "text",
+                                        "label": "Title"
+                                    },
+                                    {
+                                        "name": "description",
+                                        "type": "text",
+                                        "label": "Description"
+                                    },
+                                    {
+                                        "name": "summary",
+                                        "type": "text",
+                                        "label": "Summary"
+                                    },
+                                    {
+                                        "name": "author",
+                                        "type": "text",
+                                        "label": "Author"
+                                    },
+                                    {
+                                        "name": "url",
+                                        "type": "url",
+                                        "label": "URL"
+                                    },
+                                    {
+                                        "name": "dateUpdated",
+                                        "type": "date",
+                                        "label": "Date updated"
+                                    },
+                                    {
+                                        "name": "dateCreated",
+                                        "type": "date",
+                                        "label": "Date created"
+                                    },
+                                    {
+                                        "name": "comments",
+                                        "type": "url",
+                                        "label": "Comments"
+                                    },
+                                    {
+                                        "name": "image",
+                                        "spec": [
+                                            {
+                                                "name": "title",
+                                                "type": "text",
+                                                "label": "Name"
+                                            },
+                                            {
+                                                "name": "url",
+                                                "type": "url",
+                                                "label": "URL"
+                                            }
+                                        ],
+                                        "type": "collection",
+                                        "label": "Image"
+                                    },
+                                    {
+                                        "name": "categories",
+                                        "spec": {
+                                            "type": "text"
+                                        },
+                                        "type": "array",
+                                        "label": "Categories"
+                                    },
+                                    {
+                                        "name": "source",
+                                        "spec": [
+                                            {
+                                                "name": "title",
+                                                "type": "text",
+                                                "label": "Name"
+                                            },
+                                            {
+                                                "name": "url",
+                                                "type": "url",
+                                                "label": "URL"
+                                            }
+                                        ],
+                                        "type": "collection",
+                                        "label": "Source"
+                                    },
+                                    {
+                                        "name": "enclosures",
+                                        "spec": [
+                                            {
+                                                "name": "url",
+                                                "type": "url",
+                                                "label": "URL"
+                                            },
+                                            {
+                                                "name": "type",
+                                                "type": "text",
+                                                "label": "Type"
+                                            },
+                                            {
+                                                "name": "length",
+                                                "type": "number",
+                                                "label": "Length"
+                                            }
+                                        ],
+                                        "type": "array",
+                                        "label": "Enclosures"
+                                    },
+                                    {
+                                        "help": "Other RSS fields. All values are in text format.",
+                                        "name": "rssFields",
+                                        "spec": [
+                                            {
+                                                "name": "title",
+                                                "type": "text",
+                                                "label": "title"
+                                            },
+                                            {
+                                                "name": "link",
+                                                "type": "text",
+                                                "label": "link"
+                                            },
+                                            {
+                                                "name": "pubdate",
+                                                "type": "text",
+                                                "label": "pubdate"
+                                            },
+                                            {
+                                                "name": "guid",
+                                                "type": "text",
+                                                "label": "guid"
+                                            },
+                                            {
+                                                "name": "description",
+                                                "type": "text",
+                                                "label": "description"
+                                            },
+                                            {
+                                                "name": "prompt",
+                                                "type": "text",
+                                                "label": "prompt"
+                                            },
+                                            {
+                                                "name": "enclosure",
+                                                "type": "text",
+                                                "label": "enclosure"
+                                            },
+                                            {
+                                                "name": "media:content",
+                                                "spec": [
+                                                    {
+                                                        "name": "props",
+                                                        "spec": [
+                                                            {
+                                                                "name": "url",
+                                                                "type": "text",
+                                                                "label": "url"
+                                                            },
+                                                            {
+                                                                "name": "medium",
+                                                                "type": "text",
+                                                                "label": "medium"
+                                                            },
+                                                            {
+                                                                "name": "width",
+                                                                "type": "number",
+                                                                "label": "width"
+                                                            },
+                                                            {
+                                                                "name": "height",
+                                                                "type": "number",
+                                                                "label": "height"
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "Properties"
+                                                    },
+                                                    {
+                                                        "name": "value",
+                                                        "type": "text",
+                                                        "label": "Value"
+                                                    },
+                                                    {
+                                                        "name": "media:title",
+                                                        "spec": [
+                                                            {
+                                                                "name": "props",
+                                                                "spec": [],
+                                                                "type": "collection",
+                                                                "label": "Properties"
+                                                            },
+                                                            {
+                                                                "name": "value",
+                                                                "type": "text",
+                                                                "label": "Value"
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "media:title"
+                                                    },
+                                                    {
+                                                        "name": "media:description",
+                                                        "spec": [
+                                                            {
+                                                                "name": "props",
+                                                                "spec": [],
+                                                                "type": "collection",
+                                                                "label": "Properties"
+                                                            },
+                                                            {
+                                                                "name": "value",
+                                                                "type": "text",
+                                                                "label": "Value"
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "media:description"
+                                                    }
+                                                ],
+                                                "type": "collection",
+                                                "label": "media:content"
+                                            }
+                                        ],
+                                        "type": "collection",
+                                        "label": "RSS fields"
+                                    }
+                                ]
                             }
                         },
                         {
@@ -164,14 +448,150 @@
                                 "__IMTCONN__": 4597163
                             },
                             "mapper": {
-                                "board": "{{2.board_id}}",
-                                "note": "{{50.description}}",
-                                "link": "{{50.link}}",
-                                "image_url": "{{50.enclosure.url}}",
-                                "title": "{{50.title}}"
+                                "link": "{{50.rssFields.link}}",
+                                "title": "{{50.rssFields.title}}",
+                                "alt_text": "{{50.rssFields.prompt}}",
+                                "board_id": "{{1.board_name}}",
+                                "description": "{{50.rssFields.description}}",
+                                "media_source": {
+                                    "url": "{{50.rssFields.`media:content`.props.url}}",
+                                    "source_type": "image_url"
+                                }
                             },
                             "metadata": {
-                                "designer": { "x": 1200, "y": -150 }
+                                "designer": {
+                                    "x": 1200,
+                                    "y": -150
+                                },
+                                "restore": {
+                                    "expect": {
+                                        "board_id": {
+                                            "mode": "edit"
+                                        },
+                                        "media_source": {
+                                            "nested": {
+                                                "is_standard": {
+                                                    "mode": "chose"
+                                                },
+                                                "source_type": {
+                                                    "mode": "chose",
+                                                    "label": "Image URL"
+                                                }
+                                            }
+                                        },
+                                        "ad_account_id": {
+                                            "mode": "chose",
+                                            "label": "Empty"
+                                        },
+                                        "parent_pin_id": {
+                                            "mode": "chose",
+                                            "label": "Empty"
+                                        }
+                                    },
+                                    "parameters": {
+                                        "__IMTCONN__": {
+                                            "data": {
+                                                "scoped": "true",
+                                                "connection": "pinterest2"
+                                            },
+                                            "label": "PaperPause Pinterest (paperpause)"
+                                        }
+                                    }
+                                },
+                                "parameters": [
+                                    {
+                                        "name": "__IMTCONN__",
+                                        "type": "account:pinterest2",
+                                        "label": "Connection",
+                                        "required": true
+                                    }
+                                ],
+                                "expect": [
+                                    {
+                                        "name": "media_source",
+                                        "spec": [
+                                            {
+                                                "name": "source_type",
+                                                "type": "select",
+                                                "label": "Source Type",
+                                                "required": true,
+                                                "validate": {
+                                                    "enum": [
+                                                        "video_id",
+                                                        "image_url",
+                                                        "multiple_image_urls",
+                                                        "image_base64",
+                                                        "multiple_image_base64"
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "name": "url",
+                                                "type": "url",
+                                                "label": "Image URL",
+                                                "required": true
+                                            },
+                                            {
+                                                "name": "is_standard",
+                                                "type": "boolean",
+                                                "label": "Is Standard"
+                                            }
+                                        ],
+                                        "type": "collection",
+                                        "label": "Media Source",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "board_id",
+                                        "type": "select",
+                                        "label": "Board",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "title",
+                                        "type": "text",
+                                        "label": "Pin Name"
+                                    },
+                                    {
+                                        "name": "description",
+                                        "type": "text",
+                                        "label": "Description",
+                                        "validate": {
+                                            "max": 800
+                                        }
+                                    },
+                                    {
+                                        "name": "link",
+                                        "type": "url",
+                                        "label": "Link"
+                                    },
+                                    {
+                                        "name": "alt_text",
+                                        "type": "text",
+                                        "label": "Alternative Text"
+                                    },
+                                    {
+                                        "name": "dominant_color",
+                                        "type": "color",
+                                        "label": "Dominant Color"
+                                    },
+                                    {
+                                        "name": "parent_pin_id",
+                                        "type": "select",
+                                        "label": "Parent Pin"
+                                    },
+                                    {
+                                        "name": "ad_account_id",
+                                        "type": "select",
+                                        "label": "Ad Account"
+                                    },
+                                    {
+                                        "name": "board_section_id",
+                                        "type": "any",
+                                        "label": "Board Section"
+                                    }
+                                ],
+                                "advanced": true
                             }
                         }
                     ]
@@ -197,7 +617,7 @@
                                 ]
                             },
                             "mapper": {
-                                "limit": "120",
+                                "limit": "1000",
                                 "privacy": "ALL"
                             },
                             "metadata": {
@@ -269,13 +689,20 @@
                                 "feeder": 18
                             },
                             "filter": {
-                                "name": "",
+                                "name": "Match Board Name",
                                 "conditions": [
                                     [
                                         {
-                                            "a": "{{18.name}}",
-                                            "b": "{{1.board_name}}",
-                                            "o": "text:cicontains"
+                                            "a": "{{lower(18.name)}}",
+                                            "b": "{{lower(1.board_name)}}",
+                                            "o": "text:equal"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "a": "{{lower(18.name)}}",
+                                            "b": "{{lower(1.board_name + \" - Free Printables\")}}",
+                                            "o": "text:equal"
                                         }
                                     ]
                                 ]
@@ -881,7 +1308,7 @@
                                                 "__IMTCONN__": 4597163
                                             },
                                             "mapper": {
-                                                "name": "{{1.board_name}} - Free Printable",
+                                                "name": "{{1.board_name}} - Free Printables",
                                                 "privacy": "PUBLIC",
                                                 "description": "{{5.result}}"
                                             },
@@ -955,7 +1382,7 @@
                                             "module": "datastore:AddRecord",
                                             "version": 1,
                                             "parameters": {
-                                                "datastore": 79819
+                                                "datastore": 79862
                                             },
                                             "mapper": {
                                                 "key": "{{1.collection}}",
@@ -977,7 +1404,7 @@
                                                     },
                                                     "parameters": {
                                                         "datastore": {
-                                                            "label": "Board_Mappings"
+                                                            "label": "My data store"
                                                         }
                                                     }
                                                 },
@@ -1007,7 +1434,7 @@
                                                             {
                                                                 "name": "board_id",
                                                                 "type": "text",
-                                                                "label": "Board ID"
+                                                                "label": null
                                                             }
                                                         ],
                                                         "type": "collection",
@@ -1091,18 +1518,231 @@
                                                         "label": "Request compressed content",
                                                         "required": true
                                                     }
+                                                ],
+                                                "interface": [
+                                                    {
+                                                        "name": "title",
+                                                        "type": "text",
+                                                        "label": "Title"
+                                                    },
+                                                    {
+                                                        "name": "description",
+                                                        "type": "text",
+                                                        "label": "Description"
+                                                    },
+                                                    {
+                                                        "name": "summary",
+                                                        "type": "text",
+                                                        "label": "Summary"
+                                                    },
+                                                    {
+                                                        "name": "author",
+                                                        "type": "text",
+                                                        "label": "Author"
+                                                    },
+                                                    {
+                                                        "name": "url",
+                                                        "type": "url",
+                                                        "label": "URL"
+                                                    },
+                                                    {
+                                                        "name": "dateUpdated",
+                                                        "type": "date",
+                                                        "label": "Date updated"
+                                                    },
+                                                    {
+                                                        "name": "dateCreated",
+                                                        "type": "date",
+                                                        "label": "Date created"
+                                                    },
+                                                    {
+                                                        "name": "comments",
+                                                        "type": "url",
+                                                        "label": "Comments"
+                                                    },
+                                                    {
+                                                        "name": "image",
+                                                        "spec": [
+                                                            {
+                                                                "name": "title",
+                                                                "type": "text",
+                                                                "label": "Name"
+                                                            },
+                                                            {
+                                                                "name": "url",
+                                                                "type": "url",
+                                                                "label": "URL"
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "Image"
+                                                    },
+                                                    {
+                                                        "name": "categories",
+                                                        "spec": {
+                                                            "type": "text"
+                                                        },
+                                                        "type": "array",
+                                                        "label": "Categories"
+                                                    },
+                                                    {
+                                                        "name": "source",
+                                                        "spec": [
+                                                            {
+                                                                "name": "title",
+                                                                "type": "text",
+                                                                "label": "Name"
+                                                            },
+                                                            {
+                                                                "name": "url",
+                                                                "type": "url",
+                                                                "label": "URL"
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "Source"
+                                                    },
+                                                    {
+                                                        "name": "enclosures",
+                                                        "spec": [
+                                                            {
+                                                                "name": "url",
+                                                                "type": "url",
+                                                                "label": "URL"
+                                                            },
+                                                            {
+                                                                "name": "type",
+                                                                "type": "text",
+                                                                "label": "Type"
+                                                            },
+                                                            {
+                                                                "name": "length",
+                                                                "type": "number",
+                                                                "label": "Length"
+                                                            }
+                                                        ],
+                                                        "type": "array",
+                                                        "label": "Enclosures"
+                                                    },
+                                                    {
+                                                        "help": "Other RSS fields. All values are in text format.",
+                                                        "name": "rssFields",
+                                                        "spec": [
+                                                            {
+                                                                "name": "title",
+                                                                "type": "text",
+                                                                "label": "title"
+                                                            },
+                                                            {
+                                                                "name": "link",
+                                                                "type": "text",
+                                                                "label": "link"
+                                                            },
+                                                            {
+                                                                "name": "pubdate",
+                                                                "type": "text",
+                                                                "label": "pubdate"
+                                                            },
+                                                            {
+                                                                "name": "guid",
+                                                                "type": "text",
+                                                                "label": "guid"
+                                                            },
+                                                            {
+                                                                "name": "description",
+                                                                "type": "text",
+                                                                "label": "description"
+                                                            },
+                                                            {
+                                                                "name": "prompt",
+                                                                "type": "text",
+                                                                "label": "prompt"
+                                                            },
+                                                            {
+                                                                "name": "enclosure",
+                                                                "type": "text",
+                                                                "label": "enclosure"
+                                                            },
+                                                            {
+                                                                "name": "media:content",
+                                                                "spec": [
+                                                                    {
+                                                                        "name": "props",
+                                                                        "spec": [
+                                                                            {
+                                                                                "name": "url",
+                                                                                "type": "text",
+                                                                                "label": "url"
+                                                                            },
+                                                                            {
+                                                                                "name": "medium",
+                                                                                "type": "text",
+                                                                                "label": "medium"
+                                                                            },
+                                                                            {
+                                                                                "name": "width",
+                                                                                "type": "number",
+                                                                                "label": "width"
+                                                                            },
+                                                                            {
+                                                                                "name": "height",
+                                                                                "type": "number",
+                                                                                "label": "height"
+                                                                            }
+                                                                        ],
+                                                                        "type": "collection",
+                                                                        "label": "Properties"
+                                                                    },
+                                                                    {
+                                                                        "name": "value",
+                                                                        "type": "text",
+                                                                        "label": "Value"
+                                                                    },
+                                                                    {
+                                                                        "name": "media:title",
+                                                                        "spec": [
+                                                                            {
+                                                                                "name": "props",
+                                                                                "spec": [],
+                                                                                "type": "collection",
+                                                                                "label": "Properties"
+                                                                            },
+                                                                            {
+                                                                                "name": "value",
+                                                                                "type": "text",
+                                                                                "label": "Value"
+                                                                            }
+                                                                        ],
+                                                                        "type": "collection",
+                                                                        "label": "media:title"
+                                                                    },
+                                                                    {
+                                                                        "name": "media:description",
+                                                                        "spec": [
+                                                                            {
+                                                                                "name": "props",
+                                                                                "spec": [],
+                                                                                "type": "collection",
+                                                                                "label": "Properties"
+                                                                            },
+                                                                            {
+                                                                                "name": "value",
+                                                                                "type": "text",
+                                                                                "label": "Value"
+                                                                            }
+                                                                        ],
+                                                                        "type": "collection",
+                                                                        "label": "media:description"
+                                                                    }
+                                                                ],
+                                                                "type": "collection",
+                                                                "label": "media:content"
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "RSS fields"
+                                                    }
                                                 ]
-                                            }
-                                        },
-                                        {
-                                            "id": 15,
-                                            "module": "pinterest:createPin",
-                                            "version": 2,
-                                            "metadata": {
-                                                "designer": {
-                                                    "x": 2949,
-                                                    "y": 110
-                                                }
                                             }
                                         }
                                     ]
@@ -1110,20 +1750,20 @@
                                 {
                                     "flow": [
                                         {
-                                            "id": 11,
+                                            "id": 99,
                                             "module": "datastore:AddRecord",
                                             "version": 1,
                                             "parameters": {
-                                                "datastore": 79819
+                                                "datastore": 79862
                                             },
                                             "filter": {
                                                 "name": "Board exist",
                                                 "conditions": [
                                                     [
                                                         {
-                                                            "a": "{{22.array}}",
+                                                            "a": "{{length(22.array)}}",
                                                             "b": "0",
-                                                            "o": "array:greater"
+                                                            "o": "number:greater"
                                                         }
                                                     ]
                                                 ]
@@ -1131,7 +1771,7 @@
                                             "mapper": {
                                                 "key": "{{1.collection}}",
                                                 "data": {
-                                                    "board_id": ""
+                                                    "board_id": "{{get(22.array; 1)}}{{22.array[].id}}"
                                                 },
                                                 "overwrite": false
                                             },
@@ -1148,7 +1788,7 @@
                                                     },
                                                     "parameters": {
                                                         "datastore": {
-                                                            "label": "Board_Mappings"
+                                                            "label": "My data store"
                                                         }
                                                     }
                                                 },
@@ -1178,43 +1818,13 @@
                                                             {
                                                                 "name": "board_id",
                                                                 "type": "text",
-                                                                "label": "Board ID"
+                                                                "label": null
                                                             }
                                                         ],
                                                         "type": "collection",
                                                         "label": "Record"
                                                     }
                                                 ]
-                                            }
-                                        },
-                                        {
-                                            "id": 11,
-                                            "module": "datastore:AddRecord",
-                                            "version": 1,
-                                            "parameters": {
-                                                "datastore": 79819
-                                            },
-                                            "filter": {
-                                                "name": "Board exist",
-                                                "conditions": [
-                                                    [
-                                                        {
-                                                            "a": "{{length(22.array)}}",
-                                                            "b": "0",
-                                                            "o": "number:greater"
-                                                        }
-                                                    ]
-                                                ]
-                                            },
-                                            "mapper": {
-                                                "key": "{{1.collection}}",
-                                                "data": {
-                                                    "board_id": "{{get(22.array; 1).id}}"
-                                                },
-                                                "overwrite": false
-                                            },
-                                            "metadata": {
-                                                "designer": { "x": 2281, "y": 564 }
                                             }
                                         },
                                         {
@@ -1230,25 +1840,10 @@
                                                 "maxResults": "1"
                                             },
                                             "metadata": {
-                                                "designer": { "x": 2630, "y": 570 }
-                                            }
-                                        },
-                                        {
-                                            "id": 60,
-                                            "module": "pinterest:createPin",
-                                            "version": 2,
-                                            "parameters": {
-                                                "__IMTCONN__": 4597163
-                                            },
-                                            "mapper": {
-                                                "board": "{{11.data.board_id}}",
-                                                "note": "{{14.description}}",
-                                                "link": "{{14.link}}",
-                                                "image_url": "{{14.enclosure.url}}",
-                                                "title": "{{14.title}}"
-                                            },
-                                            "metadata": {
-                                                "designer": { "x": 2900, "y": 570 }
+                                                "designer": {
+                                                    "x": 2630,
+                                                    "y": 570
+                                                }
                                             }
                                         }
                                     ]

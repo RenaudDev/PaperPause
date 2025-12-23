@@ -60,7 +60,7 @@
             "module": "datastore:GetRecord",
             "version": 1,
             "parameters": {
-                "datastore": 79819
+                "datastore": null
             },
             "mapper": {
                 "key": "{{1.collection}}",
@@ -102,13 +102,14 @@
                 ],
                 "interface": [
                     {
-                        "help": "Test",
                         "name": "board_id",
                         "type": "text",
-                        "label": null,
-                        "default": null,
-                        "required": false,
-                        "multiline": false
+                        "label": "Board ID"
+                    },
+                    {
+                        "name": "Test",
+                        "type": "text",
+                        "label": "Old ID (Test)"
                     }
                 ]
             }
@@ -131,6 +132,9 @@
                             "id": 50,
                             "module": "rss:ActionReadArticles",
                             "version": 4,
+                            "parameters": {
+                                "include": []
+                            },
                             "filter": {
                                 "name": "Board exist",
                                 "conditions": [
@@ -139,21 +143,308 @@
                                             "a": "{{2.board_id}}",
                                             "o": "exist"
                                         }
+                                    ],
+                                    [
+                                        {
+                                            "a": "{{2.Test}}",
+                                            "o": "exist"
+                                        }
                                     ]
                                 ]
                             },
-                            "parameters": {
-                                "include": []
-                            },
                             "mapper": {
                                 "url": "{{1.rss_url}}",
-                                "gzip": true,
-                                "password": "",
                                 "username": "",
-                                "maxResults": "1"
+                                "password": "",
+                                "filterDateFrom": "",
+                                "filterDateTo": "",
+                                "maxResults": "1",
+                                "gzip": true
                             },
                             "metadata": {
-                                "designer": { "x": 900, "y": -150 }
+                                "designer": {
+                                    "x": 900,
+                                    "y": -150
+                                },
+                                "restore": {},
+                                "parameters": [
+                                    {
+                                        "name": "include",
+                                        "type": "select",
+                                        "label": "Process RSS fields",
+                                        "multiple": true,
+                                        "validate": {
+                                            "enum": [
+                                                "google-merchant-center",
+                                                "itunes"
+                                            ]
+                                        }
+                                    }
+                                ],
+                                "expect": [
+                                    {
+                                        "name": "url",
+                                        "type": "url",
+                                        "label": "URL",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "username",
+                                        "type": "text",
+                                        "label": "User name"
+                                    },
+                                    {
+                                        "name": "password",
+                                        "type": "text",
+                                        "label": "Password"
+                                    },
+                                    {
+                                        "name": "filterDateFrom",
+                                        "type": "date",
+                                        "label": "Date from"
+                                    },
+                                    {
+                                        "name": "filterDateTo",
+                                        "type": "date",
+                                        "label": "Date to "
+                                    },
+                                    {
+                                        "name": "maxResults",
+                                        "type": "number",
+                                        "label": "Maximum number of returned items",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "gzip",
+                                        "type": "boolean",
+                                        "label": "Request compressed content",
+                                        "required": true
+                                    }
+                                ],
+                                "interface": [
+                                    {
+                                        "name": "title",
+                                        "type": "text",
+                                        "label": "Title"
+                                    },
+                                    {
+                                        "name": "description",
+                                        "type": "text",
+                                        "label": "Description"
+                                    },
+                                    {
+                                        "name": "summary",
+                                        "type": "text",
+                                        "label": "Summary"
+                                    },
+                                    {
+                                        "name": "author",
+                                        "type": "text",
+                                        "label": "Author"
+                                    },
+                                    {
+                                        "name": "url",
+                                        "type": "url",
+                                        "label": "URL"
+                                    },
+                                    {
+                                        "name": "dateUpdated",
+                                        "type": "date",
+                                        "label": "Date updated"
+                                    },
+                                    {
+                                        "name": "dateCreated",
+                                        "type": "date",
+                                        "label": "Date created"
+                                    },
+                                    {
+                                        "name": "comments",
+                                        "type": "url",
+                                        "label": "Comments"
+                                    },
+                                    {
+                                        "name": "image",
+                                        "type": "collection",
+                                        "label": "Image",
+                                        "spec": [
+                                            {
+                                                "name": "title",
+                                                "label": "Name",
+                                                "type": "text"
+                                            },
+                                            {
+                                                "name": "url",
+                                                "label": "URL",
+                                                "type": "url"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "categories",
+                                        "type": "array",
+                                        "label": "Categories",
+                                        "spec": {
+                                            "type": "text"
+                                        }
+                                    },
+                                    {
+                                        "name": "source",
+                                        "type": "collection",
+                                        "label": "Source",
+                                        "spec": [
+                                            {
+                                                "name": "title",
+                                                "label": "Name",
+                                                "type": "text"
+                                            },
+                                            {
+                                                "name": "url",
+                                                "label": "URL",
+                                                "type": "url"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "enclosures",
+                                        "type": "array",
+                                        "label": "Enclosures",
+                                        "spec": [
+                                            {
+                                                "name": "url",
+                                                "label": "URL",
+                                                "type": "url"
+                                            },
+                                            {
+                                                "name": "type",
+                                                "label": "Type",
+                                                "type": "text"
+                                            },
+                                            {
+                                                "name": "length",
+                                                "label": "Length",
+                                                "type": "number"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "rssFields",
+                                        "label": "RSS fields",
+                                        "help": "Other RSS fields. All values are in text format.",
+                                        "type": "collection",
+                                        "spec": [
+                                            {
+                                                "name": "title",
+                                                "label": "title",
+                                                "type": "text"
+                                            },
+                                            {
+                                                "name": "link",
+                                                "label": "link",
+                                                "type": "text"
+                                            },
+                                            {
+                                                "name": "pubdate",
+                                                "label": "pubdate",
+                                                "type": "text"
+                                            },
+                                            {
+                                                "name": "guid",
+                                                "label": "guid",
+                                                "type": "text"
+                                            },
+                                            {
+                                                "name": "description",
+                                                "label": "description",
+                                                "type": "text"
+                                            },
+                                            {
+                                                "name": "prompt",
+                                                "label": "prompt",
+                                                "type": "text"
+                                            },
+                                            {
+                                                "name": "enclosure",
+                                                "label": "enclosure",
+                                                "type": "text"
+                                            },
+                                            {
+                                                "label": "media:content",
+                                                "name": "media:content",
+                                                "type": "collection",
+                                                "spec": [
+                                                    {
+                                                        "name": "props",
+                                                        "label": "Properties",
+                                                        "type": "collection",
+                                                        "spec": [
+                                                            {
+                                                                "label": "url",
+                                                                "name": "url",
+                                                                "type": "text"
+                                                            },
+                                                            {
+                                                                "label": "medium",
+                                                                "name": "medium",
+                                                                "type": "text"
+                                                            },
+                                                            {
+                                                                "label": "width",
+                                                                "name": "width",
+                                                                "type": "number"
+                                                            },
+                                                            {
+                                                                "label": "height",
+                                                                "name": "height",
+                                                                "type": "number"
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "label": "Value",
+                                                        "name": "value",
+                                                        "type": "text"
+                                                    },
+                                                    {
+                                                        "label": "media:title",
+                                                        "name": "media:title",
+                                                        "type": "collection",
+                                                        "spec": [
+                                                            {
+                                                                "name": "props",
+                                                                "label": "Properties",
+                                                                "type": "collection",
+                                                                "spec": []
+                                                            },
+                                                            {
+                                                                "label": "Value",
+                                                                "name": "value",
+                                                                "type": "text"
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "label": "media:description",
+                                                        "name": "media:description",
+                                                        "type": "collection",
+                                                        "spec": [
+                                                            {
+                                                                "name": "props",
+                                                                "label": "Properties",
+                                                                "type": "collection",
+                                                                "spec": []
+                                                            },
+                                                            {
+                                                                "label": "Value",
+                                                                "name": "value",
+                                                                "type": "text"
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
                             }
                         },
                         {
@@ -164,14 +455,150 @@
                                 "__IMTCONN__": 4597163
                             },
                             "mapper": {
-                                "board": "{{2.board_id}}",
-                                "note": "{{50.description}}",
-                                "link": "{{50.link}}",
-                                "image_url": "{{50.enclosure.url}}",
-                                "title": "{{50.title}}"
+                                "media_source": {
+                                    "source_type": "image_url",
+                                    "url": "{{50.rssFields.`media:content`.props.url}}"
+                                },
+                                "board_id": "{{1.board_name}}",
+                                "title": "{{50.rssFields.title}}",
+                                "description": "{{50.rssFields.description}}",
+                                "link": "{{50.rssFields.link}}",
+                                "alt_text": "{{50.rssFields.prompt}}"
                             },
                             "metadata": {
-                                "designer": { "x": 1200, "y": -150 }
+                                "designer": {
+                                    "x": 1200,
+                                    "y": -150
+                                },
+                                "restore": {
+                                    "parameters": {
+                                        "__IMTCONN__": {
+                                            "label": "PaperPause Pinterest (paperpause)",
+                                            "data": {
+                                                "scoped": "true",
+                                                "connection": "pinterest2"
+                                            }
+                                        }
+                                    },
+                                    "expect": {
+                                        "media_source": {
+                                            "nested": {
+                                                "source_type": {
+                                                    "mode": "chose",
+                                                    "label": "Image URL"
+                                                },
+                                                "is_standard": {
+                                                    "mode": "chose"
+                                                }
+                                            }
+                                        },
+                                        "board_id": {
+                                            "mode": "edit"
+                                        },
+                                        "parent_pin_id": {
+                                            "mode": "chose",
+                                            "label": "Empty"
+                                        },
+                                        "ad_account_id": {
+                                            "mode": "chose",
+                                            "label": "Empty"
+                                        }
+                                    }
+                                },
+                                "parameters": [
+                                    {
+                                        "name": "__IMTCONN__",
+                                        "type": "account:pinterest2",
+                                        "label": "Connection",
+                                        "required": true
+                                    }
+                                ],
+                                "expect": [
+                                    {
+                                        "name": "media_source",
+                                        "type": "collection",
+                                        "label": "Media Source",
+                                        "required": true,
+                                        "spec": [
+                                            {
+                                                "name": "source_type",
+                                                "type": "select",
+                                                "label": "Source Type",
+                                                "required": true,
+                                                "validate": {
+                                                    "enum": [
+                                                        "video_id",
+                                                        "image_url",
+                                                        "multiple_image_urls",
+                                                        "image_base64",
+                                                        "multiple_image_base64"
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "name": "url",
+                                                "type": "url",
+                                                "label": "Image URL",
+                                                "required": true
+                                            },
+                                            {
+                                                "name": "is_standard",
+                                                "type": "boolean",
+                                                "label": "Is Standard"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "board_id",
+                                        "type": "select",
+                                        "label": "Board",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "title",
+                                        "type": "text",
+                                        "label": "Pin Name"
+                                    },
+                                    {
+                                        "name": "description",
+                                        "type": "text",
+                                        "label": "Description",
+                                        "validate": {
+                                            "max": 800
+                                        }
+                                    },
+                                    {
+                                        "name": "link",
+                                        "type": "url",
+                                        "label": "Link"
+                                    },
+                                    {
+                                        "name": "alt_text",
+                                        "type": "text",
+                                        "label": "Alternative Text"
+                                    },
+                                    {
+                                        "name": "dominant_color",
+                                        "type": "color",
+                                        "label": "Dominant Color"
+                                    },
+                                    {
+                                        "name": "parent_pin_id",
+                                        "type": "select",
+                                        "label": "Parent Pin"
+                                    },
+                                    {
+                                        "name": "ad_account_id",
+                                        "type": "select",
+                                        "label": "Ad Account"
+                                    },
+                                    {
+                                        "name": "board_section_id",
+                                        "type": "any",
+                                        "label": "Board Section"
+                                    }
+                                ],
+                                "advanced": true
                             }
                         }
                     ]
@@ -192,13 +619,17 @@
                                         {
                                             "a": "{{2.board_id}}",
                                             "o": "notexist"
+                                        },
+                                        {
+                                            "a": "{{2.Test}}",
+                                            "o": "notexist"
                                         }
                                     ]
                                 ]
                             },
                             "mapper": {
-                                "limit": "120",
-                                "privacy": "ALL"
+                                "privacy": "ALL",
+                                "limit": "1000"
                             },
                             "metadata": {
                                 "designer": {
@@ -206,6 +637,15 @@
                                     "y": 288
                                 },
                                 "restore": {
+                                    "parameters": {
+                                        "__IMTCONN__": {
+                                            "label": "PaperPause Pinterest (paperpause)",
+                                            "data": {
+                                                "scoped": "true",
+                                                "connection": "pinterest2"
+                                            }
+                                        }
+                                    },
                                     "expect": {
                                         "privacy": {
                                             "mode": "chose",
@@ -213,15 +653,6 @@
                                         },
                                         "ad_account_id": {
                                             "mode": "chose"
-                                        }
-                                    },
-                                    "parameters": {
-                                        "__IMTCONN__": {
-                                            "data": {
-                                                "scoped": "true",
-                                                "connection": "pinterest2"
-                                            },
-                                            "label": "PaperPause Pinterest (paperpause)"
                                         }
                                     }
                                 },
@@ -269,20 +700,20 @@
                                 "feeder": 18
                             },
                             "filter": {
-                                "name": "",
+                                "name": "Match Board Name",
                                 "conditions": [
                                     [
                                         {
-                                            "a": "{{18.name}}",
-                                            "b": "{{1.board_name}}",
-                                            "o": "text:cicontains"
+                                            "a": "{{lower(18.name)}}",
+                                            "b": "{{lower(1.board_name)}}",
+                                            "o": "text:contains"
                                         }
                                     ]
                                 ]
                             },
                             "mapper": {
-                                "id": "{{18.id}}",
-                                "name": "{{18.name}}"
+                                "name": "{{18.name}}",
+                                "id": "{{18.id}}"
                             },
                             "metadata": {
                                 "designer": {
@@ -341,22 +772,22 @@
                                                         "role": "user",
                                                         "parts": [
                                                             {
-                                                                "text": "Constraints:\r\n\r\nLength: Maximum 300 characters.\r\nStructure: Natural, engaging sentences (not just a list of tags).\r\nKeywords: Include the primary keyword, plus LSI/Semantic terms like \"line art,\" \"sheets,\" \"for kids and adults,\" \"instant download,\" and \"DIY activity.\"\r\nTone: Creative, helpful, and inviting.\r\nOutput: Return ONLY the description text. No quotes, no intro.\r\nExample for \"Cat Coloring Pages\": Discover a charming collection of free printable cat coloring pages! From cute kittens to intricate feline line art, these high-quality sheets are perfect for kids and adults. Enjoy a relaxing DIY activity with instant download PDF coloring sheets. Grab your crayons and start coloring today!",
-                                                                "type": "text"
+                                                                "type": "text",
+                                                                "text": "Constraints:\r\n\r\nLength: Maximum 300 characters.\r\nStructure: Natural, engaging sentences (not just a list of tags).\r\nKeywords: Include the primary keyword, plus LSI/Semantic terms like \"line art,\" \"sheets,\" \"for kids and adults,\" \"instant download,\" and \"DIY activity.\"\r\nTone: Creative, helpful, and inviting.\r\nOutput: Return ONLY the description text. No quotes, no intro.\r\nExample for \"Cat Coloring Pages\": Discover a charming collection of free printable cat coloring pages! From cute kittens to intricate feline line art, these high-quality sheets are perfect for kids and adults. Enjoy a relaxing DIY activity with instant download PDF coloring sheets. Grab your crayons and start coloring today!"
                                                             }
                                                         ]
                                                     }
                                                 ],
-                                                "generationConfig": {
-                                                    "imageConfig": {},
-                                                    "thinkingConfig": {}
-                                                },
                                                 "system_instruction": {
                                                     "parts": [
                                                         {
                                                             "text": "Pinterest SEO Expert and Copywriter. Task: Write a keyword-rich board description for a Pinterest board titled: \"{{1.collection}} Coloring Pages - Free Printables\"."
                                                         }
                                                     ]
+                                                },
+                                                "generationConfig": {
+                                                    "thinkingConfig": {},
+                                                    "imageConfig": {}
                                                 }
                                             },
                                             "metadata": {
@@ -365,6 +796,15 @@
                                                     "y": 143
                                                 },
                                                 "restore": {
+                                                    "parameters": {
+                                                        "__IMTCONN__": {
+                                                            "label": "My Gemini AI connection",
+                                                            "data": {
+                                                                "scoped": "true",
+                                                                "connection": "gemini-ai-q9zyjp"
+                                                            }
+                                                        }
+                                                    },
                                                     "expect": {
                                                         "model": {
                                                             "mode": "chose",
@@ -392,52 +832,6 @@
                                                                 }
                                                             ]
                                                         },
-                                                        "url_context": {
-                                                            "mode": "chose"
-                                                        },
-                                                        "code_execution": {
-                                                            "mode": "chose"
-                                                        },
-                                                        "safetySettings": {
-                                                            "mode": "chose"
-                                                        },
-                                                        "generationConfig": {
-                                                            "nested": {
-                                                                "imageConfig": {
-                                                                    "nested": {
-                                                                        "imageSize": {
-                                                                            "mode": "chose",
-                                                                            "label": "Empty"
-                                                                        }
-                                                                    }
-                                                                },
-                                                                "stopSequences": {
-                                                                    "mode": "chose"
-                                                                },
-                                                                "thinkingConfig": {
-                                                                    "nested": {
-                                                                        "thinking_level": {
-                                                                            "mode": "chose",
-                                                                            "label": "Empty"
-                                                                        },
-                                                                        "include_thoughts": {
-                                                                            "mode": "chose"
-                                                                        }
-                                                                    }
-                                                                },
-                                                                "mediaResolution": {
-                                                                    "mode": "chose",
-                                                                    "label": "Empty"
-                                                                },
-                                                                "responseMimeType": {
-                                                                    "mode": "chose",
-                                                                    "label": "Empty"
-                                                                },
-                                                                "responseModalities": {
-                                                                    "mode": "chose"
-                                                                }
-                                                            }
-                                                        },
                                                         "system_instruction": {
                                                             "nested": {
                                                                 "parts": {
@@ -448,26 +842,63 @@
                                                                 }
                                                             }
                                                         },
-                                                        "google_maps_context": {
+                                                        "safetySettings": {
+                                                            "mode": "chose"
+                                                        },
+                                                        "generationConfig": {
+                                                            "nested": {
+                                                                "stopSequences": {
+                                                                    "mode": "chose"
+                                                                },
+                                                                "responseModalities": {
+                                                                    "mode": "chose"
+                                                                },
+                                                                "thinkingConfig": {
+                                                                    "nested": {
+                                                                        "include_thoughts": {
+                                                                            "mode": "chose"
+                                                                        },
+                                                                        "thinking_level": {
+                                                                            "mode": "chose",
+                                                                            "label": "Empty"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "mediaResolution": {
+                                                                    "mode": "chose",
+                                                                    "label": "Empty"
+                                                                },
+                                                                "imageConfig": {
+                                                                    "nested": {
+                                                                        "imageSize": {
+                                                                            "mode": "chose",
+                                                                            "label": "Empty"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "responseMimeType": {
+                                                                    "mode": "chose",
+                                                                    "label": "Empty"
+                                                                }
+                                                            }
+                                                        },
+                                                        "function_declarations_context": {
+                                                            "mode": "chose"
+                                                        },
+                                                        "url_context": {
                                                             "mode": "chose"
                                                         },
                                                         "google_search_context": {
                                                             "mode": "chose"
                                                         },
-                                                        "file_search_store_context": {
+                                                        "code_execution": {
                                                             "mode": "chose"
                                                         },
-                                                        "function_declarations_context": {
+                                                        "google_maps_context": {
                                                             "mode": "chose"
-                                                        }
-                                                    },
-                                                    "parameters": {
-                                                        "__IMTCONN__": {
-                                                            "data": {
-                                                                "scoped": "true",
-                                                                "connection": "gemini-ai-q9zyjp"
-                                                            },
-                                                            "label": "My Gemini AI connection"
+                                                        },
+                                                        "file_search_store_context": {
+                                                            "mode": "chose"
                                                         }
                                                     }
                                                 },
@@ -488,6 +919,9 @@
                                                     },
                                                     {
                                                         "name": "contents",
+                                                        "type": "array",
+                                                        "label": "Messages",
+                                                        "required": true,
                                                         "spec": [
                                                             {
                                                                 "name": "role",
@@ -627,18 +1061,18 @@
                                                                 "type": "array",
                                                                 "label": "Parts"
                                                             }
-                                                        ],
-                                                        "type": "array",
-                                                        "label": "Messages",
-                                                        "required": true
+                                                        ]
                                                     },
                                                     {
                                                         "name": "system_instruction",
+                                                        "type": "collection",
+                                                        "label": "System Instructions",
                                                         "spec": [
                                                             {
                                                                 "name": "parts",
+                                                                "type": "array",
+                                                                "label": "Prompts",
                                                                 "spec": {
-                                                                    "name": "value",
                                                                     "spec": [
                                                                         {
                                                                             "name": "text",
@@ -647,17 +1081,16 @@
                                                                         }
                                                                     ],
                                                                     "type": "collection",
-                                                                    "label": "Prompt"
-                                                                },
-                                                                "type": "array",
-                                                                "label": "Prompts"
+                                                                    "label": "Prompt",
+                                                                    "name": "value"
+                                                                }
                                                             }
-                                                        ],
-                                                        "type": "collection",
-                                                        "label": "System Instructions"
+                                                        ]
                                                     },
                                                     {
                                                         "name": "safetySettings",
+                                                        "type": "array",
+                                                        "label": "Safety Settings",
                                                         "spec": [
                                                             {
                                                                 "name": "category",
@@ -705,22 +1138,22 @@
                                                                     }
                                                                 ]
                                                             }
-                                                        ],
-                                                        "type": "array",
-                                                        "label": "Safety Settings"
+                                                        ]
                                                     },
                                                     {
                                                         "name": "generationConfig",
+                                                        "type": "collection",
+                                                        "label": "Generation configurations",
                                                         "spec": [
                                                             {
                                                                 "name": "stopSequences",
-                                                                "spec": {
-                                                                    "name": "value",
-                                                                    "type": "text",
-                                                                    "label": "Stop Sequence"
-                                                                },
                                                                 "type": "array",
-                                                                "label": "Stop Sequences"
+                                                                "label": "Stop Sequences",
+                                                                "spec": {
+                                                                    "type": "text",
+                                                                    "label": "Stop Sequence",
+                                                                    "name": "value"
+                                                                }
                                                             },
                                                             {
                                                                 "name": "responseModalities",
@@ -764,6 +1197,8 @@
                                                             },
                                                             {
                                                                 "name": "thinkingConfig",
+                                                                "type": "collection",
+                                                                "label": "Thinking Config",
                                                                 "spec": [
                                                                     {
                                                                         "name": "thinkingBudget",
@@ -786,9 +1221,7 @@
                                                                             ]
                                                                         }
                                                                     }
-                                                                ],
-                                                                "type": "collection",
-                                                                "label": "Thinking Config"
+                                                                ]
                                                             },
                                                             {
                                                                 "name": "mediaResolution",
@@ -804,6 +1237,8 @@
                                                             },
                                                             {
                                                                 "name": "imageConfig",
+                                                                "type": "collection",
+                                                                "label": "Image Configuration",
                                                                 "spec": [
                                                                     {
                                                                         "name": "imageSize",
@@ -817,18 +1252,14 @@
                                                                             ]
                                                                         }
                                                                     }
-                                                                ],
-                                                                "type": "collection",
-                                                                "label": "Image Configuration"
+                                                                ]
                                                             },
                                                             {
                                                                 "name": "responseMimeType",
                                                                 "type": "select",
                                                                 "label": "Response Format"
                                                             }
-                                                        ],
-                                                        "type": "collection",
-                                                        "label": "Generation configurations"
+                                                        ]
                                                     },
                                                     {
                                                         "name": "tools",
@@ -881,9 +1312,9 @@
                                                 "__IMTCONN__": 4597163
                                             },
                                             "mapper": {
-                                                "name": "{{1.board_name}} - Free Printable",
-                                                "privacy": "PUBLIC",
-                                                "description": "{{5.result}}"
+                                                "name": "{{1.board_name}} - Free Printables",
+                                                "description": "{{5.result}}",
+                                                "privacy": "PUBLIC"
                                             },
                                             "metadata": {
                                                 "designer": {
@@ -891,6 +1322,15 @@
                                                     "y": 121
                                                 },
                                                 "restore": {
+                                                    "parameters": {
+                                                        "__IMTCONN__": {
+                                                            "label": "PaperPause Pinterest (paperpause)",
+                                                            "data": {
+                                                                "scoped": "true",
+                                                                "connection": "pinterest2"
+                                                            }
+                                                        }
+                                                    },
                                                     "expect": {
                                                         "privacy": {
                                                             "mode": "chose",
@@ -898,15 +1338,6 @@
                                                         },
                                                         "ad_account_id": {
                                                             "mode": "chose"
-                                                        }
-                                                    },
-                                                    "parameters": {
-                                                        "__IMTCONN__": {
-                                                            "data": {
-                                                                "scoped": "true",
-                                                                "connection": "pinterest2"
-                                                            },
-                                                            "label": "PaperPause Pinterest (paperpause)"
                                                         }
                                                     }
                                                 },
@@ -955,14 +1386,14 @@
                                             "module": "datastore:AddRecord",
                                             "version": 1,
                                             "parameters": {
-                                                "datastore": 79819
+                                                "datastore": null
                                             },
                                             "mapper": {
                                                 "key": "{{1.collection}}",
+                                                "overwrite": true,
                                                 "data": {
                                                     "board_id": "{{4.id}}"
-                                                },
-                                                "overwrite": true
+                                                }
                                             },
                                             "metadata": {
                                                 "designer": {
@@ -970,14 +1401,14 @@
                                                     "y": 121
                                                 },
                                                 "restore": {
-                                                    "expect": {
-                                                        "overwrite": {
-                                                            "mode": "chose"
-                                                        }
-                                                    },
                                                     "parameters": {
                                                         "datastore": {
                                                             "label": "Board_Mappings"
+                                                        }
+                                                    },
+                                                    "expect": {
+                                                        "overwrite": {
+                                                            "mode": "chose"
                                                         }
                                                     }
                                                 },
@@ -1003,15 +1434,15 @@
                                                     },
                                                     {
                                                         "name": "data",
+                                                        "type": "collection",
+                                                        "label": "Record",
                                                         "spec": [
                                                             {
                                                                 "name": "board_id",
                                                                 "type": "text",
                                                                 "label": "Board ID"
                                                             }
-                                                        ],
-                                                        "type": "collection",
-                                                        "label": "Record"
+                                                        ]
                                                     }
                                                 ]
                                             }
@@ -1025,12 +1456,12 @@
                                             },
                                             "mapper": {
                                                 "url": "{{1.rss_url}}",
-                                                "gzip": true,
-                                                "password": "",
                                                 "username": "",
-                                                "maxResults": "1",
+                                                "password": "",
+                                                "filterDateFrom": "",
                                                 "filterDateTo": "",
-                                                "filterDateFrom": ""
+                                                "maxResults": "1",
+                                                "gzip": true
                                             },
                                             "metadata": {
                                                 "designer": {
@@ -1091,6 +1522,230 @@
                                                         "label": "Request compressed content",
                                                         "required": true
                                                     }
+                                                ],
+                                                "interface": [
+                                                    {
+                                                        "name": "title",
+                                                        "type": "text",
+                                                        "label": "Title"
+                                                    },
+                                                    {
+                                                        "name": "description",
+                                                        "type": "text",
+                                                        "label": "Description"
+                                                    },
+                                                    {
+                                                        "name": "summary",
+                                                        "type": "text",
+                                                        "label": "Summary"
+                                                    },
+                                                    {
+                                                        "name": "author",
+                                                        "type": "text",
+                                                        "label": "Author"
+                                                    },
+                                                    {
+                                                        "name": "url",
+                                                        "type": "url",
+                                                        "label": "URL"
+                                                    },
+                                                    {
+                                                        "name": "dateUpdated",
+                                                        "type": "date",
+                                                        "label": "Date updated"
+                                                    },
+                                                    {
+                                                        "name": "dateCreated",
+                                                        "type": "date",
+                                                        "label": "Date created"
+                                                    },
+                                                    {
+                                                        "name": "comments",
+                                                        "type": "url",
+                                                        "label": "Comments"
+                                                    },
+                                                    {
+                                                        "name": "image",
+                                                        "type": "collection",
+                                                        "label": "Image",
+                                                        "spec": [
+                                                            {
+                                                                "name": "title",
+                                                                "label": "Name",
+                                                                "type": "text"
+                                                            },
+                                                            {
+                                                                "name": "url",
+                                                                "label": "URL",
+                                                                "type": "url"
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "name": "categories",
+                                                        "type": "array",
+                                                        "label": "Categories",
+                                                        "spec": {
+                                                            "type": "text"
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": "source",
+                                                        "type": "collection",
+                                                        "label": "Source",
+                                                        "spec": [
+                                                            {
+                                                                "name": "title",
+                                                                "label": "Name",
+                                                                "type": "text"
+                                                            },
+                                                            {
+                                                                "name": "url",
+                                                                "label": "URL",
+                                                                "type": "url"
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "name": "enclosures",
+                                                        "type": "array",
+                                                        "label": "Enclosures",
+                                                        "spec": [
+                                                            {
+                                                                "name": "url",
+                                                                "label": "URL",
+                                                                "type": "url"
+                                                            },
+                                                            {
+                                                                "name": "type",
+                                                                "label": "Type",
+                                                                "type": "text"
+                                                            },
+                                                            {
+                                                                "name": "length",
+                                                                "label": "Length",
+                                                                "type": "number"
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "name": "rssFields",
+                                                        "label": "RSS fields",
+                                                        "help": "Other RSS fields. All values are in text format.",
+                                                        "type": "collection",
+                                                        "spec": [
+                                                            {
+                                                                "name": "title",
+                                                                "label": "title",
+                                                                "type": "text"
+                                                            },
+                                                            {
+                                                                "name": "link",
+                                                                "label": "link",
+                                                                "type": "text"
+                                                            },
+                                                            {
+                                                                "name": "pubdate",
+                                                                "label": "pubdate",
+                                                                "type": "text"
+                                                            },
+                                                            {
+                                                                "name": "guid",
+                                                                "label": "guid",
+                                                                "type": "text"
+                                                            },
+                                                            {
+                                                                "name": "description",
+                                                                "label": "description",
+                                                                "type": "text"
+                                                            },
+                                                            {
+                                                                "name": "prompt",
+                                                                "label": "prompt",
+                                                                "type": "text"
+                                                            },
+                                                            {
+                                                                "name": "enclosure",
+                                                                "label": "enclosure",
+                                                                "type": "text"
+                                                            },
+                                                            {
+                                                                "label": "media:content",
+                                                                "name": "media:content",
+                                                                "type": "collection",
+                                                                "spec": [
+                                                                    {
+                                                                        "name": "props",
+                                                                        "label": "Properties",
+                                                                        "type": "collection",
+                                                                        "spec": [
+                                                                            {
+                                                                                "label": "url",
+                                                                                "name": "url",
+                                                                                "type": "text"
+                                                                            },
+                                                                            {
+                                                                                "label": "medium",
+                                                                                "name": "medium",
+                                                                                "type": "text"
+                                                                            },
+                                                                            {
+                                                                                "label": "width",
+                                                                                "name": "width",
+                                                                                "type": "number"
+                                                                            },
+                                                                            {
+                                                                                "label": "height",
+                                                                                "name": "height",
+                                                                                "type": "number"
+                                                                            }
+                                                                        ]
+                                                                    },
+                                                                    {
+                                                                        "label": "Value",
+                                                                        "name": "value",
+                                                                        "type": "text"
+                                                                    },
+                                                                    {
+                                                                        "label": "media:title",
+                                                                        "name": "media:title",
+                                                                        "type": "collection",
+                                                                        "spec": [
+                                                                            {
+                                                                                "name": "props",
+                                                                                "label": "Properties",
+                                                                                "type": "collection",
+                                                                                "spec": []
+                                                                            },
+                                                                            {
+                                                                                "label": "Value",
+                                                                                "name": "value",
+                                                                                "type": "text"
+                                                                            }
+                                                                        ]
+                                                                    },
+                                                                    {
+                                                                        "label": "media:description",
+                                                                        "name": "media:description",
+                                                                        "type": "collection",
+                                                                        "spec": [
+                                                                            {
+                                                                                "name": "props",
+                                                                                "label": "Properties",
+                                                                                "type": "collection",
+                                                                                "spec": []
+                                                                            },
+                                                                            {
+                                                                                "label": "Value",
+                                                                                "name": "value",
+                                                                                "type": "text"
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
                                                 ]
                                             }
                                         },
@@ -1098,6 +1753,16 @@
                                             "id": 15,
                                             "module": "pinterest:createPin",
                                             "version": 2,
+                                            "parameters": {
+                                                "__IMTCONN__": 4597163
+                                            },
+                                            "mapper": {
+                                                "board": "{{9.data.board_id}}",
+                                                "note": "{{13.description}}",
+                                                "link": "{{13.link}}",
+                                                "image_url": "{{13.enclosure.url}}",
+                                                "title": "{{13.title}}"
+                                            },
                                             "metadata": {
                                                 "designer": {
                                                     "x": 2949,
@@ -1110,30 +1775,30 @@
                                 {
                                     "flow": [
                                         {
-                                            "id": 11,
+                                            "id": 99,
                                             "module": "datastore:AddRecord",
                                             "version": 1,
                                             "parameters": {
-                                                "datastore": 79819
+                                                "datastore": null
                                             },
                                             "filter": {
                                                 "name": "Board exist",
                                                 "conditions": [
                                                     [
                                                         {
-                                                            "a": "{{22.array}}",
+                                                            "a": "{{length(22.array)}}",
                                                             "b": "0",
-                                                            "o": "array:greater"
+                                                            "o": "number:greater"
                                                         }
                                                     ]
                                                 ]
                                             },
                                             "mapper": {
                                                 "key": "{{1.collection}}",
+                                                "overwrite": false,
                                                 "data": {
-                                                    "board_id": ""
-                                                },
-                                                "overwrite": false
+                                                    "board_id": "{{get(22.array; 1).id}}"
+                                                }
                                             },
                                             "metadata": {
                                                 "designer": {
@@ -1141,14 +1806,14 @@
                                                     "y": 564
                                                 },
                                                 "restore": {
-                                                    "expect": {
-                                                        "overwrite": {
-                                                            "mode": "chose"
-                                                        }
-                                                    },
                                                     "parameters": {
                                                         "datastore": {
                                                             "label": "Board_Mappings"
+                                                        }
+                                                    },
+                                                    "expect": {
+                                                        "overwrite": {
+                                                            "mode": "chose"
                                                         }
                                                     }
                                                 },
@@ -1174,47 +1839,17 @@
                                                     },
                                                     {
                                                         "name": "data",
+                                                        "type": "collection",
+                                                        "label": "Record",
                                                         "spec": [
                                                             {
                                                                 "name": "board_id",
                                                                 "type": "text",
-                                                                "label": "Board ID"
+                                                                "label": null
                                                             }
-                                                        ],
-                                                        "type": "collection",
-                                                        "label": "Record"
+                                                        ]
                                                     }
                                                 ]
-                                            }
-                                        },
-                                        {
-                                            "id": 11,
-                                            "module": "datastore:AddRecord",
-                                            "version": 1,
-                                            "parameters": {
-                                                "datastore": 79819
-                                            },
-                                            "filter": {
-                                                "name": "Board exist",
-                                                "conditions": [
-                                                    [
-                                                        {
-                                                            "a": "{{length(22.array)}}",
-                                                            "b": "0",
-                                                            "o": "number:greater"
-                                                        }
-                                                    ]
-                                                ]
-                                            },
-                                            "mapper": {
-                                                "key": "{{1.collection}}",
-                                                "data": {
-                                                    "board_id": "{{get(22.array; 1).id}}"
-                                                },
-                                                "overwrite": false
-                                            },
-                                            "metadata": {
-                                                "designer": { "x": 2281, "y": 564 }
                                             }
                                         },
                                         {
@@ -1230,7 +1865,10 @@
                                                 "maxResults": "1"
                                             },
                                             "metadata": {
-                                                "designer": { "x": 2630, "y": 570 }
+                                                "designer": {
+                                                    "x": 2630,
+                                                    "y": 570
+                                                }
                                             }
                                         },
                                         {
@@ -1241,14 +1879,17 @@
                                                 "__IMTCONN__": 4597163
                                             },
                                             "mapper": {
-                                                "board": "{{11.data.board_id}}",
+                                                "board": "{{99.data.board_id}}",
                                                 "note": "{{14.description}}",
                                                 "link": "{{14.link}}",
                                                 "image_url": "{{14.enclosure.url}}",
                                                 "title": "{{14.title}}"
                                             },
                                             "metadata": {
-                                                "designer": { "x": 2900, "y": 570 }
+                                                "designer": {
+                                                    "x": 2900,
+                                                    "y": 570
+                                                }
                                             }
                                         }
                                     ]
