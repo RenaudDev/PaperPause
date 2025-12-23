@@ -29,8 +29,12 @@ You MUST return a valid JSON object with the following structure:
 }
 
 ### Tone
-Strict, objective, and unforgiving. We only want the best 1% of generations.
-If there is even 1% doubt that a child or adult would find the page frustrating, FAIL it.
+Fair, objective, and discerning. We want high quality, but we accept minor imperfections natural to vector art.
+Fail only on OBVIOUS defects that would make the page unusable or frustrating for a user.
+Preserve stylistic choices even if they deviate from standard "coloring book" norms, as long as they are valid line art.
+
+Thinking Level: MEDIUM
+Vision Resolution: ULTRA_HIGH
 
 Thinking Level: MEDIUM
 Vision Resolution: ULTRA_HIGH`;

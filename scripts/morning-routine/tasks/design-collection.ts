@@ -158,6 +158,19 @@ async function run() {
     
     let dirExistsBefore = fs.existsSync(collDir);
     let promptExistsBefore = fs.existsSync(promptPath);
+
+    // Robustness: If strict match failed, try case-insensitive lookup (fixes Linux/Windows disparity)
+    if (!promptExistsBefore && fs.existsSync(PROMPTS_DIR)) {
+      const searchName = `${category}-${collection}.json`.toLowerCase();
+      const files = fs.readdirSync(PROMPTS_DIR);
+      const match = files.find(f => f.toLowerCase() === searchName);
+      if (match) {
+        // If found, treat it as existing (and maybe warn or use the matched path if we needed to read it, 
+        // but here we just check existence for scaffolding decision)
+        promptExistsBefore = true; 
+      }
+    }
+
     const needsScaffolding = !dirExistsBefore || !promptExistsBefore;
 
     let action = 'None (Exists)';
