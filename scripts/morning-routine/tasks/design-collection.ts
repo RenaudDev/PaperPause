@@ -152,7 +152,7 @@ async function run() {
   ];
 
   for (const collPath of designerMatrix) {
-    const [category, collection] = collPath.split('/');
+    const [category, collection] = collPath.toLowerCase().split('/');
     const collDir = path.join(CONTENT_PATH, category, collection);
     const promptPath = path.join(PROMPTS_DIR, `${category}-${collection}.json`);
     
