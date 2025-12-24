@@ -1,0 +1,79 @@
+{
+  "collection": "designer-preview",
+  "category": "animals",
+  "base": "Vector line art coloring page of a [Subject]. Subject filling the page (80% occupancy). Pure black outlines, no shading, no text.",
+  "negative_prompt": "text, letters, words, numbers, signature, watermark, logo, name, gray, shading, gradient, realistic, photorealistic, 3d, rendering, photo, blurry, broken lines, thin lines, sketch, messy, horizontal, landscape, colored, transparent, background patterns, complex shading",
+  "attributes": {
+    "tones": [
+      "Majestic",
+      "Whimsical",
+      "Serene",
+      "Gentle",
+      "Curious",
+      "Regal",
+      "Peaceful",
+      "Adventurous",
+      "Joyful",
+      "Noble",
+      "Quiet",
+      "Playful"
+    ],
+    "types": [
+      "Stately African Elephant",
+      "Sitting Red Fox",
+      "Proud Highland Cow",
+      "Sleeping Koala",
+      "Prowling Bengal Tiger",
+      "Wise Barn Owl",
+      "Playful Sea Otter",
+      "Gentle Giraffe",
+      "Graceful Swan",
+      "Curious Raccoon",
+      "Noble Lion",
+      "Giant Panda",
+      "Arctic Polar Bear",
+      "Hopping Kangaroo",
+      "Giant Capybara"
+    ],
+    "actions": [
+      "napping",
+      "exploring",
+      "sitting upright",
+      "peeking out",
+      "stretching",
+      "walking slowly",
+      "looking at the viewer",
+      "tucking into a ball",
+      "munching on a leaf",
+      "resting on a branch",
+      "wading in shallow water"
+    ],
+    "settings": [
+      "sparse meadow",
+      "simple forest clearing",
+      "minimalist savannah",
+      "quiet pond with lily pads",
+      "stylized jungle foliage",
+      "distant mountain silhouette",
+      "rolling hills",
+      "desert dunes",
+      "tall grass patch",
+      "rocky ledge"
+    ],
+    "details": [
+      "wearing a crown of wildflowers",
+      "wearing a chunky knit scarf",
+      "surrounded by large butterflies",
+      "wearing a simple bowtie",
+      "framed by circular floral vines",
+      "wearing a small festive hat"
+    ],
+    "styles": [
+      "Kawaii",
+      "Cottagecore",
+      "Totem",
+      "Bold Line Pop Art",
+      "Magical Realism"
+    ]
+  }
+}
