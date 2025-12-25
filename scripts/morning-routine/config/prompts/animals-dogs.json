@@ -35,34 +35,29 @@
     ],
     "actions": [
       "napping",
-      "reading",
       "playing",
       "smiling",
       "resting",
       "howling",
       "Playing Tug-of-War",
       "Chasing a Ball",
-      "Digging",
       "Doing The \"Sploot\"",
-      "Sitting Pretty",
-      "Chewing a Shoe"
+      "Sitting Pretty"
     ],
     "settings": [
       "home",
       "garden",
-      "library",
-      "kitchen",
-      "studio",
       "beach",
-      "appartment",
       "cottagecore",
-      "outside porch"
+      "outside porch",
+      "park",
+      "forest path"
     ],
     "details": [],
     "styles": [
       "Kawaii",
       "Cottagecore",
-      "Totem",
+      "SteamPunk",
       "Bold Line Pop Art",
       "Magical Realism"
     ]

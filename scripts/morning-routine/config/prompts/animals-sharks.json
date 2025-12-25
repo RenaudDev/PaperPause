@@ -25,28 +25,24 @@
       "Baby Shark"
     ],
     "actions": [
-      "Surfing a wave",
       "Treasure Hunting",
       "Leaping",
       "Hunting",
       "Swimming",
-      "Winking"
+      "Patrolling"
     ],
     "settings": [
       "Sunken Pirate Ship",
       "Coral Reef",
-      "Deep Sea Cave",
       "Tropical Beach Shallows",
       "Atlantis Ruins",
       "Jellyfish Field",
-      "Open Ocean Surface",
-      "Steampunk Submarine",
-      "Beach"
+      "Open Ocean Surface"
     ],
     "details": [],
     "styles": [
       "Magical Realism",
-      "Totem",
+      "SteamPunk",
       "Kawaii",
       "Cottagecore",
       "Bold Line Pop Art"

@@ -64,6 +64,16 @@ export const COLORING_STYLES: Record<string, StyleDefinition> = {
     targetAudience: "Adults",
     preferredMedium: "Colored Pencils",
     tags: ["realistic", "fantasy", "elegant", "detailed", "enchanted"]
+  },
+
+  steampunk: {
+    id: "steampunk",
+    name: "SteamPunk",
+    description: "Mechanical, detailed, Victorian industrial.",
+    promptModifier: "steampunk style, mechanical details, gears and cogs, victorian industrial aesthetic, fine technical line work, brass and copper textures implied through shading patterns, intricate machinery, scifi-vintage fusion, clear nuts and bolts details, clockwork elements.",
+    targetAudience: "Adults",
+    preferredMedium: "Fineliners",
+    tags: ["steampunk", "mechanical", "gears", "victorian", "detailed"]
   }
 };
 

@@ -32,8 +32,8 @@
     ],
     "actions": [
       "flying",
-      "standing",
-      "resting"
+      "resting",
+      "fluttering"
     ],
     "settings": [
       "garden",
@@ -44,7 +44,7 @@
     "styles": [
       "Kawaii",
       "Cottagecore",
-      "Totem",
+      "SteamPunk",
       "Bold Line Pop Art",
       "Magical Realism"
     ]

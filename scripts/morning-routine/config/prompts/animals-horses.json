@@ -32,21 +32,19 @@
       "Grazing"
     ],
     "settings": [
-      "stable",
-      "barn",
       "pasture",
-      "riding arena",
-      "racetrack",
       "ranch",
       "steppes",
       "desert",
       "mountain foothills",
-      "sparse woodland"
+      "sparse woodland",
+      "wildflower meadow",
+      "river bank"
     ],
     "details": [],
     "styles": [
       "Magical Realism",
-      "Totem",
+      "SteamPunk",
       "Kawaii",
       "Cottagecore",
       "Bold Line Pop Art"

@@ -222,7 +222,7 @@ ATMOSPHERE: Whimsical, inviting, clean line art ready for coloring.`,
       actions: ['baking', 'napping', 'reading', 'painting', 'dancing'],
       settings: ['home', 'garden', 'library', 'kitchen', 'studio'],
       details: [],
-      styles: ['Kawaii', 'Cottagecore', 'Totem', 'Bold Line Pop Art', 'Magical Realism']
+      styles: ['Kawaii', 'Cottagecore', 'SteamPunk', 'Bold Line Pop Art', 'Magical Realism']
     }
   };
 
