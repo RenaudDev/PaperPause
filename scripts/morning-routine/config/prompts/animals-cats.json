@@ -1,8 +1,8 @@
 {
   "collection": "cats",
   "category": "animals",
-  "base": "Vector line art coloring page of a [Subject]. Pure black outlines on white background. High contrast. Subject must fill the page (80% occupancy). No text. No shading. No gray.",
-  "negative_prompt": "text, letters, words, numbers, signature, watermark, border, frame, shading, gray, gradient, realistic, 3d, rendering, photo, blurry, messy, color, filled black areas, shadows",
+  "base": "Vector line art coloring page of a [Subject]. Pure black outlines on white background. High contrast. Subject must fill the page (80% occupancy).",
+  "negative_prompt": "",
   "attributes": {
     "tones": [
       "Cozy",

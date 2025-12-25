@@ -151,12 +151,10 @@ export function getVariantPrompt(
     detail = (details && details.length > 0) ? details[Math.floor(Math.random() * details.length)] : '';
   }
 
-  let variant = `A ${tone} ${type}`.replace(/\s+/g, ' ').trim();
-  if (action) variant += `, ${action}`;
-  if (setting) variant += `, in ${setting}`;
-  if (detail) variant += `. ${detail}`;
+  // Story 2.0.2: Macro-First Template
+  const variant = `${tone} ${type} ${action}, closely surrounded by ${setting}, filling the frame, macro view.`.replace(/\s+/g, ' ').trim();
 
-  return variant.trim();
+  return variant;
 }
 
 /**
@@ -354,8 +352,8 @@ export function buildPromptWithStyle(
   }
 
   // Inject style modifier into base prompt
-  const styledBase = `${promptConfig.base}\n\nSTYLE MODIFIER: ${style.promptModifier}\n\nCRITICAL ENFORCEMENT: NO BORDERS, NO FRAMES, NO EDGES. The art must exist freely on the white background without any containing box or boundary lines.`;
-  const fullPrompt = `${styledBase}\n\nSCENE: ${variantPrompt}, aspectRatio = "3:4", Resolution: "4K", 3:4 aspect ratio, high-resolution 4K detail`;
+  const styledBase = `${promptConfig.base}\n\nSTYLE MODIFIER: ${style.promptModifier}`;
+  const fullPrompt = `${styledBase}\n\nSCENE: ${variantPrompt}`;
 
   // Merge immunization terms if present
   let finalNegative = promptConfig.negative_prompt;

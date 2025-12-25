@@ -20,8 +20,8 @@ audience: Kids
 cf_image_id: fe7002d7-c48a-4feb-a11d-f487a482fa00
 image_url: >-
   https://imagedelivery.net/G92SwfasiUv-usR1s4VYvA/fe7002d7-c48a-4feb-a11d-f487a482fa00/desktop
-download_url: 'https://img.paperpause.app/dogs/20251222-dogs-slot-1.pdf'
-r2_original: 'https://img.paperpause.app/dogs/20251222-dogs-slot-1.png'
+download_url: 'https://img.paperpause.app/dogs/Chihuahua%20With%20Mushrooms.png'
+r2_original: 'https://img.paperpause.app/dogs/Chihuahua%20With%20Mushrooms.png'
 asset_id: 20251222-dogs-slot-1
 prompt: >-
   A cute chihuahua sits smiling, wearing a patterned bandana, surrounded by
