@@ -1,187 +1,159 @@
+# Nightwatcher Distribution System PRD
 
-# 1.E.3 — Distribution Conductor & Queue System (Final)
-
-**Epic:** `1 - PaperPause Autonomy System`
-**Status:** Ready for Implementation
-**Architecture:** Deterministic "Night Watchman" (GitHub) → "One-Way Fire" (Make.com)
+**Epic:** `1 - PaperPause Autonomy System`  
+**Status:** ✅ Implemented  
+**Architecture:** Success-Gated Randomized Distribution (GitHub) → One-Way Fire (Make.com)
 
 ---
 
 ## 1. Executive Summary
-We are implementing a **Deterministic Distribution System** that scales from 5 to 50+ collections without human intervention.
-- **The Brain (GitHub):** Calculates the daily "Flight Plan" based on hard rules (post counts) and manages the queue.
-- **The Hands (Make.com):** Receives orders, manages Pinterest Board IDs (Just-In-Time provisioning), and executes posts.
-- **Security:** One-way data flow. Make.com never writes back to GitHub.
+
+The **Nightwatcher Distribution System** is a fully automated Pinterest distribution pipeline that:
+
+- **Only posts new content:** Uses manifest-based success gating to ensure only collections that successfully generated images get scheduled
+- **Randomizes post times:** Each collection gets a unique random time slot daily (1 AM - 4 PM ET)
+- **Prevents duplicates:** Failed generation = no scheduling = no duplicate pins
+- **Scales effortlessly:** From 5 to 50+ collections without human intervention
 
 ---
 
-## 2. Responsibility Matrix
+## 2. Architecture Overview
 
-### 👤 Manual Setup (You do this once)
-1.  **Make.com Data Store:** Create `Board_Mappings` store.
-2.  **Make.com Scenario:** Build the "Smart Router" scenario (Webhook → Pinterest).
-3.  **GitHub Secrets:** Add `MAKE_WEBHOOK_URL` to repository secrets.
+### Data Flow
 
-### 🤖 Automated Code (The System does this forever)
-1.  **Midnight Scheduler:** Audits content, applies Growth/Maintenance rules, generates JIT board names, builds the queue.
-2.  **Distribution Conductor:** Pops items from the queue, triggers Make.com, commits state to repo.
-3.  **GitHub Workflows:** Orchestrates the timing (00:00 reset + hourly distribution).
-
----
-
-## 3. System Architecture
-
-### A. The "Night Watchman" (Scheduler Script)
-* **Runs:** Every night at 00:00 UTC.
-* **Logic:**
-    1.  Scans `content/animals/*`.
-    2.  **Growth Rule:** If posts < 75 → Schedule **Daily**.
-    3.  **Maintenance Rule:** If posts ≥ 75 → Schedule **Weekly** (DayOfYear % 7 == CollectionHash % 7).
-    4.  **JIT Naming:** Generates "Board Name" (e.g., `sharks` → "Shark Coloring Pages") automatically.
-    5.  **Output:** Overwrites `config/distribution-queue.json`.
-
-### B. The "Conductor" (Executor Script)
-* **Runs:** Approx every 45-60 minutes (via Cron).
-* **Logic:**
-    1.  Reads `config/distribution-queue.json`.
-    2.  **Queue Empty?** → Exit.
-    3.  **Queue Has Item?** → Pop first item.
-    4.  **Fire:** Send JSON payload to Make.com Webhook.
-    5.  **Commit:** Save updated queue to GitHub (preventing duplicates).
-
-### C. The "Executor" (Make.com)
-* **Trigger:** Webhook.
-* **Logic:**
-    1.  **Check Memory:** Look up Collection in `Board_Mappings` Data Store.
-    2.  **Miss (New Collection):** Search Pinterest for Board → Create if missing → Save ID to Data Store.
-    3.  **Hit (Existing):** Use cached Board ID.
-    4.  **Action:** Create Pin.
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│              daily-generate-and-optimize.yml (12:10 AM ET)             │
+├────────────────────────────────────────────────────────────────────────┤
+│ 1. Generate images (matrix per collection)                             │
+│ 2. Write manifests with category/collection/created[]                  │
+│ 3. Commit content                                                      │
+│ 4. Run Scheduler (--from-manifests)                                    │
+│    → Only successful collections get random time slots                 │
+│ 5. Commit queue                                                        │
+└────────────────────────────────────────────────────────────────────────┘
+                                    ↓
+┌────────────────────────────────────────────────────────────────────────┐
+│              distribution-system.yml (Every 15 min)                    │
+├────────────────────────────────────────────────────────────────────────┤
+│ 1. Read queue                                                          │
+│ 2. Find items where scheduled_at <= now                                │
+│ 3. Fire webhooks for all due items                                     │
+│ 4. Remove successful items from queue                                  │
+│ 5. Commit updated queue                                                │
+└────────────────────────────────────────────────────────────────────────┘
+                                    ↓
+┌────────────────────────────────────────────────────────────────────────┐
+│                      Make.com (Executor)                                │
+├────────────────────────────────────────────────────────────────────────┤
+│ 1. Webhook receives: collection, board_name, rss_url                   │
+│ 2. Check Data Store for cached board_id                                │
+│ 3. If miss: Search/Create Pinterest board, cache ID                    │
+│ 4. Fetch RSS feed → Get latest item                                    │
+│ 5. Create Pin                                                          │
+└────────────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
-## 4. Technical Specifications (The Code)
+## 3. Key Design Decisions
 
-### Artifact: `config/distribution-queue.json`
+### Success-Gated Scheduling
+- The scheduler reads **generation manifests** (not the file system)
+- Only collections with `created.length > 0` are scheduled
+- This prevents posting yesterday's content if today's generation failed
+
+### Randomized Time Slots
+- Window: **06:00 - 21:00 UTC** (1 AM - 4 PM ET)
+- Slots: Every 15 minutes (60 slots available)
+- Assignment: Fisher-Yates shuffle for even distribution
+- No collisions: Each collection gets a unique slot
+
+### RSS Propagation Buffer
+- Generation runs at **05:10 UTC** (12:10 AM ET)
+- First possible post at **06:00 UTC** (1:00 AM ET)
+- 50-minute buffer ensures GitHub Pages has rebuilt
+
+---
+
+## 4. Technical Specifications
+
+### Queue Schema (`config/distribution-queue.json`)
+
 ```json
 {
-  "generated_at": "2025-12-21T00:00:00Z",
+  "generated_at": "2025-12-26T05:15:00Z",
   "queue": [
     {
-      "collection": "dragons",
-      "board_name": "Dragon Coloring Pages",
-      "mode": "growth"
+      "collection": "dogs",
+      "board_name": "Dogs Coloring Pages",
+      "mode": "growth",
+      "priority": 10,
+      "rss_url": "https://paperpause.app/animals/dogs/index.xml",
+      "scheduled_at": "2025-12-26T14:30:00Z"
     }
   ]
 }
-
 ```
 
-### Script 1: `scripts/morning-routine/tasks/midnight-scheduler.ts`
+### Manifest Schema (`scripts/morning-routine/.runs/*.json`)
 
-*(Logic to handle file counting, hashing, and shuffling)*
-
-### Script 2: `scripts/morning-routine/tasks/distribution-conductor.ts`
-
-*(Logic to pop queue, fetch webhook, and git commit)*
-
-### Workflow: `.github/workflows/distribution-system.yml`
-
-```yaml
-name: Distribution System
-
-on:
-  schedule:
-    # 1. The Night Watchman: Runs at midnight UTC to build the queue
-    - cron: '0 0 * * *'
-    # 2. The Conductor: Runs every hour at minute 45 to distribute
-    - cron: '45 * * * *'
-  workflow_dispatch:
-
-permissions:
-  contents: write
-
-jobs:
-  scheduler:
-    if: github.event.schedule == '0 0 * * *' || github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - run: npm ci
-      - name: Run Night Watchman
-        run: npx ts-node scripts/morning-routine/tasks/midnight-scheduler.ts
-      - name: Commit Queue
-        run: |
-          git config user.name "PaperPause Bot"
-          git config user.email "bot@paperpause.app"
-          git add config/distribution-queue.json
-          git commit -m "chore(schedule): generate daily distribution queue" || exit 0
-          git push
-
-  distributor:
-    if: github.event.schedule != '0 0 * * *'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - run: npm ci
-      - name: Run Conductor
-        env:
-          MAKE_WEBHOOK_URL: ${{ secrets.MAKE_WEBHOOK_URL }}
-        run: npx ts-node scripts/morning-routine/tasks/distribution-conductor.ts
-
+```json
+{
+  "runId": "2025-12-26T05-15-00Z-dogs",
+  "category": "animals",
+  "collection": "dogs",
+  "created": [
+    "content/animals/dogs/20251226-golden-retriever-garden-for-kids-ab12.md"
+  ]
+}
 ```
+
+### Environment Variables
+
+| Variable | Source | Purpose |
+| :--- | :--- | :--- |
+| `MAKE_WEBHOOK` | GitHub Secret | Make.com scenario webhook URL |
+| `MAKE_WEBHOOK_API` | GitHub Secret | Make.com API key for auth header |
 
 ---
 
-## 5. Make.com Scenario Configuration (Manual)
+## 5. Workflows
 
-**Data Store:**
+### `daily-generate-and-optimize.yml`
 
-* **Name:** `Board_Mappings`
-* **Structure:** Key (`collection`), Value (`board_id`)
+- **Schedule:** `10 5 * * *` (12:10 AM ET)
+- **Jobs:**
+  - `setup`: Foreman + Designer
+  - `generate`: Matrix generation (1 image per collection)
+  - `commit`: Content commit + Scheduler run + Queue commit
 
-**Scenario Flow:**
+### `distribution-system.yml`
 
-1. **Webhook:** Capture `collection`, `board_name`.
-2. **Get Record (Data Store):** Key = `{{collection}}`.
-3. **Router:**
-* **Route A (Known):** Record exists.
-* Set Variable `final_board_id` = `{{Record.value}}`.
-
-
-* **Route B (Unknown):** Record missing.
-* **Pinterest List Boards:** Search `{{board_name}}`.
-* **Router (Sub):**
-* **Found:** Set `temp_id` = `{{ID}}`.
-* **Missing:** **Pinterest Create Board** (`{{board_name}}`) → Set `temp_id` = `{{ID}}`.
-
-
-* **Add Record (Data Store):** Key=`{{collection}}`, Value=`{{temp_id}}`.
-* Set Variable `final_board_id` = `{{temp_id}}`.
-
-
-
-
-4. **Converge:**
-5. **RSS Get Feed:** `https://paperpause.app/animals/{{collection}}/index.xml`
-6. **Pinterest Create Pin:**
-* Board: `{{final_board_id}}` (Map option)
-* Image: `{{RSS.image}}`
-* Link: `{{RSS.link}}`
-
-
+- **Schedule:** `*/15 6-22 * * *` (Every 15 min, 1 AM - 5 PM ET)
+- **Jobs:**
+  - `distributor`: Check for due items, fire webhooks, commit queue
 
 ---
 
 ## 6. Acceptance Criteria
 
-* [ ] **Zero-Touch Scaling:** Adding a new folder `content/animals/unicorns` automatically results in a "Unicorn Coloring Pages" board being created and pinned to the next day.
-* [ ] **State Awareness:** Collections with >75 posts automatically slow down to 1x/week.
-* [ ] **Resilience:** If GitHub fails to fire, the queue remains. If Make.com fails, the item is retried next time (via queue persistence logic adjustment if strict delivery is needed, but current logic "pops" to prevent blocking).
-* [ ] **Security:** No API tokens for Pinterest exist in the GitHub Repo.
- 
+- [x] **Success-Gating:** Only collections with successful generation are scheduled
+- [x] **Randomized Times:** Each collection gets a unique random time slot
+- [x] **No Duplicates:** Failed generation → no queue entry → no duplicate pin
+- [x] **Zero-Touch Scaling:** New collections automatically get boards and start posting
+- [x] **State Awareness:** Collections with ≥75 posts slow down to weekly (maintenance mode)
+- [x] **Security:** No Pinterest tokens in GitHub repo; Make.com manages OAuth
+
+---
+
+## 7. Manual Setup (One-Time)
+
+### Make.com
+1. Create `Board_Mappings` Data Store (key: collection, value: board_id)
+2. Build scenario: Webhook → Board lookup/create → RSS → Create Pin
+3. Configure Pinterest OAuth connection
+
+### GitHub
+1. Add secret: `MAKE_WEBHOOK` (scenario webhook URL)
+2. Add secret: `MAKE_WEBHOOK_API` (Make.com API key)
