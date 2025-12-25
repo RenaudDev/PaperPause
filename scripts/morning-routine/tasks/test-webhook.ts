@@ -14,10 +14,10 @@ async function testWebhook() {
   }
 
   const payload = {
-    collection: 'cats',
-    board_name: 'Cat Coloring Pages',
-    rss_url: 'https://paperpause.app/animals/cats/index.xml'
-  };
+  "collection": "Dogs", 
+  "board_name": "Dog Coloring Pages",
+  "rss_url": "https://paperpause.app/animals/dogs/index.xml"
+};
 
   console.log(`🔗 Endpoint: ${ENV.MAKE_WEBHOOK}`);
   console.log('📦 Payload:', JSON.stringify(payload, null, 2));
