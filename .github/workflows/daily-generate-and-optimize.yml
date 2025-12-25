@@ -2,8 +2,8 @@ name: Daily Generate & Optimize Coloring Pages
 
 on:
   schedule:
-    # Run at 5 AM EST = 10 AM UTC (EST is UTC-5)
-    - cron: '0 10 * * *'
+    # Run at 12:10 AM EST = 5:10 AM UTC
+    - cron: '10 5 * * *'
   workflow_dispatch:  # Allow manual trigger for testing
 
 permissions:
@@ -187,6 +187,15 @@ jobs:
           echo "count=$COUNT" >> "$GITHUB_OUTPUT"
           echo "Staged $COUNT file(s)"
 
+      - name: Upload generation manifests
+        # Always upload manifest if it exists, even if staging count is 0 (though unlikely if success)
+        uses: actions/upload-artifact@v4
+        with:
+          name: manifest-${{ steps.parse.outputs.collection }}
+          path: scripts/morning-routine/.runs/*.json
+          retention-days: 1
+          if-no-files-found: ignore
+
       - name: Upload generated content as artifact
         if: steps.stage.outputs.count != '0'
         uses: actions/upload-artifact@v4
@@ -205,12 +214,18 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Download all artifacts
+      - name: Download all content artifacts
         uses: actions/download-artifact@v4
         with:
-          # Download to root to restore preserved paths (content/animals/...)
           path: .
           pattern: content-*
+          merge-multiple: true
+
+      - name: Download all manifests
+        uses: actions/download-artifact@v4
+        with:
+          path: scripts/morning-routine/.runs/
+          pattern: manifest-*
           merge-multiple: true
 
       - name: Architect Immunization (Self-Healing)
@@ -233,6 +248,23 @@ jobs:
             git commit -m "🎨 Generate daily coloring pages [automated]"
             git push
             echo "✓ Pushed changes"
+          fi
+
+      - name: Build Distribution Queue (Success-Gated)
+        run: npx ts-node scripts/morning-routine/tasks/midnight-scheduler.ts --from-manifests
+
+      - name: Commit Distribution Queue
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git add config/distribution-queue.json
+          
+          if git diff --staged --quiet; then
+             echo "✓ No changes to queue"
+          else
+             git commit -m "📅 Schedule distribution for successful collections"
+             git push
+             echo "✓ Pushed queue updates"
           fi
 
       - name: Report workflow summary

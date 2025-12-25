@@ -121,10 +121,35 @@ function generatePinterestDescription(
 }
 
 /**
- * Generate SEO-friendly slug from style and collection
- * Format: {style}-{collection}-coloring-pages-{uuid}
- * Example: "totem-butterflies-coloring-pages-7292"
+ * Build a SEO-friendly, collision-safe asset ID from the variant prompt.
+ * Format: YYYYMMDD-{type}-{setting}-{audience}-{hash4}
+ * 
+ * Story 1.C.1 (v2): Keyword-Rich + Collision-Safe Asset Identity
  */
+function buildAssetId(variant: string, style: { targetAudience: string }, date: Date): string {
+  const dateStr = date.toISOString().slice(0, 10).replace(/-/g, '');
+  
+  // Extract keywords from variant: "Playful Yorkshire Terrier playing, closely surrounded by garden flowers"
+  // -> type: "yorkshire-terrier", setting: "garden-flowers"
+  const typeMatch = variant.match(/^[\w\s]+?\s+([\w\s]+?)\s+(?:playing|napping|sitting|walking|chasing|flying|swimming|standing|posed|winking|baking|reading|painting|dancing)/i);
+  const settingMatch = variant.match(/surrounded by\s+([\w\s]+?)(?:,|$)/i);
+  
+  const typeSlug = typeMatch 
+    ? typeMatch[1].toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').slice(0, 30)
+    : 'subject';
+  const settingSlug = settingMatch 
+    ? settingMatch[1].toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').slice(0, 20)
+    : 'scene';
+  
+  // Audience from style
+  const audience = style.targetAudience === 'kids' ? 'for-kids' : 'for-adults';
+  
+  // 4-char unique hash (from timestamp + random)
+  const hash = (Date.now().toString(36) + Math.random().toString(36).slice(2, 4)).slice(-4);
+  
+  return `${dateStr}-${typeSlug}-${settingSlug}-${audience}-${hash}`;
+}
+
 /**
  * Generate a batch of coloring pages for a specific collection
  * Uses rate limiting to respect API quotas
@@ -203,11 +228,9 @@ export const generateBatch = async (
         styleOptions
       );
 
-      // Story 1.C.1: Deterministic Asset Identity
-      // Format: YYYYMMDD-[style]-[collection]-slot-[N]
-      const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-      const styleSlug = style.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-      const assetId = `${dateStr}-${styleSlug}-${collection}-slot-${i + 1}`;
+      // Story 1.C.1 (v2): Keyword-Rich + Collision-Safe Asset Identity
+      // Format: YYYYMMDD-{type}-{setting}-{audience}-{hash4}
+      const assetId = buildAssetId(variantPrompt, style, new Date());
 
       // 1. Use AssetID as the primary identifier
       const tempId = assetId;
@@ -381,6 +404,8 @@ A beautiful ${collection} coloring page in ${style.name} style.
     const manifestPath = path.join(runsDir, `${runId}.json`);
     const manifest = {
       runId,
+      category,
+      collection,
       created: createdMdPaths
     };
     await fs.writeJson(manifestPath, manifest, { spaces: 2 });

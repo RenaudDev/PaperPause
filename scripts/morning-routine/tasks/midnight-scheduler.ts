@@ -16,6 +16,7 @@ interface QueueItem {
   mode: 'growth' | 'maintenance' | 'daily_maintenance';
   priority: number; // For sorting if needed, though strictly we just push/pop
   rss_url: string;
+  scheduled_at?: string; // ISO timestamp
 }
 
 interface DistributionQueue {
@@ -52,81 +53,143 @@ function toTitleCase(str: string): string {
 async function main() {
   logger.info("🌙 Night Watchman: Starting midnight schedule run...");
 
+  const args = process.argv.slice(2);
+  const fromManifests = args.includes('--from-manifests');
+
   try {
-    // 1. Discover Collections
-    // We look for directories in content/animals/
-    // glob doesn't support only directories easily in v7/8 without config, but we can list * and check stat
-    const items = fs.readdirSync(CONTENT_ROOT);
-    const collections = items.filter(item => {
-      const fullPath = path.join(CONTENT_ROOT, item);
-      return fs.statSync(fullPath).isDirectory() && item !== '.DS_Store'; // Basic filter
-    });
+    let collectionsToSchedule: QueueItem[] = [];
 
-    logger.info(`Found ${collections.length} collections.`);
-
-    const queue: QueueItem[] = [];
-    const today = new Date();
-    const dayOfYear = getDayOfYear(today);
-
-    for (const collection of collections) {
-        // 2. Count Content
-        // We use listContent from lib, but we need to list ALL for counts, not just non-drafts?
-        // PRD: "Maintenance Rule: If posts >= 75"
-        // Usually we count published posts.
-        const posts = listContent('animals', collection, false); // draftOnly=false (published)
-        const count = posts.length;
-
-        // 3. Determine Mode & Schedule
-        const boardName = `${toTitleCase(collection)} Coloring Pages`;
-        const rssUrl = `https://paperpause.app/animals/${collection}/index.xml`;
-        
-        let shouldSchedule = false;
-        let mode: QueueItem['mode'] = 'growth';
-
-        if (count < 75) {
-            // Growth: Schedule Daily
-            mode = 'growth';
-            shouldSchedule = true;
-        } else {
-            // Maintenance: Schedule Weekly
-            // Rule: DayOfYear % 7 == CollectionHash % 7
-            // This spreads maintenance collections evenly across the week
-            const hash = simpleHash(collection);
-            const targetDay = hash % 7;
-            const currentDay = dayOfYear % 7; // 0-6
-            
-            // Note: This matches "Day of Year" modulo, not "Day of Week" (Sunday/Monday). 
-            // This ensures rotation even if week boundaries shift, but effectively it's a 7-day cycle.
-            if (targetDay === currentDay) {
-                mode = 'maintenance';
-                shouldSchedule = true;
+    if (fromManifests) {
+      // MODE A: Success-Gated Scheduling (from Daily Workflow)
+      // Only schedule collections that successfully generated content TODAY
+      logger.info('📚 Mode: Success-Gated (Manifests)');
+      
+      const runsDir = path.resolve(__dirname, '../../.runs');
+      if (fs.existsSync(runsDir)) {
+         // Look for manifests specific to this run batch (heuristic: created in last 2 hours)
+         // OR just process all json files since the workflow cleans up/downloads fresh artifacts
+         // The workflow uses download-artifact which overwrites.
+         const files = glob.sync(`${runsDir}/*.json`);
+         
+         for (const file of files) {
+            try {
+              const manifest = await fs.readJson(file);
+              // Validation: Must have created content
+              if (manifest.created && manifest.created.length > 0) {
+                 logger.info(`✅ Found success manifest: ${manifest.collection}`);
+                 
+                 // Calculate details
+                 const collection = manifest.collection;
+                 const boardName = `${toTitleCase(collection)} Coloring Pages`;
+                 const rssUrl = `https://paperpause.app/animals/${collection}/index.xml`;
+                 
+                 collectionsToSchedule.push({
+                   collection,
+                   board_name: boardName,
+                   mode: 'growth', // Generated today = growth/active
+                   priority: 10,
+                   rss_url: rssUrl
+                 });
+              } else {
+                logger.warn(`⚠️ Skipping empty manifest: ${path.basename(file)}`);
+              }
+            } catch (err) {
+              logger.warn(`Failed to parse manifest ${file}`, err);
             }
-        }
+         }
+      } else {
+        logger.warn("No .runs directory found. Queue will be empty.");
+      }
 
-        if (shouldSchedule) {
-            logger.info(`[${collection}] count=${count} mode=${mode} -> Scheduled`);
-            queue.push({
-                collection,
-                board_name: boardName,
-                mode,
-                priority: mode === 'growth' ? 10 : 5, // Growth gets priority if we sort, but simple queue is fine
-                rss_url: rssUrl
-            });
-        } else {
-            logger.debug(`[${collection}] count=${count} mode=maintenance -> Skipped (Not today)`);
-        }
+    } else {
+      // MODE B: Full Audit (Legacy/Midnight Cron)
+      // Scans file system, applies growth/maintenance logic
+      logger.info('🔍 Mode: Full System Audit');
+      
+      const items = fs.readdirSync(CONTENT_ROOT);
+      const collections = items.filter(item => {
+        const fullPath = path.join(CONTENT_ROOT, item);
+        return fs.statSync(fullPath).isDirectory() && item !== '.DS_Store';
+      });
+
+      const today = new Date();
+      const dayOfYear = getDayOfYear(today);
+
+      for (const collection of collections) {
+          const posts = listContent('animals', collection, false);
+          const count = posts.length;
+          const boardName = `${toTitleCase(collection)} Coloring Pages`;
+          const rssUrl = `https://paperpause.app/animals/${collection}/index.xml`;
+          
+          let shouldSchedule = false;
+          let mode: QueueItem['mode'] = 'growth';
+
+          if (count < 75) {
+              mode = 'growth';
+              shouldSchedule = true;
+          } else {
+              const hash = simpleHash(collection);
+              const targetDay = hash % 7;
+              const currentDay = dayOfYear % 7;
+              if (targetDay === currentDay) {
+                  mode = 'maintenance';
+                  shouldSchedule = true;
+              }
+          }
+
+          if (shouldSchedule) {
+              collectionsToSchedule.push({
+                  collection,
+                  board_name: boardName,
+                  mode,
+                  priority: mode === 'growth' ? 10 : 5,
+                  rss_url: rssUrl
+              });
+          }
+      }
     }
 
-    // 4. Sort Queue?
-    // PRD doesn't strict specify order, but mixing valid items is good.
-    // "Calculates the daily 'Flight Plan'... and manages the queue."
-    // Let's sort by Priority then Name for deterministic output
-    queue.sort((a, b) => {
-        if (a.priority !== b.priority) return b.priority - a.priority; // Higher priority first
-        return a.collection.localeCompare(b.collection);
+    logger.info(`Selected ${collectionsToSchedule.length} collections for distribution.`);
+
+    // --- Time Slot Assignment (Randomized) ---
+    // Window: 06:00 UTC (1 AM ET) to 21:00 UTC (4 PM ET)
+    // 15 hour window = 60 * 15 = 900 minutes / 15 min slots = 60 slots
+    const queue: QueueItem[] = [];
+    const START_HOUR = 6; 
+    const END_HOUR = 21;
+    
+    // Generate available slots (every 15 mins)
+    let slots: Date[] = [];
+    const baseDate = new Date();
+    baseDate.setUTCHours(0, 0, 0, 0); // Start of today UTC
+
+    for (let h = START_HOUR; h < END_HOUR; h++) {
+      for (let m = 0; m < 60; m += 15) {
+        const slot = new Date(baseDate);
+        slot.setUTCHours(h, m, 0, 0);
+        slots.push(slot);
+      }
+    }
+
+    // Shuffle slots Fisher-Yates style
+    for (let i = slots.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [slots[i], slots[j]] = [slots[j], slots[i]];
+    }
+
+    // Assign slots to collections
+    collectionsToSchedule.forEach((item, index) => {
+       if (index < slots.length) {
+         item.scheduled_at = slots[index].toISOString();
+         queue.push(item);
+         logger.info(`📅 Scheduled ${item.collection} at ${slots[index].toISOString()} (${item.mode})`);
+       } else {
+         // Overflow fallback (should be rare with 60 slots)
+         logger.warn(`⚠️ No slots left for ${item.collection}, skipping.`);
+       }
     });
 
-    // 5. Write Queue
+    // Write Queue
     const output: DistributionQueue = {
         generated_at: new Date().toISOString(),
         queue
