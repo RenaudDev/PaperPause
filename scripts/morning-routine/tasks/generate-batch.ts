@@ -11,6 +11,7 @@ import { ENV } from '../config/env';
 import { FLAGS, logActiveFlags } from '../config/flags';
 import { assessImage } from '../../../.agents/art-critic';
 import { handleRejection } from '../lib/rejection-handler';
+import { addSafeMargins } from '../lib/image-processor';
 
 export interface GenerationResult {
   id: string;
@@ -29,13 +30,13 @@ export interface GenerationResult {
 function generateTitle(variantPrompt: string): string {
   // Remove content in parentheses (with proper spacing)
   let cleanPrompt = variantPrompt.replace(/\s*\([^)]*\)\s*/g, ' ');
-  
+
   // Remove extra punctuation and trim
   cleanPrompt = cleanPrompt.replace(/\.\s*$/, '').trim();
-  
+
   // Normalize multiple spaces to single space
   cleanPrompt = cleanPrompt.replace(/\s+/g, ' ');
-  
+
   // Capitalize each word (Title Case)
   const words = cleanPrompt.split(' ');
   const capitalizedWords = words.map(word => {
@@ -43,7 +44,7 @@ function generateTitle(variantPrompt: string): string {
     // Handle words with special characters (e.g., "Red Admiral")
     return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
   });
-  
+
   return capitalizedWords.join(' ');
 }
 
@@ -128,25 +129,25 @@ function generatePinterestDescription(
  */
 function buildAssetId(variant: string, style: { targetAudience: string }, date: Date): string {
   const dateStr = date.toISOString().slice(0, 10).replace(/-/g, '');
-  
+
   // Extract keywords from variant: "Playful Yorkshire Terrier playing, closely surrounded by garden flowers"
   // -> type: "yorkshire-terrier", setting: "garden-flowers"
   const typeMatch = variant.match(/^[\w\s]+?\s+([\w\s]+?)\s+(?:playing|napping|sitting|walking|chasing|flying|swimming|standing|posed|winking|baking|reading|painting|dancing)/i);
   const settingMatch = variant.match(/surrounded by\s+([\w\s]+?)(?:,|$)/i);
-  
-  const typeSlug = typeMatch 
+
+  const typeSlug = typeMatch
     ? typeMatch[1].toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').slice(0, 30)
     : 'subject';
-  const settingSlug = settingMatch 
+  const settingSlug = settingMatch
     ? settingMatch[1].toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').slice(0, 20)
     : 'scene';
-  
+
   // Audience from style
   const audience = style.targetAudience === 'kids' ? 'for-kids' : 'for-adults';
-  
+
   // 4-char unique hash (from timestamp + random)
   const hash = (Date.now().toString(36) + Math.random().toString(36).slice(2, 4)).slice(-4);
-  
+
   return `${dateStr}-${typeSlug}-${settingSlug}-${audience}-${hash}`;
 }
 
@@ -211,7 +212,7 @@ export const generateBatch = async (
   for (let i = 0; i < batchSize; i++) {
     await limiter.throttle(async () => {
       const startTime = Date.now();
-      
+
       // Variant selection: ALWAYS RANDOM even if style is rotating
       // Use 'random' mode to ensure content variety while style might rotate deterministically
       const variantSeed = `${styleRotationKey}:${category}/${collection}:slot_${i + 1}`;
@@ -243,9 +244,12 @@ export const generateBatch = async (
         });
 
         // 1. Generate image with negative prompt passed separately
-        const imageBuffer = await generateImage(fullPrompt, negative_prompt);
+        const rawImageBuffer = await generateImage(fullPrompt, negative_prompt);
 
-        // 2. Upload to R2 and CF Images
+        // 2. Apply safe margins (resize and center on white canvas)
+        const imageBuffer = await addSafeMargins(rawImageBuffer);
+
+        // 3. Upload to R2 and CF Images
         const filename = `${tempId}.png`;
         const uploadResult = await uploadImage(imageBuffer, filename, collection);
 

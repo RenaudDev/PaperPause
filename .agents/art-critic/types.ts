@@ -7,11 +7,11 @@ export type QAResult = 'pass' | 'fail';
 /**
  * Bounded enum for QA failure reasons as per PRD
  */
-export type QAFailureReason = 
+export type QAFailureReason =
   | 'TEXT_PRESENT'         // Image contains words, letters or numbers
   | 'GRAYSCALE_SHADING'    // Image has realistic shading instead of line art
   | 'BLURRY_LINES'         // Image has low resolution or fuzzy edges
-  | 'OPEN_PATHS'           // Lines or shapes are not fully enclosed (hard to color)
+  | 'MAJOR_OPEN_PATHS'     // Lines or shapes are not fully enclosed (hard to color)
   | 'CANVAS_OCCUPANCY_LOW' // Image is too small/sparse on the page
   | 'TOO_COMPLEX'         // Lines are too dense for a coloring page
   | 'OFF_SUBJECT'          // Image doesn't match the requested subject
