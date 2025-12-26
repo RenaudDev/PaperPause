@@ -27,6 +27,11 @@ Evolve PaperPause from a manually managed factory into an autonomous system that
 - **Budget control**: explicit ceilings per day and per collection, enforced by QA **fail-fast** and scheduling.
 - **Auditability**: all decisions that reject/skip must be explainable via logs and issue records.
 
+### Growth Constraints (Pinterest Safety)
+- **Max Daily Velocity:** 25 pins/day total (Hard Limit).
+- **Active Growth Slots:** Capped at 15 collections/day.
+- **Maintenance Buffer:** Reserve ~10 slots/day for rotating maintenance collections.
+
 ### Engineering guardrails (must follow)
 All implementation work for this PRD must follow the repo’s architecture rules in `.ai-rules.md` (especially Hugo layout hierarchy and “no root `layouts/` edits”).
 
@@ -209,9 +214,11 @@ When a collection reaches the cap, it is not removed from production; it enters 
 - **Behavior**:
   - If `published_count < 75`: schedule the collection **every day** (for the days included by the weekly rollout schedule).
   - If `published_count >= 75`: schedule the collection **only once per week** (Maintenance Mode).
-- **Maintenance day rule (deterministic)**:
-  - Schedule the once-per-week run on the **first daily run after the week starts** (week starts Monday 12:01 AM ET, daily job is 5:00 AM ET → effectively Monday’s run).
-  - This keeps behavior deterministic and avoids needing extra persisted “already ran this week” state.
+- **Maintenance day rule (Distributed Hashing)**:
+  - DO NOT schedule all maintenance runs on Monday (avoids API spikes).
+  - Use a deterministic hash of the collection name to assign a specific day of the week (0-6).
+  - Formula: `hash(collection_name) % 7` = Target Day Index.
+  - If `current_day_index == target_day_index`, include the collection in the daily run
 
 **Acceptance**: Foreman output includes the scheduled collections for the current week, where each collection is included either daily (uncapped) or once per week (capped).
 

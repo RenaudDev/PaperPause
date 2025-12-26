@@ -1,5 +1,6 @@
 import fs from 'fs-extra';
 import path from 'path';
+import crypto from 'crypto';
 import { logger } from '../lib/logger';
 
 /**
@@ -72,12 +73,24 @@ function parseSchedule(content: string): RolloutWeek[] {
 }
 
 /**
+ * Get deterministic day index (0-6) for a collection based on its name.
+ * 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+ */
+function getCollectionDay(collectionName: string): number {
+  // Use MD5 for good distribution
+  const hash = crypto.createHash('md5').update(collectionName).digest('hex');
+  // Take first 8 chars (32 bits) to convert to int
+  const intVal = parseInt(hash.substring(0, 8), 16);
+  return intVal % 7;
+}
+
+/**
  * Get current date in America/New_York as YYYY-MM-DD and day-of-week.
  * Uses Intl for deterministic timezone handling.
  */
-function getETDateInfo(): { todayStr: string; isMonday: boolean } {
+function getETDateInfo(): { todayStr: string; isMonday: boolean; dayIndex: number } {
   let nowUTC = new Date();
-  
+
   if (process.env.FORCE_DATE) {
     logger.info(`Foreman: FORCING DATE to ${process.env.FORCE_DATE}`);
     // Parse FORCE_DATE as ET date (e.g., "2025-12-22") → interpret as 5 AM ET
@@ -94,7 +107,7 @@ function getETDateInfo(): { todayStr: string; isMonday: boolean } {
     day: '2-digit',
     weekday: 'long'
   });
-  
+
   const parts = etFormatter.formatToParts(nowUTC);
   const partMap: { [key: string]: string } = {};
   for (const part of parts) {
@@ -104,9 +117,12 @@ function getETDateInfo(): { todayStr: string; isMonday: boolean } {
   const todayStr = `${partMap.year}-${partMap.month}-${partMap.day}`;
   const isMonday = partMap.weekday === 'Monday';
 
-  logger.info(`Foreman ET date: ${todayStr} (weekday: ${partMap.weekday})`);
-  
-  return { todayStr, isMonday };
+  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const dayIndex = days.indexOf(partMap.weekday);
+
+  logger.info(`Foreman ET date: ${todayStr} (weekday: ${partMap.weekday}, index: ${dayIndex})`);
+
+  return { todayStr, isMonday, dayIndex };
 }
 
 /**
@@ -120,7 +136,7 @@ function countPublishedPages(category: string, collection: string): number {
   const files = fs.readdirSync(dir);
   for (const file of files) {
     if (file === '_index.md' || !file.endsWith('.md')) continue;
-    
+
     // For now, we assume all .md files in content folders are intended to be counted 
     // unless Designer/Finisher has set them to draft. 
     // The PRD says "count only non-draft pages".
@@ -137,9 +153,9 @@ function countPublishedPages(category: string, collection: string): number {
 }
 
 async function run() {
-  const { todayStr, isMonday } = getETDateInfo();
+  const { todayStr, isMonday, dayIndex } = getETDateInfo();
 
-  logger.info(`Foreman checking schedule for: ${todayStr} (Monday: ${isMonday})`);
+  logger.info(`Foreman checking schedule for: ${todayStr} (Monday: ${isMonday}, DayIndex: ${dayIndex})`);
 
   if (!fs.existsSync(SCHEDULE_PATH)) {
     throw new Error(`Schedule file not found at ${SCHEDULE_PATH}`);
@@ -165,7 +181,8 @@ async function run() {
   const reportLines: string[] = [
     `# Foreman Scheduling Report: ${todayStr}`,
     `Active Week: **${activeWeek.week_id}**`,
-    `Is Genesis Run (Monday): **${isMonday}**`,
+    `Active Week: **${activeWeek.week_id}**`,
+    `Current Day: **${dayIndex}** (Monday=${isMonday})`,
     '',
     '| Collection | Count | Status | Decision |',
     '|---|---|---|---|'
@@ -175,16 +192,20 @@ async function run() {
     const [category, collection] = collPath.split('/');
     const count = countPublishedPages(category, collection);
     const isOverCap = count >= 75;
-    
+
     let decision = 'Daily (Uncapped)';
     let include = true;
 
     if (isOverCap) {
-      if (isMonday) {
-        decision = 'Genesis Run (Capped)';
+      const targetDay = getCollectionDay(collection);
+      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const targetDayName = days[targetDay];
+
+      if (dayIndex === targetDay) {
+        decision = `Maintenance Run (Target: ${targetDayName})`;
         include = true;
       } else {
-        decision = 'Skipped (Capped)';
+        decision = `Skipped (Wait for ${targetDayName})`;
         include = false;
       }
     }
@@ -211,10 +232,10 @@ async function run() {
 
   // Output matrix for GHA
   const combinedMatrix = Array.from(new Set([...productionMatrix, ...activeWeek.dry_run_collections]));
-  
+
   logger.info('Foreman Production Matrix:', JSON.stringify(productionMatrix));
   logger.info('Foreman Designer Matrix (includes dry-run):', JSON.stringify(combinedMatrix));
-  
+
   if (process.env.GITHUB_OUTPUT) {
     fs.appendFileSync(process.env.GITHUB_OUTPUT, `matrix=${JSON.stringify(productionMatrix)}\n`);
     fs.appendFileSync(process.env.GITHUB_OUTPUT, `designer_matrix=${JSON.stringify(combinedMatrix)}\n`);
@@ -223,7 +244,7 @@ async function run() {
     console.log(`::set-output name=matrix::${JSON.stringify(productionMatrix)}`);
     console.log(`::set-output name=designer_matrix::${JSON.stringify(combinedMatrix)}`);
   }
-  
+
   logger.success(`Foreman scheduled ${productionMatrix.length} production collections and ${combinedMatrix.length} total (inc. dry-run).`);
 }
 
