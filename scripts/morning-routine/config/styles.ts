@@ -25,17 +25,17 @@ export const COLORING_STYLES: Record<string, StyleDefinition> = {
     preferredMedium: "Crayons",
     tags: ["cute", "kids", "simple", "rounded", "japanese"]
   },
-  
+
   cottagecore: {
     id: "cottagecore",
     name: "Cottagecore",
     description: "Cozy, nostalgic, storybook feel.",
-    promptModifier: "sophisticated botanical illustration, intricate cottagecore aesthetic, fine line work, detailed organic textures, adult coloring book quality, elegant and detailed composition, continuous lines, sharp vector edges.",
+    promptModifier: "gentle hand-drawn illustration, cozy cottagecore aesthetic, medium-weight even outlines, storybook illustration style, soft organic shapes, clear fillable sections, pastoral and homey feel, minimal background clutter, clean black and white line art, continuous closed paths.",
     targetAudience: "Adults",
-    preferredMedium: "Fine-tip Markers",
+    preferredMedium: "Colored Pencils",
     tags: ["cozy", "nostalgic", "storybook", "whimsical", "nature"]
   },
-  
+
   totem: {
     id: "totem",
     name: "Totem",
@@ -45,7 +45,7 @@ export const COLORING_STYLES: Record<string, StyleDefinition> = {
     preferredMedium: "Gel Pens",
     tags: ["patterns", "zentangle", "meditative", "detailed", "symmetrical"]
   },
-  
+
   popArt: {
     id: "pop-art",
     name: "Bold Line Pop Art",
@@ -55,7 +55,7 @@ export const COLORING_STYLES: Record<string, StyleDefinition> = {
     preferredMedium: "Markers",
     tags: ["bold", "modern", "sticker", "vector", "dynamic"]
   },
-  
+
   magicalRealism: {
     id: "magical-realism",
     name: "Magical Realism",
