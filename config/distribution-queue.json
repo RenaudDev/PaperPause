@@ -1,4 +1,45 @@
 {
-  "generated_at": "2025-12-24T00:28:59.581Z",
-  "queue": []
+  "generated_at": "2025-12-26T15:25:58.290Z",
+  "queue": [
+    {
+      "collection": "butterflies",
+      "board_name": "Butterflies Coloring Pages",
+      "mode": "growth",
+      "priority": 10,
+      "rss_url": "https://paperpause.app/animals/butterflies/index.xml",
+      "scheduled_at": "2025-12-26T20:45:00.000Z"
+    },
+    {
+      "collection": "cats",
+      "board_name": "Cats Coloring Pages",
+      "mode": "growth",
+      "priority": 10,
+      "rss_url": "https://paperpause.app/animals/cats/index.xml",
+      "scheduled_at": "2025-12-26T16:00:00.000Z"
+    },
+    {
+      "collection": "dogs",
+      "board_name": "Dogs Coloring Pages",
+      "mode": "growth",
+      "priority": 10,
+      "rss_url": "https://paperpause.app/animals/dogs/index.xml",
+      "scheduled_at": "2025-12-26T16:30:00.000Z"
+    },
+    {
+      "collection": "horses",
+      "board_name": "Horses Coloring Pages",
+      "mode": "growth",
+      "priority": 10,
+      "rss_url": "https://paperpause.app/animals/horses/index.xml",
+      "scheduled_at": "2025-12-26T13:30:00.000Z"
+    },
+    {
+      "collection": "sharks",
+      "board_name": "Sharks Coloring Pages",
+      "mode": "growth",
+      "priority": 10,
+      "rss_url": "https://paperpause.app/animals/sharks/index.xml",
+      "scheduled_at": "2025-12-26T15:00:00.000Z"
+    }
+  ]
 }

@@ -1,0 +1,462 @@
+﻿2025-12-26T05:20:05.1637870Z Current runner version: '2.330.0'
+2025-12-26T05:20:05.1673982Z ##[group]Runner Image Provisioner
+2025-12-26T05:20:05.1675274Z Hosted Compute Agent
+2025-12-26T05:20:05.1676365Z Version: 20251211.462
+2025-12-26T05:20:05.1677511Z Commit: 6cbad8c2bb55d58165063d031ccabf57e2d2db61
+2025-12-26T05:20:05.1678807Z Build Date: 2025-12-11T16:28:49Z
+2025-12-26T05:20:05.1680203Z Worker ID: {422fa366-6d21-44a9-8445-7526d19ce249}
+2025-12-26T05:20:05.1681655Z ##[endgroup]
+2025-12-26T05:20:05.1682716Z ##[group]Operating System
+2025-12-26T05:20:05.1683745Z Ubuntu
+2025-12-26T05:20:05.1684561Z 24.04.3
+2025-12-26T05:20:05.1685528Z LTS
+2025-12-26T05:20:05.1686346Z ##[endgroup]
+2025-12-26T05:20:05.1687371Z ##[group]Runner Image
+2025-12-26T05:20:05.1688479Z Image: ubuntu-24.04
+2025-12-26T05:20:05.1689414Z Version: 20251215.174.1
+2025-12-26T05:20:05.1691842Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20251215.174/images/ubuntu/Ubuntu2404-Readme.md
+2025-12-26T05:20:05.1694867Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20251215.174
+2025-12-26T05:20:05.1696964Z ##[endgroup]
+2025-12-26T05:20:05.1699103Z ##[group]GITHUB_TOKEN Permissions
+2025-12-26T05:20:05.1702109Z Contents: write
+2025-12-26T05:20:05.1703133Z Issues: write
+2025-12-26T05:20:05.1704721Z Metadata: read
+2025-12-26T05:20:05.1705744Z ##[endgroup]
+2025-12-26T05:20:05.1709300Z Secret source: Actions
+2025-12-26T05:20:05.1711339Z Prepare workflow directory
+2025-12-26T05:20:05.2142733Z Prepare all required actions
+2025-12-26T05:20:05.2179542Z Getting action download info
+2025-12-26T05:20:05.5460206Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2025-12-26T05:20:06.2650026Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2025-12-26T05:20:06.9623122Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2025-12-26T05:20:07.4392364Z Complete job name: generate (animals/dogs)
+2025-12-26T05:20:07.4914894Z ##[group]Run DAILY_KEY=$(date -u +%F)
+2025-12-26T05:20:07.4915291Z [36;1mDAILY_KEY=$(date -u +%F)[0m
+2025-12-26T05:20:07.4915640Z [36;1mecho "DAILY_STYLE_KEY=$DAILY_KEY" >> $GITHUB_ENV[0m
+2025-12-26T05:20:07.4916001Z [36;1mecho "Daily style key set to: $DAILY_KEY"[0m
+2025-12-26T05:20:07.4951417Z shell: /usr/bin/bash -e {0}
+2025-12-26T05:20:07.4952057Z env:
+2025-12-26T05:20:07.4952257Z   ENABLE_FOREMAN: 1
+2025-12-26T05:20:07.4952470Z   ENABLE_DESIGNER: 1
+2025-12-26T05:20:07.4952699Z   DESIGNER_DRY_RUN: 1
+2025-12-26T05:20:07.4952900Z   ENABLE_QA: 1
+2025-12-26T05:20:07.4953101Z   QA_MODE: observe
+2025-12-26T05:20:07.4953316Z   ENABLE_FINISHING: 1
+2025-12-26T05:20:07.4953535Z   ENABLE_PDF: 1
+2025-12-26T05:20:07.4953742Z   ENABLE_IMMUNIZATION: 0
+2025-12-26T05:20:07.4953963Z   NODE_VERSION: 20
+2025-12-26T05:20:07.4954166Z   TRACKING_ISSUE_NUMBER: 1
+2025-12-26T05:20:07.4954388Z ##[endgroup]
+2025-12-26T05:20:07.5091801Z Daily style key set to: 2025-12-26
+2025-12-26T05:20:07.5244815Z ##[group]Run actions/checkout@v4
+2025-12-26T05:20:07.5245368Z with:
+2025-12-26T05:20:07.5245590Z   repository: RenaudDev/PaperPause
+2025-12-26T05:20:07.5246004Z   token: ***
+2025-12-26T05:20:07.5246218Z   ssh-strict: true
+2025-12-26T05:20:07.5246440Z   ssh-user: git
+2025-12-26T05:20:07.5246651Z   persist-credentials: true
+2025-12-26T05:20:07.5246886Z   clean: true
+2025-12-26T05:20:07.5247122Z   sparse-checkout-cone-mode: true
+2025-12-26T05:20:07.5247391Z   fetch-depth: 1
+2025-12-26T05:20:07.5247592Z   fetch-tags: false
+2025-12-26T05:20:07.5247801Z   show-progress: true
+2025-12-26T05:20:07.5248009Z   lfs: false
+2025-12-26T05:20:07.5248198Z   submodules: false
+2025-12-26T05:20:07.5248527Z   set-safe-directory: true
+2025-12-26T05:20:07.5248752Z env:
+2025-12-26T05:20:07.5248926Z   ENABLE_FOREMAN: 1
+2025-12-26T05:20:07.5249120Z   ENABLE_DESIGNER: 1
+2025-12-26T05:20:07.5249322Z   DESIGNER_DRY_RUN: 1
+2025-12-26T05:20:07.5249521Z   ENABLE_QA: 1
+2025-12-26T05:20:07.5249742Z   QA_MODE: observe
+2025-12-26T05:20:07.5250159Z   ENABLE_FINISHING: 1
+2025-12-26T05:20:07.5250359Z   ENABLE_PDF: 1
+2025-12-26T05:20:07.5250554Z   ENABLE_IMMUNIZATION: 0
+2025-12-26T05:20:07.5250770Z   NODE_VERSION: 20
+2025-12-26T05:20:07.5250967Z   TRACKING_ISSUE_NUMBER: 1
+2025-12-26T05:20:07.5251506Z   DAILY_STYLE_KEY: 2025-12-26
+2025-12-26T05:20:07.5251737Z ##[endgroup]
+2025-12-26T05:20:07.6270561Z Syncing repository: RenaudDev/PaperPause
+2025-12-26T05:20:07.6272332Z ##[group]Getting Git version info
+2025-12-26T05:20:07.6272771Z Working directory is '/home/runner/work/PaperPause/PaperPause'
+2025-12-26T05:20:07.6273353Z [command]/usr/bin/git version
+2025-12-26T05:20:07.6363371Z git version 2.52.0
+2025-12-26T05:20:07.6389540Z ##[endgroup]
+2025-12-26T05:20:07.6405900Z Temporarily overriding HOME='/home/runner/work/_temp/38fde318-c5bc-4372-97cf-3cc9bf068a1c' before making global git config changes
+2025-12-26T05:20:07.6407347Z Adding repository directory to the temporary git global config as a safe directory
+2025-12-26T05:20:07.6419744Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/PaperPause/PaperPause
+2025-12-26T05:20:07.6461904Z Deleting the contents of '/home/runner/work/PaperPause/PaperPause'
+2025-12-26T05:20:07.6466057Z ##[group]Initializing the repository
+2025-12-26T05:20:07.6470804Z [command]/usr/bin/git init /home/runner/work/PaperPause/PaperPause
+2025-12-26T05:20:07.6617888Z hint: Using 'master' as the name for the initial branch. This default branch name
+2025-12-26T05:20:07.6618626Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2025-12-26T05:20:07.6619176Z hint: to use in all of your new repositories, which will suppress this warning,
+2025-12-26T05:20:07.6619588Z hint: call:
+2025-12-26T05:20:07.6619794Z hint:
+2025-12-26T05:20:07.6620102Z hint: 	git config --global init.defaultBranch <name>
+2025-12-26T05:20:07.6620444Z hint:
+2025-12-26T05:20:07.6620769Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2025-12-26T05:20:07.6621529Z hint: 'development'. The just-created branch can be renamed via this command:
+2025-12-26T05:20:07.6621958Z hint:
+2025-12-26T05:20:07.6622189Z hint: 	git branch -m <name>
+2025-12-26T05:20:07.6622444Z hint:
+2025-12-26T05:20:07.6622797Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2025-12-26T05:20:07.6624582Z Initialized empty Git repository in /home/runner/work/PaperPause/PaperPause/.git/
+2025-12-26T05:20:07.6636892Z [command]/usr/bin/git remote add origin https://github.com/RenaudDev/PaperPause
+2025-12-26T05:20:07.6670124Z ##[endgroup]
+2025-12-26T05:20:07.6670546Z ##[group]Disabling automatic garbage collection
+2025-12-26T05:20:07.6674684Z [command]/usr/bin/git config --local gc.auto 0
+2025-12-26T05:20:07.6702475Z ##[endgroup]
+2025-12-26T05:20:07.6702940Z ##[group]Setting up auth
+2025-12-26T05:20:07.6709328Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-12-26T05:20:07.6739551Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-12-26T05:20:07.7092022Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-12-26T05:20:07.7122860Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-12-26T05:20:07.7343518Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2025-12-26T05:20:07.7375854Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2025-12-26T05:20:07.7604920Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2025-12-26T05:20:07.7640133Z ##[endgroup]
+2025-12-26T05:20:07.7640911Z ##[group]Fetching the repository
+2025-12-26T05:20:07.7649151Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +7f35e710742d46827d7644982ec5893c55f45ad8:refs/remotes/origin/main
+2025-12-26T05:20:08.2635842Z From https://github.com/RenaudDev/PaperPause
+2025-12-26T05:20:08.2636440Z  * [new ref]         7f35e710742d46827d7644982ec5893c55f45ad8 -> origin/main
+2025-12-26T05:20:08.2668051Z ##[endgroup]
+2025-12-26T05:20:08.2668466Z ##[group]Determining the checkout info
+2025-12-26T05:20:08.2746310Z ##[endgroup]
+2025-12-26T05:20:08.2746965Z [command]/usr/bin/git sparse-checkout disable
+2025-12-26T05:20:08.2748564Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2025-12-26T05:20:08.2750130Z ##[group]Checking out the ref
+2025-12-26T05:20:08.2756097Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2025-12-26T05:20:08.2982121Z Switched to a new branch 'main'
+2025-12-26T05:20:08.2983361Z branch 'main' set up to track 'origin/main'.
+2025-12-26T05:20:08.2991289Z ##[endgroup]
+2025-12-26T05:20:08.3028972Z [command]/usr/bin/git log -1 --format=%H
+2025-12-26T05:20:08.3050489Z 7f35e710742d46827d7644982ec5893c55f45ad8
+2025-12-26T05:20:08.3223454Z ##[group]Run actions/setup-node@v4
+2025-12-26T05:20:08.3223749Z with:
+2025-12-26T05:20:08.3223943Z   node-version: 20
+2025-12-26T05:20:08.3224151Z   cache: npm
+2025-12-26T05:20:08.3224348Z   always-auth: false
+2025-12-26T05:20:08.3224572Z   check-latest: false
+2025-12-26T05:20:08.3224895Z   token: ***
+2025-12-26T05:20:08.3225084Z env:
+2025-12-26T05:20:08.3225265Z   ENABLE_FOREMAN: 1
+2025-12-26T05:20:08.3225465Z   ENABLE_DESIGNER: 1
+2025-12-26T05:20:08.3225668Z   DESIGNER_DRY_RUN: 1
+2025-12-26T05:20:08.3225867Z   ENABLE_QA: 1
+2025-12-26T05:20:08.3226056Z   QA_MODE: observe
+2025-12-26T05:20:08.3226250Z   ENABLE_FINISHING: 1
+2025-12-26T05:20:08.3226451Z   ENABLE_PDF: 1
+2025-12-26T05:20:08.3226651Z   ENABLE_IMMUNIZATION: 0
+2025-12-26T05:20:08.3226870Z   NODE_VERSION: 20
+2025-12-26T05:20:08.3227071Z   TRACKING_ISSUE_NUMBER: 1
+2025-12-26T05:20:08.3227299Z   DAILY_STYLE_KEY: 2025-12-26
+2025-12-26T05:20:08.3227542Z ##[endgroup]
+2025-12-26T05:20:08.5157954Z Found in cache @ /opt/hostedtoolcache/node/20.19.6/x64
+2025-12-26T05:20:08.5164563Z ##[group]Environment details
+2025-12-26T05:20:10.4781414Z node: v20.19.6
+2025-12-26T05:20:10.4781887Z npm: 10.8.2
+2025-12-26T05:20:10.4782367Z yarn: 1.22.22
+2025-12-26T05:20:10.4783209Z ##[endgroup]
+2025-12-26T05:20:10.4805747Z [command]/opt/hostedtoolcache/node/20.19.6/x64/bin/npm config get cache
+2025-12-26T05:20:10.7260964Z /home/runner/.npm
+2025-12-26T05:20:10.8780332Z Cache hit for: node-cache-Linux-x64-npm-8d53d468b06d9b2c58e395c3f91b50747d5eccd57e8559691090afcfd0b832b9
+2025-12-26T05:20:11.8762440Z Received 88959641 of 88959641 (100.0%), 99.5 MBs/sec
+2025-12-26T05:20:11.8763006Z Cache Size: ~85 MB (88959641 B)
+2025-12-26T05:20:11.8828730Z [command]/usr/bin/tar -xf /home/runner/work/_temp/753ad9cd-1d57-41f1-8693-500358b69de4/cache.tzst -P -C /home/runner/work/PaperPause/PaperPause --use-compress-program unzstd
+2025-12-26T05:20:12.0781526Z Cache restored successfully
+2025-12-26T05:20:12.0957741Z Cache restored from key: node-cache-Linux-x64-npm-8d53d468b06d9b2c58e395c3f91b50747d5eccd57e8559691090afcfd0b832b9
+2025-12-26T05:20:12.1084398Z ##[group]Run npm ci
+2025-12-26T05:20:12.1084685Z [36;1mnpm ci[0m
+2025-12-26T05:20:12.1125941Z shell: /usr/bin/bash -e {0}
+2025-12-26T05:20:12.1126234Z env:
+2025-12-26T05:20:12.1126433Z   ENABLE_FOREMAN: 1
+2025-12-26T05:20:12.1126652Z   ENABLE_DESIGNER: 1
+2025-12-26T05:20:12.1126874Z   DESIGNER_DRY_RUN: 1
+2025-12-26T05:20:12.1127085Z   ENABLE_QA: 1
+2025-12-26T05:20:12.1127287Z   QA_MODE: observe
+2025-12-26T05:20:12.1127495Z   ENABLE_FINISHING: 1
+2025-12-26T05:20:12.1127704Z   ENABLE_PDF: 1
+2025-12-26T05:20:12.1127926Z   ENABLE_IMMUNIZATION: 0
+2025-12-26T05:20:12.1128151Z   NODE_VERSION: 20
+2025-12-26T05:20:12.1128365Z   TRACKING_ISSUE_NUMBER: 1
+2025-12-26T05:20:12.1128607Z   DAILY_STYLE_KEY: 2025-12-26
+2025-12-26T05:20:12.1128841Z ##[endgroup]
+2025-12-26T05:20:16.6232920Z 
+2025-12-26T05:20:16.6242197Z added 411 packages, and audited 412 packages in 4s
+2025-12-26T05:20:16.6242749Z 
+2025-12-26T05:20:16.6243086Z 94 packages are looking for funding
+2025-12-26T05:20:16.6243810Z   run `npm fund` for details
+2025-12-26T05:20:16.6248422Z 
+2025-12-26T05:20:16.6248824Z found 0 vulnerabilities
+2025-12-26T05:20:16.6559250Z ##[group]Run cat << 'EOF' > .dev.vars
+2025-12-26T05:20:16.6559626Z [36;1mcat << 'EOF' > .dev.vars[0m
+2025-12-26T05:20:16.6560096Z [36;1mGEMINI_API_KEY=***[0m
+2025-12-26T05:20:16.6560418Z [36;1mR2_ACCOUNT_ID=***[0m
+2025-12-26T05:20:16.6560729Z [36;1mR2_ACCESS_KEY_ID=***[0m
+2025-12-26T05:20:16.6561532Z [36;1mR2_SECRET_ACCESS_KEY=***[0m
+2025-12-26T05:20:16.6561850Z [36;1mR2_BUCKET_NAME=***[0m
+2025-12-26T05:20:16.6562219Z [36;1mR2_PUBLIC_URL=***[0m
+2025-12-26T05:20:16.6562569Z [36;1mCF_IMAGES_ACCOUNT_ID=***[0m
+2025-12-26T05:20:16.6562943Z [36;1mCF_IMAGES_API_TOKEN=***[0m
+2025-12-26T05:20:16.6563276Z [36;1mCF_IMAGES_ACCOUNT_HASH=***[0m
+2025-12-26T05:20:16.6563560Z [36;1m# Autonomy Flags[0m
+2025-12-26T05:20:16.6563828Z [36;1mENABLE_FOREMAN=1[0m
+2025-12-26T05:20:16.6564073Z [36;1mENABLE_DESIGNER=1[0m
+2025-12-26T05:20:16.6564327Z [36;1mDESIGNER_DRY_RUN=1[0m
+2025-12-26T05:20:16.6564574Z [36;1mENABLE_QA=1[0m
+2025-12-26T05:20:16.6564860Z [36;1mQA_MODE=observe[0m
+2025-12-26T05:20:16.6565112Z [36;1mENABLE_FINISHING=1[0m
+2025-12-26T05:20:16.6565369Z [36;1mENABLE_PDF=1[0m
+2025-12-26T05:20:16.6565614Z [36;1mENABLE_IMMUNIZATION=0[0m
+2025-12-26T05:20:16.6565878Z [36;1mEOF[0m
+2025-12-26T05:20:16.6599392Z shell: /usr/bin/bash -e {0}
+2025-12-26T05:20:16.6599670Z env:
+2025-12-26T05:20:16.6599880Z   ENABLE_FOREMAN: 1
+2025-12-26T05:20:16.6600114Z   ENABLE_DESIGNER: 1
+2025-12-26T05:20:16.6600369Z   DESIGNER_DRY_RUN: 1
+2025-12-26T05:20:16.6600595Z   ENABLE_QA: 1
+2025-12-26T05:20:16.6600821Z   QA_MODE: observe
+2025-12-26T05:20:16.6601153Z   ENABLE_FINISHING: 1
+2025-12-26T05:20:16.6601380Z   ENABLE_PDF: 1
+2025-12-26T05:20:16.6601637Z   ENABLE_IMMUNIZATION: 0
+2025-12-26T05:20:16.6601876Z   NODE_VERSION: 20
+2025-12-26T05:20:16.6602116Z   TRACKING_ISSUE_NUMBER: 1
+2025-12-26T05:20:16.6602367Z   DAILY_STYLE_KEY: 2025-12-26
+2025-12-26T05:20:16.6602616Z ##[endgroup]
+2025-12-26T05:20:16.6690171Z ##[group]Run # category/collection -> category collection
+2025-12-26T05:20:16.6690615Z [36;1m# category/collection -> category collection[0m
+2025-12-26T05:20:16.6690949Z [36;1mPATH_VAL="animals/dogs"[0m
+2025-12-26T05:20:16.6691539Z [36;1mecho "category=${PATH_VAL%/*}" >> $GITHUB_OUTPUT[0m
+2025-12-26T05:20:16.6691940Z [36;1mecho "collection=${PATH_VAL#*/}" >> $GITHUB_OUTPUT[0m
+2025-12-26T05:20:16.6720513Z shell: /usr/bin/bash -e {0}
+2025-12-26T05:20:16.6720783Z env:
+2025-12-26T05:20:16.6720989Z   ENABLE_FOREMAN: 1
+2025-12-26T05:20:16.6721448Z   ENABLE_DESIGNER: 1
+2025-12-26T05:20:16.6721678Z   DESIGNER_DRY_RUN: 1
+2025-12-26T05:20:16.6721901Z   ENABLE_QA: 1
+2025-12-26T05:20:16.6722109Z   QA_MODE: observe
+2025-12-26T05:20:16.6722331Z   ENABLE_FINISHING: 1
+2025-12-26T05:20:16.6722560Z   ENABLE_PDF: 1
+2025-12-26T05:20:16.6722791Z   ENABLE_IMMUNIZATION: 0
+2025-12-26T05:20:16.6723031Z   NODE_VERSION: 20
+2025-12-26T05:20:16.6723251Z   TRACKING_ISSUE_NUMBER: 1
+2025-12-26T05:20:16.6723558Z   DAILY_STYLE_KEY: 2025-12-26
+2025-12-26T05:20:16.6723810Z ##[endgroup]
+2025-12-26T05:20:16.6814179Z ##[group]Run RUN_ID=$(date +%Y-%m-%dT%H-%M-%SZ)-dogs
+2025-12-26T05:20:16.6814586Z [36;1mRUN_ID=$(date +%Y-%m-%dT%H-%M-%SZ)-dogs[0m
+2025-12-26T05:20:16.6814927Z [36;1mecho "run_id=$RUN_ID" >> $GITHUB_OUTPUT[0m
+2025-12-26T05:20:16.6815452Z [36;1mGENERATION_RUN_ID=$RUN_ID npx ts-node scripts/morning-routine/tasks/generate-batch.ts animals dogs 1[0m
+2025-12-26T05:20:16.6844464Z shell: /usr/bin/bash -e {0}
+2025-12-26T05:20:16.6844737Z env:
+2025-12-26T05:20:16.6844946Z   ENABLE_FOREMAN: 1
+2025-12-26T05:20:16.6845168Z   ENABLE_DESIGNER: 1
+2025-12-26T05:20:16.6845409Z   DESIGNER_DRY_RUN: 1
+2025-12-26T05:20:16.6845634Z   ENABLE_QA: 1
+2025-12-26T05:20:16.6845847Z   QA_MODE: observe
+2025-12-26T05:20:16.6846067Z   ENABLE_FINISHING: 1
+2025-12-26T05:20:16.6846458Z   ENABLE_PDF: 1
+2025-12-26T05:20:16.6846699Z   ENABLE_IMMUNIZATION: 0
+2025-12-26T05:20:16.6846941Z   NODE_VERSION: 20
+2025-12-26T05:20:16.6847166Z   TRACKING_ISSUE_NUMBER: 1
+2025-12-26T05:20:16.6847450Z   DAILY_STYLE_KEY: 2025-12-26
+2025-12-26T05:20:16.6847703Z   STYLE_MODE: rotate
+2025-12-26T05:20:16.6847938Z   STYLE_ROTATION_KEY: 2025-12-26
+2025-12-26T05:20:16.6848191Z ##[endgroup]
+2025-12-26T05:20:18.7794093Z [dotenv@17.2.3] injecting env (9) from .dev.vars -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+2025-12-26T05:20:19.4340960Z [INFO] 🚩 Active Autonomy Flags: ["ENABLE_FOREMAN: true","ENABLE_DESIGNER: true","DESIGNER_DRY_RUN: true","ENABLE_QA: true","QA_MODE: observe","ENABLE_FINISHING: true","ENABLE_PDF: true"]
+2025-12-26T05:20:19.4375407Z [loadPrompt] Looking for: /home/runner/work/PaperPause/PaperPause/scripts/morning-routine/config/prompts/animals-dogs.json
+2025-12-26T05:20:19.4377264Z [loadPrompt] PROMPTS_DIR: /home/runner/work/PaperPause/PaperPause/scripts/morning-routine/config/prompts
+2025-12-26T05:20:19.4378452Z [loadPrompt] Exists: true
+2025-12-26T05:20:19.4379684Z [INFO] Starting batch generation for 1 images in animals/dogs {"styleMode":"rotate","rotationKey":"2025-12-26","styleName":"N/A"}
+2025-12-26T05:20:19.4383598Z [loadPrompt] Looking for: /home/runner/work/PaperPause/PaperPause/scripts/morning-routine/config/prompts/animals-dogs.json
+2025-12-26T05:20:19.4385604Z [loadPrompt] PROMPTS_DIR: /home/runner/work/PaperPause/PaperPause/scripts/morning-routine/config/prompts
+2025-12-26T05:20:19.4386591Z [loadPrompt] Exists: true
+2025-12-26T05:20:19.4389943Z [loadPrompt] Looking for: /home/runner/work/PaperPause/PaperPause/scripts/morning-routine/config/prompts/animals-dogs.json
+2025-12-26T05:20:19.4392036Z [loadPrompt] PROMPTS_DIR: /home/runner/work/PaperPause/PaperPause/scripts/morning-routine/config/prompts
+2025-12-26T05:20:19.4393053Z [loadPrompt] Exists: true
+2025-12-26T05:20:19.4395504Z [WARN] Canonical style "Totem" not in collection "dogs" allowed styles: [Kawaii, Cottagecore, SteamPunk, Bold Line Pop Art, Magical Realism]. Using first allowed style instead. 
+2025-12-26T05:20:19.4401863Z [INFO] [1/1] Generating {"tempId":"20251226-subject-outside-porch-for-adults-tbzr","variant":"Sleepy Chihuahua howling, closely surrou","style":"Kawaii"}
+2025-12-26T05:20:19.4405292Z [INFO] Generating image with Gemini 3 Pro Image... 
+2025-12-26T05:20:39.0766862Z [INFO] Gemini response structure: {"hasResponse":true,"hasCandidates":true,"candidatesLength":1}
+2025-12-26T05:20:39.0772627Z [SUCCESS] ✅ Image generated successfully via Gemini 3 Pro Image {"size":2396663}
+2025-12-26T05:20:39.0774350Z [R2] Uploading PNG dogs/20251226-subject-outside-porch-for-adults-tbzr.png...
+2025-12-26T05:20:39.5266144Z [R2] ✅ PNG stored at ***/dogs/20251226-subject-outside-porch-for-adults-tbzr.png
+2025-12-26T05:20:40.7323207Z [CF Images] ✅ Uploaded: 20251226-subject-outside-porch-for-adults-tbzr.png → 8edc54a5-1bb4-40fe-b470-38b3e3c3d000
+2025-12-26T05:20:40.7324968Z [Upload] ✅ CF Images configured for web delivery
+2025-12-26T05:20:40.7326041Z [INFO] Critic is inspecting image... {"subject":"dogs"}
+2025-12-26T05:20:51.4093697Z [WARN] QA FAIL: OPEN_PATHS - The lines for the dog's front paws and the rims of the flower pots are not closed, creating 'rivers' of white space where the subject bleeds into the background elements. This makes it difficult for users to color the dog and the environment as distinct sections. 
+2025-12-26T05:20:51.4098053Z [WARN] [Observe] QA Failure detected but allowing production to continue. {"reason":"OPEN_PATHS","details":"The lines for the dog's front paws and the rims of the flower pots are not closed, creating 'rivers' of white space where the subject bleeds into the background elements. This makes it difficult for users to color the dog and the environment as distinct sections."}
+2025-12-26T05:20:51.4132914Z [SUCCESS] ✅ [1/1] Complete {"tempId":"20251226-subject-outside-porch-for-adults-tbzr","path":"/home/runner/work/PaperPause/PaperPause/content/animals/dogs/20251226-subject-outside-porch-for-adults-tbzr.md","duration":"31975ms"}
+2025-12-26T05:20:56.4151491Z [INFO] Batch generation complete {"collection":"animals/dogs","total":1,"successful":1,"failed":0}
+2025-12-26T05:20:56.4161583Z [SUCCESS] ✅ Wrote generation manifest {"runId":"2025-12-26T05-20-16Z-dogs","manifestPath":"/home/runner/work/PaperPause/PaperPause/scripts/morning-routine/.runs/2025-12-26T05-20-16Z-dogs.json","created":1}
+2025-12-26T05:20:56.4163268Z [SUCCESS] ✅ Batch operation finished 
+2025-12-26T05:20:56.4163724Z [
+2025-12-26T05:20:56.4164050Z   {
+2025-12-26T05:20:56.4164576Z     "id": "20251226-subject-outside-porch-for-adults-tbzr",
+2025-12-26T05:20:56.4165159Z     "status": "success",
+2025-12-26T05:20:56.4166204Z     "path": "/home/runner/work/PaperPause/PaperPause/content/animals/dogs/20251226-subject-outside-porch-for-adults-tbzr.md",
+2025-12-26T05:20:56.4167184Z     "duration": 31975
+2025-12-26T05:20:56.4167535Z   }
+2025-12-26T05:20:56.4167829Z ]
+2025-12-26T05:20:56.4502149Z ##[group]Run MANIFEST_FILE="scripts/morning-routine/.runs/2025-12-26T05-20-16Z-dogs.json"
+2025-12-26T05:20:56.4502815Z [36;1mMANIFEST_FILE="scripts/morning-routine/.runs/2025-12-26T05-20-16Z-dogs.json"[0m
+2025-12-26T05:20:56.4503263Z [36;1mif [ -f "$MANIFEST_FILE" ]; then[0m
+2025-12-26T05:20:56.4503687Z [36;1m  npx ts-node scripts/morning-routine/tasks/finish-batch.ts "$MANIFEST_FILE"[0m
+2025-12-26T05:20:56.4504093Z [36;1melse[0m
+2025-12-26T05:20:56.4504372Z [36;1m  echo "⚠️  No manifest found, skipping Finisher"[0m
+2025-12-26T05:20:56.4504696Z [36;1mfi[0m
+2025-12-26T05:20:56.4537233Z shell: /usr/bin/bash -e {0}
+2025-12-26T05:20:56.4537506Z env:
+2025-12-26T05:20:56.4537706Z   ENABLE_FOREMAN: 1
+2025-12-26T05:20:56.4537932Z   ENABLE_DESIGNER: 1
+2025-12-26T05:20:56.4538161Z   DESIGNER_DRY_RUN: 1
+2025-12-26T05:20:56.4538381Z   ENABLE_QA: 1
+2025-12-26T05:20:56.4538589Z   QA_MODE: observe
+2025-12-26T05:20:56.4538803Z   ENABLE_FINISHING: 1
+2025-12-26T05:20:56.4539056Z   ENABLE_PDF: 1
+2025-12-26T05:20:56.4539275Z   ENABLE_IMMUNIZATION: 0
+2025-12-26T05:20:56.4539516Z   NODE_VERSION: 20
+2025-12-26T05:20:56.4539730Z   TRACKING_ISSUE_NUMBER: 1
+2025-12-26T05:20:56.4539980Z   DAILY_STYLE_KEY: 2025-12-26
+2025-12-26T05:20:56.4540227Z ##[endgroup]
+2025-12-26T05:20:58.2464140Z [dotenv@17.2.3] injecting env (9) from .dev.vars -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+2025-12-26T05:20:58.7341721Z [INFO] 🚀 Starting Finisher for run: 2025-12-26T05-20-16Z-dogs (1 files) 
+2025-12-26T05:20:58.7375345Z [INFO] Finishing asset: content/animals/dogs/20251226-subject-outside-porch-for-adults-tbzr.md 
+2025-12-26T05:20:58.7376432Z [INFO] Generating JIT PDF for dogs/20251226-subject-outside-porch-for-adults-tbzr.png... 
+2025-12-26T05:20:59.0816140Z [R2] Uploading JIT PDF dogs/20251226-subject-outside-porch-for-adults-tbzr.pdf...
+2025-12-26T05:20:59.3477460Z [R2] ✅ PDF stored at ***/dogs/20251226-subject-outside-porch-for-adults-tbzr.pdf
+2025-12-26T05:20:59.3478704Z [INFO] Calling SEO Copywriter for 20251226-subject-outside-porch-for-adults-tbzr... 
+2025-12-26T05:21:06.5023338Z [INFO] SEO Copywriter returned slug: chihuahua-howling-on-porch-for-kids 
+2025-12-26T05:21:06.5052890Z [SUCCESS] ✅ Asset finished and renamed: 20251226-chihuahua-howling-on-porch-for-kids.md 
+2025-12-26T05:21:06.5053741Z [SUCCESS] ✅ Finisher complete for run: 2025-12-26T05-20-16Z-dogs 
+2025-12-26T05:21:06.5368717Z ##[group]Run npm run validate:taxonomy
+2025-12-26T05:21:06.5369077Z [36;1mnpm run validate:taxonomy[0m
+2025-12-26T05:21:06.5402002Z shell: /usr/bin/bash -e {0}
+2025-12-26T05:21:06.5402256Z env:
+2025-12-26T05:21:06.5402449Z   ENABLE_FOREMAN: 1
+2025-12-26T05:21:06.5402656Z   ENABLE_DESIGNER: 1
+2025-12-26T05:21:06.5402864Z   DESIGNER_DRY_RUN: 1
+2025-12-26T05:21:06.5403067Z   ENABLE_QA: 1
+2025-12-26T05:21:06.5403263Z   QA_MODE: observe
+2025-12-26T05:21:06.5403462Z   ENABLE_FINISHING: 1
+2025-12-26T05:21:06.5403668Z   ENABLE_PDF: 1
+2025-12-26T05:21:06.5403867Z   ENABLE_IMMUNIZATION: 0
+2025-12-26T05:21:06.5404084Z   NODE_VERSION: 20
+2025-12-26T05:21:06.5404287Z   TRACKING_ISSUE_NUMBER: 1
+2025-12-26T05:21:06.5404695Z   DAILY_STYLE_KEY: 2025-12-26
+2025-12-26T05:21:06.5404924Z ##[endgroup]
+2025-12-26T05:21:06.6556718Z 
+2025-12-26T05:21:06.6557584Z > visual-sanctuary@1.0.0 validate:taxonomy
+2025-12-26T05:21:06.6558138Z > ts-node scripts/validate-taxonomy.ts
+2025-12-26T05:21:06.6558393Z 
+2025-12-26T05:21:07.7265007Z [INFO] Starting taxonomy validation... 
+2025-12-26T05:21:07.7400556Z [INFO] Found 73 markdown files to validate 
+2025-12-26T05:21:07.7979503Z 
+2025-12-26T05:21:07.7982125Z ================================================================================
+2025-12-26T05:21:07.7983395Z [SUCCESS] ✅ Taxonomy validation complete {"total":66,"valid":66,"errors":0}
+2025-12-26T05:21:07.7984279Z ================================================================================
+2025-12-26T05:21:07.7984630Z 
+2025-12-26T05:21:07.7985043Z [SUCCESS] ✅ All files have valid taxonomy! 
+2025-12-26T05:21:07.8202186Z ##[group]Run set -euo pipefail
+2025-12-26T05:21:07.8202556Z [36;1mset -euo pipefail[0m
+2025-12-26T05:21:07.8202842Z [36;1mrm -rf staging[0m
+2025-12-26T05:21:07.8203108Z [36;1mmkdir -p staging[0m
+2025-12-26T05:21:07.8203353Z [36;1m[0m
+2025-12-26T05:21:07.8203701Z [36;1m# Copy only untracked files created during this job, under this collection[0m
+2025-12-26T05:21:07.8204180Z [36;1m# Uses -z (null terminator) to handle any filenames safely[0m
+2025-12-26T05:21:07.8204654Z [36;1mgit ls-files -z --others --exclude-standard -- "content/animals/dogs/" \[0m
+2025-12-26T05:21:07.8205096Z [36;1m  | xargs -0 -r cp --parents -t staging[0m
+2025-12-26T05:21:07.8205398Z [36;1m[0m
+2025-12-26T05:21:07.8205632Z [36;1m# Count files for conditional upload[0m
+2025-12-26T05:21:07.8206098Z [36;1mCOUNT="$(find staging/content/animals/dogs -type f 2>/dev/null | wc -l | tr -d ' ')"[0m
+2025-12-26T05:21:07.8206570Z [36;1mecho "count=$COUNT" >> "$GITHUB_OUTPUT"[0m
+2025-12-26T05:21:07.8206912Z [36;1mecho "Staged $COUNT file(s)"[0m
+2025-12-26T05:21:07.8241936Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2025-12-26T05:21:07.8242310Z env:
+2025-12-26T05:21:07.8242517Z   ENABLE_FOREMAN: 1
+2025-12-26T05:21:07.8242747Z   ENABLE_DESIGNER: 1
+2025-12-26T05:21:07.8242970Z   DESIGNER_DRY_RUN: 1
+2025-12-26T05:21:07.8243192Z   ENABLE_QA: 1
+2025-12-26T05:21:07.8243402Z   QA_MODE: observe
+2025-12-26T05:21:07.8243621Z   ENABLE_FINISHING: 1
+2025-12-26T05:21:07.8243849Z   ENABLE_PDF: 1
+2025-12-26T05:21:07.8244069Z   ENABLE_IMMUNIZATION: 0
+2025-12-26T05:21:07.8244308Z   NODE_VERSION: 20
+2025-12-26T05:21:07.8244527Z   TRACKING_ISSUE_NUMBER: 1
+2025-12-26T05:21:07.8244776Z   DAILY_STYLE_KEY: 2025-12-26
+2025-12-26T05:21:07.8245030Z ##[endgroup]
+2025-12-26T05:21:07.8531755Z Staged 1 file(s)
+2025-12-26T05:21:07.8582403Z ##[group]Run actions/upload-artifact@v4
+2025-12-26T05:21:07.8582732Z with:
+2025-12-26T05:21:07.8582949Z   name: manifest-dogs
+2025-12-26T05:21:07.8583226Z   path: scripts/morning-routine/.runs/*.json
+2025-12-26T05:21:07.8583535Z   retention-days: 1
+2025-12-26T05:21:07.8583771Z   if-no-files-found: ignore
+2025-12-26T05:21:07.8584039Z   compression-level: 6
+2025-12-26T05:21:07.8584276Z   overwrite: false
+2025-12-26T05:21:07.8584508Z   include-hidden-files: false
+2025-12-26T05:21:07.8584761Z env:
+2025-12-26T05:21:07.8584956Z   ENABLE_FOREMAN: 1
+2025-12-26T05:21:07.8585172Z   ENABLE_DESIGNER: 1
+2025-12-26T05:21:07.8585396Z   DESIGNER_DRY_RUN: 1
+2025-12-26T05:21:07.8585621Z   ENABLE_QA: 1
+2025-12-26T05:21:07.8585842Z   QA_MODE: observe
+2025-12-26T05:21:07.8586058Z   ENABLE_FINISHING: 1
+2025-12-26T05:21:07.8586279Z   ENABLE_PDF: 1
+2025-12-26T05:21:07.8586497Z   ENABLE_IMMUNIZATION: 0
+2025-12-26T05:21:07.8586729Z   NODE_VERSION: 20
+2025-12-26T05:21:07.8586956Z   TRACKING_ISSUE_NUMBER: 1
+2025-12-26T05:21:07.8587235Z   DAILY_STYLE_KEY: 2025-12-26
+2025-12-26T05:21:07.8587483Z ##[endgroup]
+2025-12-26T05:21:08.0774331Z No files were found with the provided path: scripts/morning-routine/.runs/*.json. No artifacts will be uploaded.
+2025-12-26T05:21:08.0897229Z ##[group]Run actions/upload-artifact@v4
+2025-12-26T05:21:08.0897695Z with:
+2025-12-26T05:21:08.0897909Z   name: content-dogs
+2025-12-26T05:21:08.0898144Z   path: staging/
+2025-12-26T05:21:08.0898369Z   retention-days: 1
+2025-12-26T05:21:08.0898596Z   if-no-files-found: warn
+2025-12-26T05:21:08.0898847Z   compression-level: 6
+2025-12-26T05:21:08.0899151Z   overwrite: false
+2025-12-26T05:21:08.0899405Z   include-hidden-files: false
+2025-12-26T05:21:08.0899652Z env:
+2025-12-26T05:21:08.0899846Z   ENABLE_FOREMAN: 1
+2025-12-26T05:21:08.0900064Z   ENABLE_DESIGNER: 1
+2025-12-26T05:21:08.0900288Z   DESIGNER_DRY_RUN: 1
+2025-12-26T05:21:08.0900507Z   ENABLE_QA: 1
+2025-12-26T05:21:08.0900717Z   QA_MODE: observe
+2025-12-26T05:21:08.0900930Z   ENABLE_FINISHING: 1
+2025-12-26T05:21:08.0901373Z   ENABLE_PDF: 1
+2025-12-26T05:21:08.0901597Z   ENABLE_IMMUNIZATION: 0
+2025-12-26T05:21:08.0901829Z   NODE_VERSION: 20
+2025-12-26T05:21:08.0902046Z   TRACKING_ISSUE_NUMBER: 1
+2025-12-26T05:21:08.0902338Z   DAILY_STYLE_KEY: 2025-12-26
+2025-12-26T05:21:08.0902592Z ##[endgroup]
+2025-12-26T05:21:08.3044225Z With the provided path, there will be 1 file uploaded
+2025-12-26T05:21:08.3050700Z Artifact name is valid!
+2025-12-26T05:21:08.3052357Z Root directory input is valid!
+2025-12-26T05:21:08.4666832Z Beginning upload of artifact content to blob storage
+2025-12-26T05:21:08.6191732Z Uploaded bytes 944
+2025-12-26T05:21:08.6592295Z Finished uploading artifact content to blob storage!
+2025-12-26T05:21:08.6596000Z SHA256 digest of uploaded artifact zip is e584f116dddcc5059221e3df9da2abfae1dfb366e58abcaf961d4fbde5f8495f
+2025-12-26T05:21:08.6597322Z Finalizing artifact upload
+2025-12-26T05:21:08.7913276Z Artifact content-dogs.zip successfully finalized. Artifact ID 4969361254
+2025-12-26T05:21:08.7915013Z Artifact content-dogs has been successfully uploaded! Final size is 944 bytes. Artifact ID is 4969361254
+2025-12-26T05:21:08.7922407Z Artifact download URL: https://github.com/RenaudDev/PaperPause/actions/runs/20516570940/artifacts/4969361254
+2025-12-26T05:21:08.8077710Z Post job cleanup.
+2025-12-26T05:21:08.9602412Z Cache hit occurred on the primary key node-cache-Linux-x64-npm-8d53d468b06d9b2c58e395c3f91b50747d5eccd57e8559691090afcfd0b832b9, not saving cache.
+2025-12-26T05:21:08.9710363Z Post job cleanup.
+2025-12-26T05:21:09.0646814Z [command]/usr/bin/git version
+2025-12-26T05:21:09.0684448Z git version 2.52.0
+2025-12-26T05:21:09.0729072Z Temporarily overriding HOME='/home/runner/work/_temp/5dc551bb-9cf6-48ff-be51-2db28589a4e2' before making global git config changes
+2025-12-26T05:21:09.0730637Z Adding repository directory to the temporary git global config as a safe directory
+2025-12-26T05:21:09.0735849Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/PaperPause/PaperPause
+2025-12-26T05:21:09.0778046Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-12-26T05:21:09.0809991Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-12-26T05:21:09.1038066Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-12-26T05:21:09.1059064Z http.https://github.com/.extraheader
+2025-12-26T05:21:09.1071765Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2025-12-26T05:21:09.1104605Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-12-26T05:21:09.1320686Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2025-12-26T05:21:09.1350769Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2025-12-26T05:21:09.1667133Z Cleaning up orphan processes

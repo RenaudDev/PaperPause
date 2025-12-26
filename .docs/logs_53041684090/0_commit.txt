@@ -1,0 +1,291 @@
+﻿2025-12-26T05:21:21.6992517Z Current runner version: '2.330.0'
+2025-12-26T05:21:21.7015072Z ##[group]Runner Image Provisioner
+2025-12-26T05:21:21.7015855Z Hosted Compute Agent
+2025-12-26T05:21:21.7016376Z Version: 20251211.462
+2025-12-26T05:21:21.7016911Z Commit: 6cbad8c2bb55d58165063d031ccabf57e2d2db61
+2025-12-26T05:21:21.7017561Z Build Date: 2025-12-11T16:28:49Z
+2025-12-26T05:21:21.7018161Z Worker ID: {865166f2-0b62-4a19-bd4a-10e55c555ce1}
+2025-12-26T05:21:21.7018760Z ##[endgroup]
+2025-12-26T05:21:21.7019251Z ##[group]Operating System
+2025-12-26T05:21:21.7019853Z Ubuntu
+2025-12-26T05:21:21.7020280Z 24.04.3
+2025-12-26T05:21:21.7020671Z LTS
+2025-12-26T05:21:21.7021092Z ##[endgroup]
+2025-12-26T05:21:21.7021553Z ##[group]Runner Image
+2025-12-26T05:21:21.7022038Z Image: ubuntu-24.04
+2025-12-26T05:21:21.7022508Z Version: 20251215.174.1
+2025-12-26T05:21:21.7023386Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20251215.174/images/ubuntu/Ubuntu2404-Readme.md
+2025-12-26T05:21:21.7024783Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20251215.174
+2025-12-26T05:21:21.7025638Z ##[endgroup]
+2025-12-26T05:21:21.7026599Z ##[group]GITHUB_TOKEN Permissions
+2025-12-26T05:21:21.7028627Z Contents: write
+2025-12-26T05:21:21.7029066Z Issues: write
+2025-12-26T05:21:21.7029571Z Metadata: read
+2025-12-26T05:21:21.7030139Z ##[endgroup]
+2025-12-26T05:21:21.7032039Z Secret source: Actions
+2025-12-26T05:21:21.7032694Z Prepare workflow directory
+2025-12-26T05:21:21.7465567Z Prepare all required actions
+2025-12-26T05:21:21.7517874Z Getting action download info
+2025-12-26T05:21:22.1161979Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2025-12-26T05:21:22.2155701Z Download action repository 'actions/download-artifact@v4' (SHA:d3f86a106a0bac45b974a628896c90dbdf5c8093)
+2025-12-26T05:21:23.1014738Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2025-12-26T05:21:23.1921393Z Download action repository 'actions/github-script@v7' (SHA:f28e40c7f34bde8b3046d885e986cb6290c5673b)
+2025-12-26T05:21:24.0905035Z Complete job name: commit
+2025-12-26T05:21:24.1765615Z ##[group]Run actions/checkout@v4
+2025-12-26T05:21:24.1766776Z with:
+2025-12-26T05:21:24.1767413Z   fetch-depth: 0
+2025-12-26T05:21:24.1768172Z   repository: RenaudDev/PaperPause
+2025-12-26T05:21:24.1769392Z   token: ***
+2025-12-26T05:21:24.1770301Z   ssh-strict: true
+2025-12-26T05:21:24.1770994Z   ssh-user: git
+2025-12-26T05:21:24.1771700Z   persist-credentials: true
+2025-12-26T05:21:24.1772476Z   clean: true
+2025-12-26T05:21:24.1773191Z   sparse-checkout-cone-mode: true
+2025-12-26T05:21:24.1774062Z   fetch-tags: false
+2025-12-26T05:21:24.1774763Z   show-progress: true
+2025-12-26T05:21:24.1775477Z   lfs: false
+2025-12-26T05:21:24.1776113Z   submodules: false
+2025-12-26T05:21:24.1776834Z   set-safe-directory: true
+2025-12-26T05:21:24.1777845Z env:
+2025-12-26T05:21:24.1778456Z   ENABLE_FOREMAN: 1
+2025-12-26T05:21:24.1779155Z   ENABLE_DESIGNER: 1
+2025-12-26T05:21:24.1779996Z   DESIGNER_DRY_RUN: 1
+2025-12-26T05:21:24.1780712Z   ENABLE_QA: 1
+2025-12-26T05:21:24.1781408Z   QA_MODE: observe
+2025-12-26T05:21:24.1782080Z   ENABLE_FINISHING: 1
+2025-12-26T05:21:24.1782794Z   ENABLE_PDF: 1
+2025-12-26T05:21:24.1783466Z   ENABLE_IMMUNIZATION: 0
+2025-12-26T05:21:24.1784214Z   NODE_VERSION: 20
+2025-12-26T05:21:24.1784908Z   TRACKING_ISSUE_NUMBER: 1
+2025-12-26T05:21:24.1785675Z ##[endgroup]
+2025-12-26T05:21:24.2834425Z Syncing repository: RenaudDev/PaperPause
+2025-12-26T05:21:24.2837088Z ##[group]Getting Git version info
+2025-12-26T05:21:24.2838373Z Working directory is '/home/runner/work/PaperPause/PaperPause'
+2025-12-26T05:21:24.2840390Z [command]/usr/bin/git version
+2025-12-26T05:21:24.2882976Z git version 2.52.0
+2025-12-26T05:21:24.2905886Z ##[endgroup]
+2025-12-26T05:21:24.2918569Z Temporarily overriding HOME='/home/runner/work/_temp/a0ee4120-b8ad-45e7-a129-bc5f8d43a1ee' before making global git config changes
+2025-12-26T05:21:24.2921122Z Adding repository directory to the temporary git global config as a safe directory
+2025-12-26T05:21:24.2923821Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/PaperPause/PaperPause
+2025-12-26T05:21:24.2963410Z Deleting the contents of '/home/runner/work/PaperPause/PaperPause'
+2025-12-26T05:21:24.2966383Z ##[group]Initializing the repository
+2025-12-26T05:21:24.2970218Z [command]/usr/bin/git init /home/runner/work/PaperPause/PaperPause
+2025-12-26T05:21:24.3061063Z hint: Using 'master' as the name for the initial branch. This default branch name
+2025-12-26T05:21:24.3063899Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2025-12-26T05:21:24.3065657Z hint: to use in all of your new repositories, which will suppress this warning,
+2025-12-26T05:21:24.3066857Z hint: call:
+2025-12-26T05:21:24.3067478Z hint:
+2025-12-26T05:21:24.3068290Z hint: 	git config --global init.defaultBranch <name>
+2025-12-26T05:21:24.3069578Z hint:
+2025-12-26T05:21:24.3070699Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2025-12-26T05:21:24.3072324Z hint: 'development'. The just-created branch can be renamed via this command:
+2025-12-26T05:21:24.3073548Z hint:
+2025-12-26T05:21:24.3074174Z hint: 	git branch -m <name>
+2025-12-26T05:21:24.3075234Z hint:
+2025-12-26T05:21:24.3076241Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2025-12-26T05:21:24.3077994Z Initialized empty Git repository in /home/runner/work/PaperPause/PaperPause/.git/
+2025-12-26T05:21:24.3080924Z [command]/usr/bin/git remote add origin https://github.com/RenaudDev/PaperPause
+2025-12-26T05:21:24.3107700Z ##[endgroup]
+2025-12-26T05:21:24.3109615Z ##[group]Disabling automatic garbage collection
+2025-12-26T05:21:24.3112196Z [command]/usr/bin/git config --local gc.auto 0
+2025-12-26T05:21:24.3137358Z ##[endgroup]
+2025-12-26T05:21:24.3139189Z ##[group]Setting up auth
+2025-12-26T05:21:24.3145467Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-12-26T05:21:24.3173525Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-12-26T05:21:24.3450590Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-12-26T05:21:24.3476719Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-12-26T05:21:24.3647206Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2025-12-26T05:21:24.3682828Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2025-12-26T05:21:24.3860011Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2025-12-26T05:21:24.3888582Z ##[endgroup]
+2025-12-26T05:21:24.3891064Z ##[group]Fetching the repository
+2025-12-26T05:21:24.3899046Z [command]/usr/bin/git -c protocol.version=2 fetch --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
+2025-12-26T05:21:25.1875296Z From https://github.com/RenaudDev/PaperPause
+2025-12-26T05:21:25.1875999Z  * [new branch]      main       -> origin/main
+2025-12-26T05:21:25.1911165Z [command]/usr/bin/git branch --list --remote origin/main
+2025-12-26T05:21:25.1931475Z   origin/main
+2025-12-26T05:21:25.1938910Z [command]/usr/bin/git rev-parse refs/remotes/origin/main
+2025-12-26T05:21:25.1955241Z 7f35e710742d46827d7644982ec5893c55f45ad8
+2025-12-26T05:21:25.1958592Z ##[endgroup]
+2025-12-26T05:21:25.1959234Z ##[group]Determining the checkout info
+2025-12-26T05:21:25.1960135Z ##[endgroup]
+2025-12-26T05:21:25.1964774Z [command]/usr/bin/git sparse-checkout disable
+2025-12-26T05:21:25.1996219Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2025-12-26T05:21:25.2016652Z ##[group]Checking out the ref
+2025-12-26T05:21:25.2021816Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2025-12-26T05:21:25.2182935Z Switched to a new branch 'main'
+2025-12-26T05:21:25.2183679Z branch 'main' set up to track 'origin/main'.
+2025-12-26T05:21:25.2190172Z ##[endgroup]
+2025-12-26T05:21:25.2222769Z [command]/usr/bin/git log -1 --format=%H
+2025-12-26T05:21:25.2241603Z 7f35e710742d46827d7644982ec5893c55f45ad8
+2025-12-26T05:21:25.2406976Z ##[group]Run actions/download-artifact@v4
+2025-12-26T05:21:25.2407277Z with:
+2025-12-26T05:21:25.2407486Z   path: .
+2025-12-26T05:21:25.2407690Z   pattern: content-*
+2025-12-26T05:21:25.2407932Z   merge-multiple: true
+2025-12-26T05:21:25.2408203Z   repository: RenaudDev/PaperPause
+2025-12-26T05:21:25.2408465Z   run-id: 20516570940
+2025-12-26T05:21:25.2408688Z env:
+2025-12-26T05:21:25.2408885Z   ENABLE_FOREMAN: 1
+2025-12-26T05:21:25.2409106Z   ENABLE_DESIGNER: 1
+2025-12-26T05:21:25.2409327Z   DESIGNER_DRY_RUN: 1
+2025-12-26T05:21:25.2409547Z   ENABLE_QA: 1
+2025-12-26T05:21:25.2409954Z   QA_MODE: observe
+2025-12-26T05:21:25.2410254Z   ENABLE_FINISHING: 1
+2025-12-26T05:21:25.2410476Z   ENABLE_PDF: 1
+2025-12-26T05:21:25.2410701Z   ENABLE_IMMUNIZATION: 0
+2025-12-26T05:21:25.2410953Z   NODE_VERSION: 20
+2025-12-26T05:21:25.2411174Z   TRACKING_ISSUE_NUMBER: 1
+2025-12-26T05:21:25.2411421Z ##[endgroup]
+2025-12-26T05:21:25.6670721Z Found 6 artifact(s)
+2025-12-26T05:21:25.6671759Z Filtering artifacts by pattern 'content-*'
+2025-12-26T05:21:25.6689102Z Preparing to download the following artifacts:
+2025-12-26T05:21:25.6691269Z - content-butterflies (ID: 4969361597, Size: 975, Expected Digest: sha256:eea5cd338a051c704cee89de667b74fe3eb3dd705e8623692aa2c12b1b654c15)
+2025-12-26T05:21:25.6692720Z - content-horses (ID: 4969361589, Size: 954, Expected Digest: sha256:d25e3f20a8f95cf40b1e9c3fafbcdc22192d479ae7fd1098b4cf406a58d0bee6)
+2025-12-26T05:21:25.6694139Z - content-cats (ID: 4969361559, Size: 964, Expected Digest: sha256:ca18a64e913b1a159f5f5009d61dae5d7ca11f5dc068972fb5d068c9319218db)
+2025-12-26T05:21:25.6695490Z - content-sharks (ID: 4969361291, Size: 937, Expected Digest: sha256:dbf55c067a05017044790ab47f2b8a94556efa73d6296529052981859b4249c1)
+2025-12-26T05:21:25.6696779Z - content-dogs (ID: 4969361254, Size: 944, Expected Digest: sha256:e584f116dddcc5059221e3df9da2abfae1dfb366e58abcaf961d4fbde5f8495f)
+2025-12-26T05:21:25.8202783Z Redirecting to blob download url: https://productionresultssa16.blob.core.windows.net/actions-results/812f10af-cfda-4d4d-b78a-286dd5d239b4/workflow-job-run-3f2890c1-bffd-5228-9f99-66f36418505a/artifacts/b016b81028fa81d3c39de4068d8a75096a6262ee2bdc5610cef4d266ff3e16b8.zip
+2025-12-26T05:21:25.8204837Z Starting download of artifact to: /home/runner/work/PaperPause/PaperPause
+2025-12-26T05:21:25.9548069Z Redirecting to blob download url: https://productionresultssa16.blob.core.windows.net/actions-results/812f10af-cfda-4d4d-b78a-286dd5d239b4/workflow-job-run-fb642cac-eac8-549a-b7e3-f845ea184d4a/artifacts/883e604bc60a5ac925ed8722d4d8c6e3379083a8b20c7ff38d126f30d86fc3c4.zip
+2025-12-26T05:21:25.9550318Z Starting download of artifact to: /home/runner/work/PaperPause/PaperPause
+2025-12-26T05:21:25.9689672Z Redirecting to blob download url: https://productionresultssa16.blob.core.windows.net/actions-results/812f10af-cfda-4d4d-b78a-286dd5d239b4/workflow-job-run-5081d9bf-1a35-51d6-ac83-14bf8c99c0eb/artifacts/dbb39ccfb550fd03c8ed3cc1e9c06dc81d99dfef6fb274969b545ee967f77888.zip
+2025-12-26T05:21:25.9692074Z Starting download of artifact to: /home/runner/work/PaperPause/PaperPause
+2025-12-26T05:21:25.9755137Z Redirecting to blob download url: https://productionresultssa16.blob.core.windows.net/actions-results/812f10af-cfda-4d4d-b78a-286dd5d239b4/workflow-job-run-e3237b3f-ef03-5756-b2f3-e5eb77f2a937/artifacts/d097b9758e3fb025496bc6721fd702224c81474b0026291fc1e31eb47d9ad5c5.zip
+2025-12-26T05:21:25.9757301Z Starting download of artifact to: /home/runner/work/PaperPause/PaperPause
+2025-12-26T05:21:25.9884301Z Redirecting to blob download url: https://productionresultssa16.blob.core.windows.net/actions-results/812f10af-cfda-4d4d-b78a-286dd5d239b4/workflow-job-run-7c2e7108-62d0-565f-a667-d9cc10708ebe/artifacts/fc7e8696c83f7422edd40a35f3e179c50616d74542290f10ea42efeb45fb6a20.zip
+2025-12-26T05:21:25.9886241Z Starting download of artifact to: /home/runner/work/PaperPause/PaperPause
+2025-12-26T05:21:26.0191836Z (node:2137) [DEP0005] DeprecationWarning: Buffer() is deprecated due to security and usability issues. Please use the Buffer.alloc(), Buffer.allocUnsafe(), or Buffer.from() methods instead.
+2025-12-26T05:21:26.0193010Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2025-12-26T05:21:26.0230577Z SHA256 digest of downloaded artifact is eea5cd338a051c704cee89de667b74fe3eb3dd705e8623692aa2c12b1b654c15
+2025-12-26T05:21:26.0231110Z Artifact download completed successfully.
+2025-12-26T05:21:26.1524470Z SHA256 digest of downloaded artifact is ca18a64e913b1a159f5f5009d61dae5d7ca11f5dc068972fb5d068c9319218db
+2025-12-26T05:21:26.1525222Z Artifact download completed successfully.
+2025-12-26T05:21:26.1844910Z SHA256 digest of downloaded artifact is e584f116dddcc5059221e3df9da2abfae1dfb366e58abcaf961d4fbde5f8495f
+2025-12-26T05:21:26.1845622Z Artifact download completed successfully.
+2025-12-26T05:21:26.1958245Z SHA256 digest of downloaded artifact is d25e3f20a8f95cf40b1e9c3fafbcdc22192d479ae7fd1098b4cf406a58d0bee6
+2025-12-26T05:21:26.1958836Z Artifact download completed successfully.
+2025-12-26T05:21:26.1996214Z SHA256 digest of downloaded artifact is dbf55c067a05017044790ab47f2b8a94556efa73d6296529052981859b4249c1
+2025-12-26T05:21:26.1997509Z Artifact download completed successfully.
+2025-12-26T05:21:26.1998524Z Total of 5 artifact(s) downloaded
+2025-12-26T05:21:26.2004388Z Download artifact has finished successfully
+2025-12-26T05:21:26.2121140Z ##[group]Run actions/download-artifact@v4
+2025-12-26T05:21:26.2121444Z with:
+2025-12-26T05:21:26.2121665Z   path: scripts/morning-routine/.runs/
+2025-12-26T05:21:26.2121939Z   pattern: manifest-*
+2025-12-26T05:21:26.2122192Z   merge-multiple: true
+2025-12-26T05:21:26.2122443Z   repository: RenaudDev/PaperPause
+2025-12-26T05:21:26.2122709Z   run-id: 20516570940
+2025-12-26T05:21:26.2122922Z env:
+2025-12-26T05:21:26.2123138Z   ENABLE_FOREMAN: 1
+2025-12-26T05:21:26.2123345Z   ENABLE_DESIGNER: 1
+2025-12-26T05:21:26.2123565Z   DESIGNER_DRY_RUN: 1
+2025-12-26T05:21:26.2123772Z   ENABLE_QA: 1
+2025-12-26T05:21:26.2123967Z   QA_MODE: observe
+2025-12-26T05:21:26.2124170Z   ENABLE_FINISHING: 1
+2025-12-26T05:21:26.2124384Z   ENABLE_PDF: 1
+2025-12-26T05:21:26.2124593Z   ENABLE_IMMUNIZATION: 0
+2025-12-26T05:21:26.2124816Z   NODE_VERSION: 20
+2025-12-26T05:21:26.2125023Z   TRACKING_ISSUE_NUMBER: 1
+2025-12-26T05:21:26.2125255Z ##[endgroup]
+2025-12-26T05:21:26.6489306Z Found 6 artifact(s)
+2025-12-26T05:21:26.6491401Z Filtering artifacts by pattern 'manifest-*'
+2025-12-26T05:21:26.6513725Z Total of 0 artifact(s) downloaded
+2025-12-26T05:21:26.6522594Z Download artifact has finished successfully
+2025-12-26T05:21:26.6625715Z ##[group]Run git config user.name "GitHub Actions Bot"
+2025-12-26T05:21:26.6626245Z [36;1mgit config user.name "GitHub Actions Bot"[0m
+2025-12-26T05:21:26.6626654Z [36;1mgit config user.email "actions@github.com"[0m
+2025-12-26T05:21:26.6627123Z [36;1mgit add content/ scripts/morning-routine/config/prompts/[0m
+2025-12-26T05:21:26.6627508Z [36;1m[0m
+2025-12-26T05:21:26.6627761Z [36;1mif git diff --staged --quiet; then[0m
+2025-12-26T05:21:26.6628102Z [36;1m  echo "✓ No changes to commit"[0m
+2025-12-26T05:21:26.6628406Z [36;1melse[0m
+2025-12-26T05:21:26.6628697Z [36;1m  git commit -m "🎨 Generate daily coloring pages [automated]"[0m
+2025-12-26T05:21:26.6629018Z [36;1m  git push[0m
+2025-12-26T05:21:26.6629248Z [36;1m  echo "✓ Pushed changes"[0m
+2025-12-26T05:21:26.6629489Z [36;1mfi[0m
+2025-12-26T05:21:26.6651897Z shell: /usr/bin/bash -e {0}
+2025-12-26T05:21:26.6652178Z env:
+2025-12-26T05:21:26.6652379Z   ENABLE_FOREMAN: 1
+2025-12-26T05:21:26.6652643Z   ENABLE_DESIGNER: 1
+2025-12-26T05:21:26.6652865Z   DESIGNER_DRY_RUN: 1
+2025-12-26T05:21:26.6653261Z   ENABLE_QA: 1
+2025-12-26T05:21:26.6653467Z   QA_MODE: observe
+2025-12-26T05:21:26.6653686Z   ENABLE_FINISHING: 1
+2025-12-26T05:21:26.6653902Z   ENABLE_PDF: 1
+2025-12-26T05:21:26.6654114Z   ENABLE_IMMUNIZATION: 0
+2025-12-26T05:21:26.6654345Z   NODE_VERSION: 20
+2025-12-26T05:21:26.6654553Z   TRACKING_ISSUE_NUMBER: 1
+2025-12-26T05:21:26.6654803Z ##[endgroup]
+2025-12-26T05:21:26.6910823Z [main 114d5ba] 🎨 Generate daily coloring pages [automated]
+2025-12-26T05:21:26.6911226Z  5 files changed, 198 insertions(+)
+2025-12-26T05:21:26.6911770Z  create mode 100644 content/animals/butterflies/20251226-california-sister-butterfly-on-leaf-for-kids.md
+2025-12-26T05:21:26.6912860Z  create mode 100644 content/animals/cats/20251226-calico-cat-potting-plant-library-nook-for-kids.md
+2025-12-26T05:21:26.6913679Z  create mode 100644 content/animals/dogs/20251226-chihuahua-howling-on-porch-for-kids.md
+2025-12-26T05:21:26.6914303Z  create mode 100644 content/animals/horses/20251226-appaloosa-horse-river-walk-adult-coloring.md
+2025-12-26T05:21:26.6914912Z  create mode 100644 content/animals/sharks/20251226-goofy-whale-shark-swimming-fish-adults.md
+2025-12-26T05:21:27.3102510Z To https://github.com/RenaudDev/PaperPause
+2025-12-26T05:21:27.3103087Z    7f35e71..114d5ba  main -> main
+2025-12-26T05:21:27.3138961Z ✓ Pushed changes
+2025-12-26T05:21:27.3169140Z ##[group]Run npx ts-node scripts/morning-routine/tasks/midnight-scheduler.ts --from-manifests
+2025-12-26T05:21:27.3170196Z [36;1mnpx ts-node scripts/morning-routine/tasks/midnight-scheduler.ts --from-manifests[0m
+2025-12-26T05:21:27.3188371Z shell: /usr/bin/bash -e {0}
+2025-12-26T05:21:27.3188629Z env:
+2025-12-26T05:21:27.3188838Z   ENABLE_FOREMAN: 1
+2025-12-26T05:21:27.3189050Z   ENABLE_DESIGNER: 1
+2025-12-26T05:21:27.3189261Z   DESIGNER_DRY_RUN: 1
+2025-12-26T05:21:27.3189469Z   ENABLE_QA: 1
+2025-12-26T05:21:27.3189660Z   QA_MODE: observe
+2025-12-26T05:21:27.3190168Z   ENABLE_FINISHING: 1
+2025-12-26T05:21:27.3190379Z   ENABLE_PDF: 1
+2025-12-26T05:21:27.3190597Z   ENABLE_IMMUNIZATION: 0
+2025-12-26T05:21:27.3190825Z   NODE_VERSION: 20
+2025-12-26T05:21:27.3191043Z   TRACKING_ISSUE_NUMBER: 1
+2025-12-26T05:21:27.3191267Z ##[endgroup]
+2025-12-26T05:21:34.1979296Z npm warn exec The following package was not found and will be installed: ts-node@10.9.2
+2025-12-26T05:21:36.4990953Z /home/runner/.npm/_npx/1bf7c3c15bf47d04/node_modules/ts-node/src/index.ts:859
+2025-12-26T05:21:36.5013563Z     return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+2025-12-26T05:21:36.5017543Z            ^
+2025-12-26T05:21:36.5018245Z TSError: ⨯ Unable to compile TypeScript:
+2025-12-26T05:21:36.5019354Z scripts/morning-routine/tasks/midnight-scheduler.ts(2,16): error TS2307: Cannot find module 'fs-extra' or its corresponding type declarations.
+2025-12-26T05:21:36.5021182Z scripts/morning-routine/tasks/midnight-scheduler.ts(3,18): error TS2307: Cannot find module 'path' or its corresponding type declarations.
+2025-12-26T05:21:36.5022772Z scripts/morning-routine/tasks/midnight-scheduler.ts(6,18): error TS2307: Cannot find module 'glob' or its corresponding type declarations.
+2025-12-26T05:21:36.5024198Z scripts/morning-routine/tasks/midnight-scheduler.ts(9,35): error TS2304: Cannot find name '__dirname'.
+2025-12-26T05:21:36.5025406Z scripts/morning-routine/tasks/midnight-scheduler.ts(10,33): error TS2304: Cannot find name '__dirname'.
+2025-12-26T05:21:36.5027054Z scripts/morning-routine/tasks/midnight-scheduler.ts(56,16): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+2025-12-26T05:21:36.5028686Z scripts/morning-routine/tasks/midnight-scheduler.ts(67,36): error TS2304: Cannot find name '__dirname'.
+2025-12-26T05:21:36.5030301Z scripts/morning-routine/tasks/midnight-scheduler.ts(110,40): error TS7006: Parameter 'item' implicitly has an 'any' type.
+2025-12-26T05:21:36.5032073Z scripts/morning-routine/tasks/midnight-scheduler.ts(205,5): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+2025-12-26T05:21:36.5033522Z 
+2025-12-26T05:21:36.5034011Z     at createTSError (/home/runner/.npm/_npx/1bf7c3c15bf47d04/node_modules/ts-node/src/index.ts:859:12)
+2025-12-26T05:21:36.5035111Z     at reportTSError (/home/runner/.npm/_npx/1bf7c3c15bf47d04/node_modules/ts-node/src/index.ts:863:19)
+2025-12-26T05:21:36.5036194Z     at getOutput (/home/runner/.npm/_npx/1bf7c3c15bf47d04/node_modules/ts-node/src/index.ts:1077:36)
+2025-12-26T05:21:36.5037258Z     at Object.compile (/home/runner/.npm/_npx/1bf7c3c15bf47d04/node_modules/ts-node/src/index.ts:1433:41)
+2025-12-26T05:21:36.5038236Z     at Module.m._compile (/home/runner/.npm/_npx/1bf7c3c15bf47d04/node_modules/ts-node/src/index.ts:1617:30)
+2025-12-26T05:21:36.5038988Z     at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+2025-12-26T05:21:36.5040199Z     at Object.require.extensions.<computed> [as .ts] (/home/runner/.npm/_npx/1bf7c3c15bf47d04/node_modules/ts-node/src/index.ts:1621:12)
+2025-12-26T05:21:36.5041180Z     at Module.load (node:internal/modules/cjs/loader:1266:32)
+2025-12-26T05:21:36.5041847Z     at Function.Module._load (node:internal/modules/cjs/loader:1091:12)
+2025-12-26T05:21:36.5042602Z     at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12) {
+2025-12-26T05:21:36.5043501Z   diagnosticCodes: [
+2025-12-26T05:21:36.5043810Z     2307, 2307, 2307,
+2025-12-26T05:21:36.5044093Z     2304, 2304, 2580,
+2025-12-26T05:21:36.5044385Z     2304, 7006, 2580
+2025-12-26T05:21:36.5044650Z   ]
+2025-12-26T05:21:36.5044932Z }
+2025-12-26T05:21:36.5226304Z ##[error]Process completed with exit code 1.
+2025-12-26T05:21:36.5355219Z Post job cleanup.
+2025-12-26T05:21:36.6225619Z [command]/usr/bin/git version
+2025-12-26T05:21:36.6267434Z git version 2.52.0
+2025-12-26T05:21:36.6312462Z Temporarily overriding HOME='/home/runner/work/_temp/db310c38-cf70-4f10-b7ee-eb95d85f0879' before making global git config changes
+2025-12-26T05:21:36.6314143Z Adding repository directory to the temporary git global config as a safe directory
+2025-12-26T05:21:36.6317604Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/PaperPause/PaperPause
+2025-12-26T05:21:36.6352924Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-12-26T05:21:36.6381530Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-12-26T05:21:36.6570802Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-12-26T05:21:36.6588288Z http.https://github.com/.extraheader
+2025-12-26T05:21:36.6598822Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2025-12-26T05:21:36.6624260Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-12-26T05:21:36.6800362Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2025-12-26T05:21:36.6826047Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2025-12-26T05:21:36.7089340Z Cleaning up orphan processes
