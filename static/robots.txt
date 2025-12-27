@@ -5,4 +5,4 @@ Disallow: /*.md$
 Allow: /
 
 # Sitemap Index
-Sitemap: {{ "sitemap.xml" | absURL }}
+Sitemap: https://paperpause.app/sitemap.xml
