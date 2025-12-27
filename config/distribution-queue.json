@@ -2,14 +2,6 @@
   "generated_at": "2025-12-27T13:28:26.733Z",
   "queue": [
     {
-      "collection": "cats",
-      "board_name": "Cats Coloring Pages",
-      "mode": "growth",
-      "priority": 10,
-      "rss_url": "https://paperpause.app/animals/cats/index.xml",
-      "scheduled_at": "2025-12-27T15:45:00.000Z"
-    },
-    {
       "collection": "dogs",
       "board_name": "Dogs Coloring Pages",
       "mode": "growth",
