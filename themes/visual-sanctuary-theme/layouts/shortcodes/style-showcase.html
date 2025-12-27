@@ -1,0 +1,92 @@
+{{ $file := .Get "file" }}
+{{ $src := .Get "src" }}
+{{ $title := .Get "title" }}
+
+{{ if $file }}
+    {{ $file = replace $file ".md" "" }}
+    {{ $p := .Site.GetPage $file }}
+    {{ if $p }}
+        {{ $src = $p.Params.image_url }}
+        {{ if not $title }}
+            {{ $title = $p.Title }}
+        {{ end }}
+    {{ else }}
+        <!-- style-showcase debug: Page not found for path {{ $file }} -->
+    {{ end }}
+{{ end }}
+
+<figure class="style-showcase-container">
+    <div class="style-showcase-image-wrapper">
+        {{ if $src }}
+            <img src="{{ $src }}" alt="{{ $title }}" loading="lazy" class="style-showcase-image">
+        {{ else }}
+            <div class="style-showcase-placeholder">Image missing</div>
+        {{ end }}
+    </div>
+    <figcaption class="style-showcase-caption">
+        <h4 class="style-showcase-title">{{ $title }}</h4>
+        <p class="style-showcase-description">{{ .Get "description" }}</p>
+    </figcaption>
+</figure>
+
+<style>
+.style-showcase-container {
+    margin: 2rem 0;
+    border-radius: 1.5rem;
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid #e2e8f0; /* slate-200 */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+}
+
+.style-showcase-container:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transform: translateY(-4px);
+}
+
+.style-showcase-image-wrapper {
+    overflow: hidden;
+    aspect-ratio: 3/4;
+    background: #f8fafc; /* slate-50 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.style-showcase-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.style-showcase-container:hover .style-showcase-image {
+    transform: scale(1.05);
+}
+
+.style-showcase-placeholder {
+    color: #94a3b8;
+    font-size: 0.875rem;
+    font-style: italic;
+}
+
+.style-showcase-caption {
+    padding: 1.5rem;
+}
+
+.style-showcase-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0f172a; /* slate-900 */
+    margin: 0 0 0.5rem 0;
+}
+
+.style-showcase-description {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #475569; /* slate-600 */
+    margin: 0;
+}
+</style>
