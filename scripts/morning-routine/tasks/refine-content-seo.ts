@@ -25,11 +25,14 @@ Refine the following article for the "${collectionName}" coloring collection.
 2.  **Heading Cleanup**: 
     *   Ensure all H2 headings are clean and compelling.
     *   REMOVE all section numbers (e.g. "1. ", "2. ") and internal identifiers ("The Hook:", "Visual Breakdown:", etc.).
-3.  **Shortcode Audit**: 
-    *   Ensure only ONE style-showcase per specific style is used in the entire article.
-    *   If a style-showcase appears twice for the same image, REMOVE the redundant ones.
-    *   Ensure all {{< style-showcase >}} and {{< faq >}} shortcodes are correctly formatted.
-    *   Check for hallucinated file paths and remove them if they don't look like "category/collection/filename".
+3.  **Shortcode Validation (CRITICAL)**:
+    *   **style-showcase**: MUST use format: {{< style-showcase file="category/collection/filename" title="Title" >}}
+        - If you see file paths ending in ".md", REMOVE the ".md" extension.
+        - If you see broken or hallucinated file paths, REMOVE the entire shortcode.
+    *   **faq**: MUST use format: {{< faq question="Question text?" >}}\\nAnswer text.\\n{{< /faq >}}
+        - If you see **Q:** or **A:** patterns, CONVERT them to proper shortcode format.
+        - If you see a bare {{< faq >}} without a "question" parameter, FIX IT.
+    *   REMOVE any shortcode that doesn't match these exact patterns.
 4.  **Tone & Flow**: Enforce first-person plural ("we"). REPLACE any "I" or "As your master coach" with "we" or "At PaperPause, we...". Remove repetitive section-start greetings.
 
 [ARTICLE CONTENT]

@@ -34,6 +34,18 @@
         {{ partial "visual-index-tile.html" . }}
         {{ end }}
     </div>
+
+    {{- /* Article Zone for category pages */ -}}
+    {{ if .Content }}
+    <section class="article-zone mt-16 bg-white border-t border-slate-100 py-16">
+        <div class="max-w-3xl mx-auto">
+            <article class="max-w-none">
+                {{ .Content }}
+            </article>
+        </div>
+    </section>
+    {{ end }}
+
     {{ else }}
     {{- /* Show individual pages in masonry grid */ -}}
     <div class="flex flex-col lg:flex-row gap-8 lg:gap-12">

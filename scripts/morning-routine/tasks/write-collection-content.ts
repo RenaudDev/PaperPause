@@ -56,6 +56,32 @@ async function runContentSweep() {
     }
 
     logger.success(`🏁 Content Sweep complete. Processed ${totalProcessed} collections.`);
+
+    // Category-level processing (if TARGET_CATEGORY is set)
+    const targetCategory = process.env.TARGET_CATEGORY;
+    if (targetCategory) {
+        const categoryPath = path.join(CONTENT_DIR, targetCategory);
+        const indexPath = path.join(categoryPath, '_index.md');
+        
+        if (fs.existsSync(indexPath)) {
+            const content = fs.readFileSync(indexPath, 'utf8');
+            const { data, content: body } = matter(content);
+            
+            const wordCount = body.trim().split(/\s+/).length;
+            const isGenerated = data.content_generated === true;
+
+            if (wordCount < 2000 || !isGenerated) {
+                logger.info(`📂 Enriching category: ${targetCategory} (${wordCount} words)`);
+                try {
+                    await processCategory(targetCategory, categoryPath, data);
+                } catch (error) {
+                    logger.error(`❌ Failed to process category ${targetCategory}:`, error as Error);
+                }
+            } else {
+                logger.info(`✅ Skipping category ${targetCategory} (already deep content: ${wordCount} words)`);
+            }
+        }
+    }
 }
 
 /**
@@ -170,6 +196,83 @@ async function getStyleMap(category: string, collectionName: string, collectionP
     }
 
     return styles;
+}
+
+/**
+ * Category-level processing logic (e.g., animals/_index.md).
+ * Generates a hub page that references all child collections.
+ */
+async function processCategory(categoryName: string, categoryPath: string, metadata: any) {
+    // 1. Discover child collections
+    const collections = scanCollections(categoryName);
+    const collectionNames = collections.map(c => c.name);
+
+    // 2. Build a sample showcase menu from child collections (one per collection)
+    const showcaseItems: string[] = [];
+    for (const col of collections.slice(0, 5)) { // Max 5 showcases
+        const styles = await getStyleMap(categoryName, col.name, col.path);
+        const firstStyle = Object.keys(styles)[0];
+        if (firstStyle) {
+            const item = styles[firstStyle];
+            showcaseItems.push(`- Collection: ${col.name} | File: ${item.filePath} | Title: ${item.title}`);
+        }
+    }
+    const showcaseMenu = showcaseItems.join('\n');
+
+    // 3. Category-specific outline
+    const outline = [
+        { title: "Category Introduction", focus: `Write an inspiring introduction to the ${categoryName} category. Explain why this category is special for coloring enthusiasts. DO NOT use style-showcase.`, words: 300 },
+        { title: "Explore Our Collections", focus: `Highlight the child collections: ${collectionNames.join(', ')}. Use style-showcases to feature ONE representative image from each collection.`, words: 400 },
+        { title: "Why Color This Category", focus: `Explain the mental health and artistic benefits of coloring ${categoryName}. No style-showcase needed.`, words: 250 },
+        { title: "Getting Started", focus: `Quick tips for beginners approaching their first ${categoryName} coloring page. No style-showcase needed.`, words: 200 },
+        { title: "Expert FAQs", focus: `Write 3 FAQ questions wrapped in {{< faq >}} shortcodes. CRITICAL SYNTAX: Each FAQ must use: {{< faq question="Your question here?" >}}\\nAnswer text.\\n{{< /faq >}}`, words: 150 }
+    ];
+
+    let fullContent = "";
+    let previousSummary = "";
+
+    for (const section of outline) {
+        logger.info(`   - Generating category section: ${section.title}...`);
+        
+        let extraFocus = section.focus;
+        if (section.title.includes("Collections")) {
+            extraFocus += `\n\n[VALID STYLE SHOWCASES]\nAvailable Library:\n${showcaseMenu}\n\nCRITICAL: Use EXACT file paths from the library.`;
+        } else if (section.title.includes("FAQs")) {
+            extraFocus += `\n\nCRITICAL: DO NOT use {{< style-showcase >}}. Use ONLY the {{< faq question="..." >}} shortcode format.`;
+        } else {
+            extraFocus += `\n\nCRITICAL: DO NOT use any {{< style-showcase >}} shortcodes in this section.`;
+        }
+
+        const sectionContent = await generateSection(
+            section.title,
+            extraFocus,
+            section.words,
+            {
+                collectionName: metadata.title || categoryName,
+                previousSectionSummary: previousSummary,
+                visualStyles: collectionNames
+            }
+        );
+
+        fullContent += sectionContent + "\n\n";
+        previousSummary = sectionContent.split('\n').filter(l => l.length > 0).slice(0, 3).join(' ');
+    }
+
+    // 4. SEO Refinement
+    const refinedContent = await refineArticle(fullContent, metadata.title || categoryName);
+
+    // 5. Save
+    const finalMetadata = {
+        ...metadata,
+        content_generated: true,
+        last_swept: new Date().toISOString()
+    };
+
+    const indexPath = path.join(categoryPath, '_index.md');
+    const newFileContent = matter.stringify('\n' + refinedContent.trim(), finalMetadata);
+    fs.writeFileSync(indexPath, newFileContent, 'utf8');
+
+    logger.success(`✨ Successfully updated category: ${categoryName}`);
 }
 
 // Execute
