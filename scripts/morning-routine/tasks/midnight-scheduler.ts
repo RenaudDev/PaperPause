@@ -47,7 +47,7 @@ async function main() {
       // Only schedule collections that successfully generated content TODAY
       logger.info('📚 Mode: Success-Gated (Manifests)');
       
-      const runsDir = path.resolve(__dirname, '../../.runs');
+      const runsDir = path.resolve(__dirname, '../.runs');
       if (fs.existsSync(runsDir)) {
          // Look for manifests specific to this run batch (heuristic: created in last 2 hours)
          // OR just process all json files since the workflow cleans up/downloads fresh artifacts

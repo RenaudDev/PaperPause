@@ -260,7 +260,16 @@ jobs:
           fi
 
       - name: Build Distribution Queue (Success-Gated)
-        run: npx ts-node scripts/morning-routine/tasks/midnight-scheduler.ts --from-manifests
+        run: |
+          # Try success-gated mode first (only schedule collections that generated today)
+          npx ts-node scripts/morning-routine/tasks/midnight-scheduler.ts --from-manifests
+          
+          # Fallback: If queue is empty, run Full Audit to ensure distribution resumes
+          QUEUE_COUNT=$(jq '.queue | length' config/distribution-queue.json)
+          if [ "$QUEUE_COUNT" -eq 0 ]; then
+            echo "⚠️ Queue empty after --from-manifests. Running Full Audit fallback..."
+            npx ts-node scripts/morning-routine/tasks/midnight-scheduler.ts
+          fi
 
       - name: Commit Distribution Queue
         run: |
