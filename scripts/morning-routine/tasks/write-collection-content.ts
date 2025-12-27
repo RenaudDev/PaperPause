@@ -57,30 +57,40 @@ async function runContentSweep() {
 
     logger.success(`🏁 Content Sweep complete. Processed ${totalProcessed} collections.`);
 
-    // Category-level processing (if TARGET_CATEGORY is set)
+    // Category-level processing (automatic or targeted)
     const targetCategory = process.env.TARGET_CATEGORY;
-    if (targetCategory) {
-        const categoryPath = path.join(CONTENT_DIR, targetCategory);
+    let categoriesProcessed = 0;
+
+    for (const category of categories) {
+        // Skip if targeting a specific category and this isn't it
+        if (targetCategory && category.name !== targetCategory) continue;
+
+        const categoryPath = path.join(CONTENT_DIR, category.name);
         const indexPath = path.join(categoryPath, '_index.md');
         
-        if (fs.existsSync(indexPath)) {
-            const content = fs.readFileSync(indexPath, 'utf8');
-            const { data, content: body } = matter(content);
-            
-            const wordCount = body.trim().split(/\s+/).length;
-            const isGenerated = data.content_generated === true;
+        if (!fs.existsSync(indexPath)) continue;
 
-            if (wordCount < 2000 || !isGenerated) {
-                logger.info(`📂 Enriching category: ${targetCategory} (${wordCount} words)`);
-                try {
-                    await processCategory(targetCategory, categoryPath, data);
-                } catch (error) {
-                    logger.error(`❌ Failed to process category ${targetCategory}:`, error as Error);
-                }
-            } else {
-                logger.info(`✅ Skipping category ${targetCategory} (already deep content: ${wordCount} words)`);
+        const content = fs.readFileSync(indexPath, 'utf8');
+        const { data, content: body } = matter(content);
+        
+        const wordCount = body.trim().split(/\s+/).length;
+        const isGenerated = data.content_generated === true;
+
+        if (wordCount < 2000 || !isGenerated) {
+            logger.info(`📂 Enriching category: ${category.name} (${wordCount} words)`);
+            try {
+                await processCategory(category.name, categoryPath, data);
+                categoriesProcessed++;
+            } catch (error) {
+                logger.error(`❌ Failed to process category ${category.name}:`, error as Error);
             }
+        } else {
+            logger.info(`✅ Skipping category ${category.name} (already deep content: ${wordCount} words)`);
         }
+    }
+
+    if (categoriesProcessed > 0) {
+        logger.success(`🏁 Category Sweep complete. Processed ${categoriesProcessed} categories.`);
     }
 }
 
