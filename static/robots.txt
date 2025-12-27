@@ -1,0 +1,8 @@
+User-agent: *
+# Block the raw Markdown source files (prevent duplicate content)
+Disallow: /*.md$
+# Allow everything else (HTML, Images, CSS, JS)
+Allow: /
+
+# Sitemap Index
+Sitemap: {{ "sitemap.xml" | absURL }}
