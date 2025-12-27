@@ -184,6 +184,46 @@
         {{ end }}
       ]
     }
+
+    {{/* 6. Article Schema - For long-form content on collection pages */}}
+    {{ if .Content }}
+    ,
+    {
+      "@type": "Article",
+      "@id": "{{ .Permalink }}#article",
+      "url": "{{ .Permalink }}",
+      "headline": "{{ .Params.h1 | default .Title }}",
+      "articleBody": "{{ .Content | plainify | htmlUnescape }}",
+      "datePublished": "{{ .Date.Format "2006-01-02T15:04:05-07:00" }}",
+      "dateModified": "{{ .Lastmod.Format "2006-01-02T15:04:05-07:00" }}",
+      "publisher": { "@id": "{{ .Site.BaseURL }}#organization" },
+      "author": { "@id": "{{ .Site.BaseURL }}#organization" },
+      "mainEntityOfPage": { "@id": "{{ .Permalink }}#collectionpage" }
+    }
+    {{ end }}
+
+    {{/* 7. FAQPage Schema - If FAQs exist in the content */}}
+    {{ $faqMatches := findRE "<details[^>]*>[\\s\\S]*?<summary>[\\s\\S]*?<\\/summary>[\\s\\S]*?<div class=\"details-content\">[\\s\\S]*?<\\/div>[\\s\\S]*?<\\/details>" .Content }}
+    {{ if gt (len $faqMatches) 0 }}
+    ,
+    {
+      "@type": "FAQPage",
+      "@id": "{{ .Permalink }}#faq",
+      "mainEntity": [
+        {{ range $i, $match := $faqMatches }}
+        {{ if gt $i 0 }},{{ end }}
+        {
+          "@type": "Question",
+          "name": "{{ index (findRE "<summary>[\\s\\S]*?<\\/summary>" $match) 0 | replaceRE "<summary>|<\\/summary>" "" | plainify | htmlUnescape }}",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "{{ index (findRE "<div class=\"details-content\">[\\s\\S]*?<\\/div>" $match) 0 | replaceRE "<div class=\"details-content\">|<\\/div>" "" | plainify | htmlUnescape }}"
+          }
+        }
+        {{ end }}
+      ]
+    }
+    {{ end }}
     {{ end }}
 
     {{/* 4. Organization Schema - Enhanced for single and section pages */}}

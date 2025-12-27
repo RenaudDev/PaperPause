@@ -18,9 +18,6 @@
             {{ if .Params.description }}
             <p class="text-white text-lg mb-4">{{ .Params.description }}</p>
             {{ end }}
-            <div class="prose prose-lg text-white">
-                {{ .Content }}
-            </div>
         </header>
     </div>
 </section>
@@ -31,10 +28,10 @@
     {{- $hasSubsections := gt (len .Sections) 0 -}}
 
     {{ if $hasSubsections }}
-    {{- /* Show collection cards for subsections */ -}}
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+    {{- /* Show dense visual index for subsections */ -}}
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
         {{ range .Sections }}
-        {{ partial "collection-card.html" . }}
+        {{ partial "visual-index-tile.html" . }}
         {{ end }}
     </div>
     {{ else }}
@@ -150,19 +147,18 @@
             </div>
             {{ else }}
             <div class="masonry-grid">
-                {{ range .Pages }}
-                <div class="masonry-item" data-style="{{ .Params.style }}" data-audience="{{ .Params.audience }}">
+                {{ range $index, $page := .Pages }}
+                <div class="masonry-item {{ if ge $index 24 }}hidden vault-item{{ end }}" data-style="{{ .Params.style }}" data-audience="{{ .Params.audience }}">
                     <a href="{{ .RelPermalink }}"
                         class="block group bg-white rounded-xl shadow-sm hover:shadow-lg transition overflow-hidden">
                         <div class="relative bg-white aspect-[3/4]">
                             <!-- Use Imgix/R2 placeholder logic if real image exists -->
                             {{ if .Params.image_url }}
-                            <img src="{{ .Params.image_url }}" alt="{{ .Title }}" class="w-full h-full object-contain">
+                            <img src="{{ .Params.image_url }}" alt="{{ .Title }}" class="w-full h-full object-contain" {{ if ge $index 24 }}loading="lazy"{{ end }}>
                             {{ else }}
                             <div class="w-full h-full bg-slate-50 flex items-center justify-center text-slate-300">No
                                 Image</div>
                             {{ end }}
-
                             <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition"></div>
                         </div>
                         <div class="p-4 border-t border-slate-50">
@@ -173,9 +169,30 @@
                 </div>
                 {{ end }}
             </div>
+
+            {{ if gt (len .Pages) 24 }}
+            <div id="vault-expand-container" class="mt-12 flex justify-center">
+                <button id="show-all-button" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-8 rounded-full transition-all shadow-md hover:shadow-lg flex items-center gap-2">
+                    <span>Show All ({{ sub (len .Pages) 24 }} more)</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+            </div>
+            {{ end }}
             {{ end }}
         </div>
     </div>
+
+    {{ if .Content }}
+    <section class="article-zone mt-24 bg-white border-t border-slate-100 py-24 shadow-[0_-1px_0_rgba(0,0,0,0.05)]">
+        <div class="max-w-3xl mx-auto px-4">
+            <article class="max-w-none">
+                {{ .Content }}
+            </article>
+        </div>
+    </section>
+    {{ end }}
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -183,6 +200,8 @@
             const ageInputs = document.querySelectorAll('input[name="age-filter"]');
             const masonryItems = document.querySelectorAll('.masonry-item');
             const styleFilterOptions = document.querySelectorAll('.style-filter-option');
+            const showAllBtn = document.getElementById('show-all-button');
+            const vaultExpandContainer = document.getElementById('vault-expand-container');
 
             // Open filters by default on desktop (>= 1024px)
             const filtersDetails = document.querySelector('details.group');
@@ -226,9 +245,29 @@
                 });
             }
 
+            function forceExpandVault() {
+                if (!vaultExpandContainer) return;
+
+                const hiddenItems = document.querySelectorAll('.masonry-item.vault-item');
+                hiddenItems.forEach(item => {
+                    item.classList.remove('hidden');
+                });
+
+                vaultExpandContainer.classList.add('hidden');
+            }
+
+            if (showAllBtn) {
+                showAllBtn.addEventListener('click', forceExpandVault);
+            }
+
             function updateFilters() {
                 const selectedStyle = document.querySelector('input[name="style-filter"]:checked').value;
                 const selectedAge = document.querySelector('input[name="age-filter"]:checked').value;
+
+                // Force expand the vault if any filter is selected
+                if (selectedStyle !== '' || selectedAge !== '') {
+                    forceExpandVault();
+                }
 
                 // Filter masonry items
                 masonryItems.forEach(item => {

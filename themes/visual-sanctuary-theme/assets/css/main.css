@@ -151,3 +151,74 @@ input[type="radio"]:focus-visible+span::before {
     background: white;
   }
 }
+
+/* Story 3.0.2: Article Zone & FAQ Styling */
+.article-zone article {
+  line-height: 1.8;
+  @apply text-slate-700;
+}
+
+.article-zone article h1 {
+  @apply font-heading text-4xl font-bold text-slate-900 mb-8 mt-12;
+}
+
+.article-zone article h2 {
+  @apply font-heading text-3xl font-bold text-slate-900 mb-6 mt-16;
+}
+
+.article-zone article h3 {
+  @apply font-heading text-2xl font-bold text-slate-900 mb-4 mt-12;
+}
+
+.article-zone article p {
+  @apply mb-6;
+}
+
+.article-zone article ul {
+  @apply list-disc list-outside ml-6 mb-8 space-y-2;
+}
+
+.article-zone article ol {
+  @apply list-decimal list-outside ml-6 mb-8 space-y-2;
+}
+
+.article-zone article li {
+  @apply pl-2;
+}
+
+.article-zone article strong {
+  @apply font-bold text-slate-900;
+}
+
+.article-zone article a {
+  @apply text-teal-600 underline hover:text-teal-700 transition-colors;
+}
+
+.article-zone details {
+  @apply mb-4 border border-slate-200 rounded-xl overflow-hidden shadow-sm transition-all bg-white;
+}
+
+.article-zone summary {
+  @apply font-bold p-5 cursor-pointer hover:bg-slate-50 list-none flex justify-between items-center;
+}
+
+.article-zone summary::-webkit-details-marker {
+  display: none;
+}
+
+.article-zone summary::after {
+  content: '+';
+  @apply text-teal-600 text-xl font-light transition-transform duration-300;
+}
+
+.article-zone details[open] summary::after {
+  transform: rotate(45deg);
+}
+
+.article-zone details[open] summary {
+  @apply border-b border-slate-100;
+}
+
+.article-zone .details-content {
+  @apply p-5 text-slate-600;
+}
