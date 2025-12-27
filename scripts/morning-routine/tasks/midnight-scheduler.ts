@@ -26,27 +26,10 @@ interface DistributionQueue {
 
 // --- Helpers ---
 
-// Simple string hash for deterministic day selection
-function simpleHash(str: string): number {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash = hash & hash; // Convert to 32bit integer
-  }
-  return Math.abs(hash);
-}
-
-function getDayOfYear(date: Date): number {
-  const start = new Date(date.getFullYear(), 0, 0);
-  const diff = date.getTime() - start.getTime();
-  const oneDay = 1000 * 60 * 60 * 24;
-  return Math.floor(diff / oneDay);
-}
-
 function toTitleCase(str: string): string {
   return str.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 }
+
 
 // --- Main ---
 
@@ -112,41 +95,62 @@ async function main() {
         return fs.statSync(fullPath).isDirectory() && item !== '.DS_Store';
       });
 
-      const today = new Date();
-      const dayOfYear = getDayOfYear(today);
+      // Separate growth vs maintenance collections
+      const growthCollections: { collection: string; count: number }[] = [];
+      const maintenanceCollections: { collection: string; count: number }[] = [];
 
       for (const collection of collections) {
-          const posts = listContent('animals', collection, false);
-          const count = posts.length;
+        const posts = listContent('animals', collection, false);
+        const count = posts.length;
+        
+        if (count < 75) {
+          growthCollections.push({ collection, count });
+        } else {
+          maintenanceCollections.push({ collection, count });
+        }
+      }
+
+      logger.info(`Found ${growthCollections.length} growth collections, ${maintenanceCollections.length} maintenance collections.`);
+
+      // Schedule ALL growth collections (daily)
+      for (const { collection, count } of growthCollections) {
+        const boardName = `${toTitleCase(collection)} Coloring Pages`;
+        const rssUrl = `https://paperpause.app/animals/${collection}/index.xml`;
+        
+        collectionsToSchedule.push({
+          collection,
+          board_name: boardName,
+          mode: 'growth',
+          priority: 10,
+          rss_url: rssUrl
+        });
+        logger.info(`[${collection}] count=${count} mode=growth -> Scheduled`);
+      }
+
+      // Schedule maintenance collections using ROUND-ROBIN (balanced weekly distribution)
+      // Sort alphabetically for determinism
+      maintenanceCollections.sort((a, b) => a.collection.localeCompare(b.collection));
+      const currentDayOfWeek = new Date().getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+
+      maintenanceCollections.forEach(({ collection, count }, index) => {
+        const assignedDay = index % 7;
+        
+        if (assignedDay === currentDayOfWeek) {
           const boardName = `${toTitleCase(collection)} Coloring Pages`;
           const rssUrl = `https://paperpause.app/animals/${collection}/index.xml`;
           
-          let shouldSchedule = false;
-          let mode: QueueItem['mode'] = 'growth';
-
-          if (count < 75) {
-              mode = 'growth';
-              shouldSchedule = true;
-          } else {
-              const hash = simpleHash(collection);
-              const targetDay = hash % 7;
-              const currentDay = dayOfYear % 7;
-              if (targetDay === currentDay) {
-                  mode = 'maintenance';
-                  shouldSchedule = true;
-              }
-          }
-
-          if (shouldSchedule) {
-              collectionsToSchedule.push({
-                  collection,
-                  board_name: boardName,
-                  mode,
-                  priority: mode === 'growth' ? 10 : 5,
-                  rss_url: rssUrl
-              });
-          }
-      }
+          collectionsToSchedule.push({
+            collection,
+            board_name: boardName,
+            mode: 'maintenance',
+            priority: 5,
+            rss_url: rssUrl
+          });
+          logger.info(`[${collection}] count=${count} mode=maintenance (day ${assignedDay}) -> Scheduled`);
+        } else {
+          logger.debug(`[${collection}] count=${count} mode=maintenance (day ${assignedDay}) -> Skipped (today is day ${currentDayOfWeek})`);
+        }
+      });
     }
 
     logger.info(`Selected ${collectionsToSchedule.length} collections for distribution.`);
