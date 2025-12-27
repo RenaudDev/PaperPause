@@ -213,10 +213,14 @@
             hideBanner();
         }
 
-        // Handle reject
+        // Handle reject - also disables GA4 if already loaded
         function handleReject() {
             if (window.ppSetConsentAndLoad) {
                 window.ppSetConsentAndLoad(CONSENT_STATES.REJECTED);
+            }
+            // Disable GA4 if already loaded
+            if (window.ppGA4ID) {
+                window['ga-disable-' + window.ppGA4ID] = true;
             }
             hideBanner();
         }

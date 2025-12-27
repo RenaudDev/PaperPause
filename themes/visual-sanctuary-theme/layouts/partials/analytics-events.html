@@ -7,10 +7,11 @@
      * Respects user consent: only fires events if consent was accepted
      */
 
-    // Check if user has consented to analytics
+    // Check if user has consented to analytics (implied consent model)
+    // Returns true unless user has explicitly rejected
     function hasAnalyticsConsent() {
         const consent = window.ppGetConsentState?.();
-        return consent === 'accepted';
+        return consent !== 'rejected';
     }
 
     // Wait for gtag/pintrk to be ready before attaching listeners

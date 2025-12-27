@@ -127,7 +127,7 @@ function generatePinterestDescription(
  * 
  * Story 1.C.1 (v2): Keyword-Rich + Collision-Safe Asset Identity
  */
-function buildAssetId(variant: string, style: { targetAudience: string }, date: Date): string {
+function buildAssetId(variant: string, style: { targetAudience: string }, date: Date, collection: string): string {
   const dateStr = date.toISOString().slice(0, 10).replace(/-/g, '');
 
   // Extract keywords from variant: "Playful Yorkshire Terrier playing, closely surrounded by garden flowers"
@@ -137,8 +137,9 @@ function buildAssetId(variant: string, style: { targetAudience: string }, date: 
 
   const typeSlug = typeMatch
     ? typeMatch[1].toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').slice(0, 30)
-    : 'subject';
-  const settingSlug = settingMatch
+    : collection.replace(/\s+/g, '-').toLowerCase(); // Fallback to collection name instead of 'subject'
+  const settingSlug = settingMatch 
+
     ? settingMatch[1].toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').slice(0, 20)
     : 'scene';
 
@@ -231,7 +232,7 @@ export const generateBatch = async (
 
       // Story 1.C.1 (v2): Keyword-Rich + Collision-Safe Asset Identity
       // Format: YYYYMMDD-{type}-{setting}-{audience}-{hash4}
-      const assetId = buildAssetId(variantPrompt, style, new Date());
+      const assetId = buildAssetId(variantPrompt, style, new Date(), collection);
 
       // 1. Use AssetID as the primary identifier
       const tempId = assetId;

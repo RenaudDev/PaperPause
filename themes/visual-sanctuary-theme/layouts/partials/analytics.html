@@ -1,9 +1,10 @@
-<!-- Cookie Consent Gating for GA4 + Pinterest -->
+<!-- Implied Consent Analytics for GA4 + Pinterest -->
 <script>
     /**
-     * Cookie Consent Manager
-     * Stores consent in localStorage with 180-day expiry
-     * Loads GA4 + Pinterest only if consent is accepted
+     * Cookie Consent Manager (Implied Consent Model)
+     * - Analytics load by default unless user has opted out
+     * - Stores consent in localStorage with 180-day expiry
+     * - Users can opt-out via cookie banner
      */
 
     // Configuration
@@ -13,31 +14,9 @@
         ACCEPTED: 'accepted',
         REJECTED: 'rejected'
     };
+    const GA4_ID = '{{ site.Config.Services.GoogleAnalytics.ID | default site.Params.googleAnalytics }}';
 
-    // Check if consent is stored and valid
-    function isConsentValid() {
-        const stored = localStorage.getItem(CONSENT_KEY);
-        if (!stored) return false;
-
-        try {
-            const parsed = JSON.parse(stored);
-            const expiryDate = new Date(parsed.timestamp);
-            expiryDate.setDate(expiryDate.getDate() + CONSENT_EXPIRY_DAYS);
-            return new Date() < expiryDate && parsed.value === CONSENT_STATES.ACCEPTED;
-        } catch (e) {
-            return false;
-        }
-    }
-
-    // Store consent decision
-    function setConsentDecision(decision) {
-        localStorage.setItem(CONSENT_KEY, JSON.stringify({
-            value: decision,
-            timestamp: new Date().toISOString()
-        }));
-    }
-
-    // Get current consent state
+    // Get current consent state (returns 'accepted', 'rejected', or null)
     function getConsentState() {
         const stored = localStorage.getItem(CONSENT_KEY);
         if (!stored) return null;
@@ -59,21 +38,34 @@
         }
     }
 
-    // Load GA4
+    // Check if user has NOT explicitly rejected (implied consent)
+    function shouldLoadAnalytics() {
+        const state = getConsentState();
+        return state !== CONSENT_STATES.REJECTED;
+    }
+
+    // Store consent decision
+    function setConsentDecision(decision) {
+        localStorage.setItem(CONSENT_KEY, JSON.stringify({
+            value: decision,
+            timestamp: new Date().toISOString()
+        }));
+    }
+
+    // Load GA4 - FIXED: Use window.gtag check to avoid hoisting issue
     function ppLoadGA4() {
-        if (typeof gtag !== 'undefined') return; // Already loaded
+        if (window.gtag) return; // Already loaded
 
         const script = document.createElement('script');
         script.async = true;
-        script.src = 'https://www.googletagmanager.com/gtag/js?id={{ .Site.Params.googleAnalytics }}';
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA4_ID;
         document.head.appendChild(script);
 
         window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        window.gtag = gtag;
-        gtag('js', new Date());
+        window.gtag = function() { dataLayer.push(arguments); };
+        window.gtag('js', new Date());
 
-        gtag('config', '{{ .Site.Params.googleAnalytics }}', {
+        window.gtag('config', GA4_ID, {
             'send_page_view': true,
             'enhanced_measurement': {
                 'scrolls': true,
@@ -85,9 +77,14 @@
         });
     }
 
+    // Disable GA4 tracking (for opt-out)
+    function ppDisableGA4() {
+        window['ga-disable-' + GA4_ID] = true;
+    }
+
     // Load Pinterest Tag
     function ppLoadPinterest() {
-        if (typeof pintrk !== 'undefined') return; // Already loaded
+        if (window.pintrk) return; // Already loaded
 
         !function(e){if(!window.pintrk){window.pintrk = function () {
         window.pintrk.queue.push(Array.prototype.slice.call(arguments))};var
@@ -109,10 +106,10 @@
         document.body.appendChild(noscript);
     }
 
-    // Load analytics if consent is given
-    function ppLoadAnalyticsIfConsented() {
-        if (isConsentValid()) {
-            {{ if .Site.Params.googleAnalytics }}ppLoadGA4();{{ end }}
+    // Load analytics (implied consent - load unless rejected)
+    function ppLoadAnalytics() {
+        if (shouldLoadAnalytics()) {
+            {{ if or site.Config.Services.GoogleAnalytics.ID site.Params.googleAnalytics }}ppLoadGA4();{{ end }}
             {{ if .Site.Params.pinterestTag }}ppLoadPinterest();{{ end }}
         }
     }
@@ -121,7 +118,9 @@
     window.ppSetConsentAndLoad = function(decision) {
         setConsentDecision(decision);
         if (decision === CONSENT_STATES.ACCEPTED) {
-            ppLoadAnalyticsIfConsented();
+            ppLoadAnalytics();
+        } else if (decision === CONSENT_STATES.REJECTED) {
+            ppDisableGA4();
         }
         // Dispatch event so other scripts can listen
         window.dispatchEvent(new CustomEvent('ppConsentChanged', { detail: decision }));
@@ -131,21 +130,24 @@
         return getConsentState();
     };
 
-    window.ppIsConsentValid = function() {
-        return isConsentValid();
+    window.ppShouldLoadAnalytics = function() {
+        return shouldLoadAnalytics();
     };
 
     window.ppOpenCookieBanner = function() {
         window.dispatchEvent(new CustomEvent('ppOpenBanner'));
     };
 
+    // Expose GA4 ID for other scripts
+    window.ppGA4ID = GA4_ID;
+
     // Mark consent manager as ready
     window.ppConsentManagerReady = true;
 
-    // Load on page load if consent exists
+    // Load analytics on page load (implied consent)
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', ppLoadAnalyticsIfConsented);
+        document.addEventListener('DOMContentLoaded', ppLoadAnalytics);
     } else {
-        ppLoadAnalyticsIfConsented();
+        ppLoadAnalytics();
     }
 </script>
